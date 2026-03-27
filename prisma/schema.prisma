@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated-client"
 }
 
 datasource db {
@@ -18,32 +19,34 @@ model User {
   name          String?
   email         String?   @unique
   emailVerified DateTime?
-  image         String?
+  profileImage  String?
   password      String?
-  phone         String?   @unique
   role          UserRole  @default(TREKKER)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts      Account[]
-  sessions      Session[]
+  // Relations
+  accounts       Account[]
+  sessions       Session[]
   medicalProfile MedicalProfile?
-  bookings      Booking[]
+  bookings       Booking[]
+  treks          Trek[]          @relation("GuideTreks")
+  reviews        Review[]
 }
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String? @db.Text
-  access_token       String? @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? @db.Text
-  session_state      String?
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -71,19 +74,95 @@ model MedicalProfile {
   id        String   @id @default(cuid())
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id])
-  vitals    Json?    // Stores height, weight, BP
-  history   Json?    // Stores chronic conditions
-  fitness   Json?    // Weekly exercise stats
+  vitals    Json? // Stores height, weight, BP
+  history   Json? // Stores chronic conditions
+  fitness   Json? // Weekly exercise stats
   updatedAt DateTime @updatedAt
 }
 
-// Day 3 Module: Booking Placeholder
+// ----------------------------------------------------
+// BOOKING & CONCURRENCY SYSTEM
+// ----------------------------------------------------
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
 model Booking {
+  id String @id @default(cuid())
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  trekId String
+  trek   Trek   @relation(fields: [trekId], references: [id], onDelete: Restrict)
+
+  // Details
+  participants Int           @default(1)
+  totalPrice   Float         @default(0)
+  status       BookingStatus @default(PENDING)
+
+  // Concurrency & Security
+  // We use PostgreSQL transaction isolation & row-level locks
+  // to ensure double bookings do not occur.
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([trekId])
+}
+
+model Trek {
+  id           String   @id @default(cuid())
+  title        String
+  description  String   @db.Text
+  location     String
+  durationDays Int
+  difficulty   String // "EASY", "MODERATE", "HARD", "EXTREME"
+  price        Float
+  maxAltitude  Int? // in meters
+  bestSeason   String?
+  highlights   String[] // Important landmarks or features
+  coverImage   String? // URL
+
+  // Inventory & Concurrency
+  availableSpots Int @default(15)
+  maxCapacity    Int @default(20)
+
+  // Stores 768-D AI Embedding for similarity search
+  embedding Float[]
+
+  // Relations
+  guideId  String?
+  guide    User?     @relation("GuideTreks", fields: [guideId], references: [id])
+  reviews  Review[]
+  bookings Booking[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
   id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  ip        String
+  userAgent String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int
+  comment   String?
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   trekId    String
-  status    String   @default("PENDING")
-  payment   Json?
+  trek      Trek     @relation(fields: [trekId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
