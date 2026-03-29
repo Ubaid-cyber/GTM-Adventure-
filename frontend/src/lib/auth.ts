@@ -1,8 +1,7 @@
 import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
 import Credentials from "next-auth/providers/credentials"
-
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:4000';
+import { verifyCredentials } from "./auth-service"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -20,22 +19,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!credentials?.email || !credentials?.password) return null;
 
         try {
-          // Call the Express backend to verify credentials
-          const res = await fetch(`${BACKEND_URL}/api/auth/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              email: credentials.email,
-              password: credentials.password,
-            }),
-          });
-
-          if (!res.ok) return null;
-
-          const data = await res.json();
-          return data.user ?? null;
-        } catch (error) {
-          console.error('[NextAuth] Backend auth error:', error);
+          const user = await verifyCredentials(
+            credentials.email as string, 
+            credentials.password as string
+          );
+          return user;
+        } catch (error: any) {
+          console.error('[NextAuth] Auth error:', error.message);
           return null;
         }
       }

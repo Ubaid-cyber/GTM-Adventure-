@@ -18,21 +18,17 @@ export default function RegisterPage() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       setLoading(false);
       return;
     }
-
     try {
-      const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
-      const res = await fetch(`${BACKEND_URL}/api/auth/register`, {
+      const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: formData.name, email: formData.email, password: formData.password }),
       });
-
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Registration failed');
       router.push('/login?registered=true');
@@ -43,44 +39,55 @@ export default function RegisterPage() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-        <div className="p-8 sm:p-12">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-black text-gray-900">Join GTM-Adventure</h1>
-            <p className="text-gray-500 mt-2 font-medium">Create an account to start your journey.</p>
-          </div>
+  const fields = [
+    { name: 'name', label: 'Full Name', type: 'text', placeholder: 'John Doe' },
+    { name: 'email', label: 'Email', type: 'email', placeholder: 'you@example.com' },
+    { name: 'password', label: 'Password', type: 'password', placeholder: '••••••••' },
+    { name: 'confirmPassword', label: 'Confirm Password', type: 'password', placeholder: '••••••••' },
+  ];
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {['name', 'email', 'password', 'confirmPassword'].map((field) => (
-              <div key={field}>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 px-1">
-                  {field === 'confirmPassword' ? 'Confirm Password' : field.charAt(0).toUpperCase() + field.slice(1)}
-                </label>
+  return (
+    <div className="min-h-screen bg-surface flex items-center justify-center p-4 pt-24">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 mb-4">
+            <svg className="w-8 h-8 text-primary" viewBox="0 0 32 32" fill="currentColor">
+              <path d="M16 2L2 26h28L16 2z"/>
+            </svg>
+            <span className="font-bold text-xl text-foreground">GTM-Adventure</span>
+          </div>
+          <h1 className="text-2xl font-bold text-foreground">Create your account</h1>
+          <p className="text-muted text-sm mt-1">Join thousands of explorers on GTM-Adventure</p>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-border shadow-sm p-8">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {fields.map(f => (
+              <div key={f.name}>
+                <label className="block text-sm font-medium text-foreground mb-1.5">{f.label}</label>
                 <input
-                  name={field}
-                  type={field.includes('assword') ? 'password' : field === 'email' ? 'email' : 'text'}
-                  value={(formData as any)[field]}
-                  onChange={handleChange}
-                  required
-                  className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-gray-900 focus:bg-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all outline-none"
+                  name={f.name} type={f.type} placeholder={f.placeholder}
+                  value={(formData as any)[f.name]} onChange={handleChange} required
+                  className="w-full px-4 py-2.5 rounded-lg border border-border bg-white text-sm text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                 />
               </div>
             ))}
 
             {error && (
-              <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-xs text-red-600 font-bold">⚠️ {error}</div>
+              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 font-medium">
+                {error}
+              </div>
             )}
 
             <button type="submit" disabled={loading}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-black py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all active:scale-95 disabled:opacity-50">
-              {loading ? 'Creating Account...' : 'Create Account'}
+              className="w-full bg-primary hover:bg-primary-hover text-white py-2.5 rounded-lg font-semibold text-sm transition-colors shadow-sm disabled:opacity-60 mt-2">
+              {loading ? 'Creating account...' : 'Create Account'}
             </button>
           </form>
 
-          <p className="mt-8 text-center text-sm text-gray-500 font-medium">
-            Already have an account? <Link href="/login" className="text-green-600 hover:text-green-700 font-bold">Sign In</Link>
+          <p className="mt-6 text-center text-sm text-muted">
+            Already have an account?{' '}
+            <Link href="/login" className="text-primary font-semibold hover:underline">Sign in</Link>
           </p>
         </div>
       </div>

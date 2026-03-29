@@ -1,11 +1,11 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated-client"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DIRECT_DATABASE_URL")
 }
 
 enum UserRole {
@@ -20,6 +20,8 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   profileImage  String?
+  bio           String?   
+  country       String?
   password      String?
   role          UserRole  @default(TREKKER)
   createdAt     DateTime  @default(now())
@@ -32,6 +34,8 @@ model User {
   bookings       Booking[]
   treks          Trek[]          @relation("GuideTreks")
   reviews        Review[]
+  posts          ExpeditionPost[]
+  comments       PostComment[]
 }
 
 model Account {
@@ -40,12 +44,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String? 
+  access_token      String? 
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String? 
   session_state     String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -69,20 +73,24 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-// Day 5 Module: Health & Wellness Placeholder
-model MedicalProfile {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id])
-  vitals    Json? // Stores height, weight, BP
-  history   Json? // Stores chronic conditions
-  fitness   Json? // Weekly exercise stats
-  updatedAt DateTime @updatedAt
+enum MedicalStatus {
+  NONE
+  AWAITING_CLEARANCE
+  IN_REVIEW
+  CLEARED
 }
 
-// ----------------------------------------------------
-// BOOKING & CONCURRENCY SYSTEM
-// ----------------------------------------------------
+model MedicalProfile {
+  id        String        @id @unique @default(cuid())
+  userId    String        @unique
+  user      User          @relation(fields: [userId], references: [id])
+  vitals    Json?
+  history   Json?
+  fitness   Json?
+  status    MedicalStatus @default(NONE)
+  medicalNotes String?    
+  updatedAt DateTime      @updatedAt
+}
 
 enum BookingStatus {
   PENDING
@@ -90,28 +98,91 @@ enum BookingStatus {
   CANCELLED
 }
 
-model Booking {
-  id String @id @default(cuid())
+enum ExpeditionStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
 
-  // Relations
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Expedition {
+  id        String           @id @default(cuid())
+  trekId    String
+  trek      Trek             @relation(fields: [trekId], references: [id])
+  startDate DateTime
+  endDate   DateTime
+  status    ExpeditionStatus @default(UPCOMING)
 
-  trekId String
-  trek   Trek   @relation(fields: [trekId], references: [id], onDelete: Restrict)
+  currentLocationName String?
+  currentAltitude     Int?
+  currentLat          Float?
+  currentLong         Float?
+  progressPercent     Int     @default(0)
 
-  // Details
-  participants Int           @default(1)
-  totalPrice   Float         @default(0)
-  status       BookingStatus @default(PENDING)
-
-  // Concurrency & Security
-  // We use PostgreSQL transaction isolation & row-level locks
-  // to ensure double bookings do not occur.
+  bookings Booking[]
+  posts    ExpeditionPost[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
 
+enum PostType {
+  MESSAGE
+  UPDATE
+  MILESTONE
+  IMAGE
+  ALERT
+}
+
+model ExpeditionPost {
+  id           String     @id @default(cuid())
+  expeditionId String
+  expedition   Expedition @relation(fields: [expeditionId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  content      String     
+  type         PostType   @default(MESSAGE)
+  mediaUrl     String?
+  
+  comments     PostComment[]
+  reactions    Json?
+
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([expeditionId])
+  @@index([userId])
+}
+
+model PostComment {
+  id      String         @id @default(cuid())
+  postId  String
+  post    ExpeditionPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content String         
+  
+  createdAt DateTime     @default(now())
+
+  @@index([postId])
+}
+
+model Booking {
+  id String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trekId String
+  trek   Trek   @relation(fields: [trekId], references: [id], onDelete: Restrict)
+  expeditionId String?
+  expedition   Expedition? @relation(fields: [expeditionId], references: [id])
+  participants Int           @default(1)
+  totalPrice   Float         @default(0)
+  status       BookingStatus @default(PENDING)
+  razorpayOrderId   String? @unique
+  razorpayPaymentId String? @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   @@index([userId])
   @@index([trekId])
 }
@@ -119,29 +190,23 @@ model Booking {
 model Trek {
   id           String   @id @default(cuid())
   title        String
-  description  String   @db.Text
+  description  String   
   location     String
   durationDays Int
-  difficulty   String // "EASY", "MODERATE", "HARD", "EXTREME"
+  difficulty   String
   price        Float
-  maxAltitude  Int? // in meters
+  maxAltitude  Int?
   bestSeason   String?
-  highlights   String[] // Important landmarks or features
-  coverImage   String? // URL
-
-  // Inventory & Concurrency
+  highlights   String[]
+  coverImage   String?
   availableSpots Int @default(15)
   maxCapacity    Int @default(20)
-
-  // Stores 768-D AI Embedding for similarity search
-  embedding Float[]
-
-  // Relations
+  embedding      Float[]
   guideId  String?
   guide    User?     @relation("GuideTreks", fields: [guideId], references: [id])
   reviews  Review[]
   bookings Booking[]
-
+  expeditions Expedition[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

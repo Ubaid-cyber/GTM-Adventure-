@@ -1,35 +1,66 @@
-import { Router, Request, Response } from 'express';
-import { prisma } from '../lib/prisma';
+import { Router } from 'express';
+import { prisma } from '../lib/prisma.js';
+import { pool } from '../lib/db.js';
+import { authenticateToken } from '../middleware/auth.js';
+
+import Razorpay from 'razorpay';
 
 const router = Router();
 
-// ─── POST /api/bookings ───────────────────────────────────────────────────────
-router.post('/', async (req: Request, res: Response) => {
-  try {
-    // Auth is handled by NextAuth on the frontend; the user email is passed in the body
-    // For full decoupled auth, this will be replaced with JWT middleware in a future module
-    const { trekId, participants, userEmail } = req.body;
-    const numParticipants = parseInt(participants);
+router.use(authenticateToken); // Apply to all routes in this router
 
-    if (!trekId || isNaN(numParticipants) || numParticipants <= 0 || !userEmail) {
-      res.status(400).json({ error: 'Invalid booking data' });
-      return;
+
+const razorpay = new Razorpay({
+  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
+  key_secret: process.env.RAZORPAY_KEY_SECRET || '',
+});
+
+// GET /api/bookings
+router.get('/', async (req, res) => {
+  try {
+    const user = (req as any).user;
+
+
+    const bookings = await prisma.booking.findMany({
+      where: { userId: user.id },
+      include: {
+        trek: {
+          select: { id: true, title: true, coverImage: true, location: true, durationDays: true }
+        },
+        expedition: true
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+    res.json(bookings);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// POST /api/bookings
+router.post('/', async (req, res) => {
+  try {
+    const { trekId, participants } = req.body;
+    const numParticipants = parseInt(participants);
+    const userEmail = (req as any).user.email;
+
+    if (!trekId || isNaN(numParticipants) || numParticipants <= 0) {
+      return res.status(400).json({ error: 'Invalid booking data' });
     }
 
-    const user = await prisma.user.findUnique({ where: { email: userEmail } });
-    if (!user) { res.status(404).json({ error: 'User not found' }); return; }
+    const user = (req as any).user;
 
-    // ─── Atomic Transaction with Row-Level Locking ────────────────────────────
-    const result = await prisma.$transaction(async (tx: any) => {
+
+    // ─── Atomic Transaction with Row-Level Locking ───
+    const result: any = await prisma.$transaction(async (tx: any) => {
       const trek: any[] = await tx.$queryRaw`
-        SELECT id, price, "availableSpots", "title"
+        SELECT id, price, "availableSpots", title
         FROM "Trek"
         WHERE id = ${trekId}
         FOR UPDATE
       `;
 
       if (!trek || trek.length === 0) throw new Error('Trek not found');
-
       const selectedTrek = trek[0];
       const spotsRemaining = selectedTrek.availableSpots ?? 15;
 
@@ -37,62 +68,155 @@ router.post('/', async (req: Request, res: Response) => {
 
       const totalPrice = selectedTrek.price * numParticipants;
 
+      // 1. Create Booking
       const booking = await tx.booking.create({
-        data: { userId: user.id, trekId: selectedTrek.id, participants: numParticipants, totalPrice, status: 'PENDING' }
+        data: {
+          userId: user.id,
+          trekId: selectedTrek.id,
+          participants: numParticipants,
+          totalPrice,
+          status: 'PENDING',
+        },
       });
 
+      // 2. Decrement spots
       await tx.trek.update({
         where: { id: selectedTrek.id },
-        data: { availableSpots: { decrement: numParticipants } }
+        data: { availableSpots: { decrement: numParticipants } },
       });
 
-      return { booking, trekTitle: selectedTrek.title };
-    });
+      // 3. Create Razorpay Order
+      const order = await razorpay.orders.create({
+        amount: Math.round(totalPrice * 100), // in paise
+        currency: 'INR',
+        receipt: `receipt_${booking.id.slice(0, 10)}`,
+        notes: { bookingId: booking.id, trekTitle: selectedTrek.title }
+      });
 
-    await prisma.auditLog.create({
-      data: {
-        userId: user.id,
-        action: 'TREK_BOOKED',
-        ip: (req.headers['x-forwarded-for'] as string) || req.ip || '127.0.0.1',
-        userAgent: req.headers['user-agent'] || 'unknown',
-        metadata: { trekId, participants: numParticipants },
-      }
+      // 4. Update Booking with Order ID
+      const updatedBooking = await tx.booking.update({
+        where: { id: booking.id },
+        data: { razorpayOrderId: order.id }
+      });
+
+      return { booking: updatedBooking, order, trekTitle: selectedTrek.title };
     });
 
     res.json({
       success: true,
       booking: result.booking,
-      message: `Successfully booked ${numParticipants} spot(s) for ${result.trekTitle}`
+      order: result.order,
+      message: `Successfully reserved ${numParticipants} spot(s) for ${result.trekTitle}`
     });
+
   } catch (error: any) {
     if (error.message === 'NOT_ENOUGH_SPOTS') {
-      res.status(400).json({ error: 'Sorry, not enough spots available for this trek.' });
-      return;
+      return res.status(400).json({ error: 'Sorry, not enough spots available for this trek.' });
     }
+    console.error('Booking Error:', error);
     res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 });
 
-// ─── GET /api/bookings?email=... ──────────────────────────────────────────────
-router.get('/', async (req: Request, res: Response) => {
+// GET /api/bookings/:id (Single)
+router.get('/:id', async (req, res) => {
   try {
-    const { email } = req.query as { email: string };
-    if (!email) { res.status(400).json({ error: 'Email required' }); return; }
-
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) { res.json([]); return; }
-
-    const bookings = await prisma.booking.findMany({
-      where: { userId: user.id },
+    const booking = await prisma.booking.findUnique({
+      where: { id: req.params.id },
       include: {
-        trek: { select: { title: true, coverImage: true, location: true, durationDays: true } }
-      },
-      orderBy: { createdAt: 'desc' }
+        trek: true,
+        user: { select: { email: true } }
+      }
     });
 
-    res.json(bookings);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch bookings' });
+    if (!booking) return res.status(404).json({ error: 'Booking not found' });
+    if (booking.user.email !== (req as any).user.email) return res.status(403).json({ error: 'Access Denied' });
+
+    res.json({ success: true, booking });
+  } catch (error: any) {
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// PATCH /api/bookings/:id (Participants Update)
+router.patch('/:id', async (req, res) => {
+  try {
+    const newParticipants = parseInt(req.body.participants);
+    if (isNaN(newParticipants) || newParticipants <= 0) return res.status(400).json({ error: 'Invalid count' });
+
+    const result = await prisma.$transaction(async (tx: any) => {
+      const booking = await tx.booking.findUnique({
+        where: { id: req.params.id },
+        include: { user: true, trek: true }
+      });
+
+      if (!booking) throw new Error('NOT_FOUND');
+      if (booking.user.email !== (req as any).user.email) throw new Error('FORBIDDEN');
+      if (booking.status !== 'PENDING') throw new Error('INVALID_STATUS');
+
+      const diff = newParticipants - booking.participants;
+      if (diff === 0) return booking;
+
+      // Lock trek to adjust spots
+      const trek: any[] = await tx.$queryRaw`
+        SELECT "availableSpots" FROM "Trek" WHERE id = ${booking.trekId} FOR UPDATE
+      `;
+      const currentSpots = trek[0]?.availableSpots || 0;
+
+      if (diff > 0 && currentSpots < diff) throw new Error('NOT_ENOUGH_SPOTS');
+
+      await tx.trek.update({
+        where: { id: booking.trekId },
+        data: { availableSpots: { decrement: diff } }
+      });
+
+      return await tx.booking.update({
+        where: { id: booking.id },
+        data: { 
+          participants: newParticipants,
+          totalPrice: (booking.trek.price || 0) * newParticipants
+        }
+      });
+    });
+
+    res.json({ success: true, booking: result });
+  } catch (error: any) {
+    if (error.message === 'NOT_FOUND') return res.status(404).json({ error: 'Not Found' });
+    if (error.message === 'FORBIDDEN') return res.status(403).json({ error: 'Forbidden' });
+    res.status(500).json({ error: error.message || 'Internal Server Error' });
+  }
+});
+
+// POST /api/bookings/:id/cancel (Manual Cancel/Spot Release)
+router.post('/:id/cancel', async (req, res) => {
+  try {
+    const result = await prisma.$transaction(async (tx: any) => {
+      const booking = await tx.booking.findUnique({
+        where: { id: req.params.id },
+        include: { user: true }
+      });
+
+      if (!booking) throw new Error('NOT_FOUND');
+      if (booking.user.email !== (req as any).user.email) throw new Error('FORBIDDEN');
+      if (booking.status !== 'PENDING') throw new Error('INVALID_STATUS');
+
+      // Release spots
+      await tx.trek.update({
+        where: { id: booking.trekId },
+        data: { availableSpots: { increment: booking.participants } }
+      });
+
+      return await tx.booking.update({
+        where: { id: booking.id },
+        data: { status: 'CANCELLED' }
+      });
+    });
+
+    res.json({ success: true, message: 'Booking cancelled and spots released.' });
+  } catch (error: any) {
+    if (error.message === 'NOT_FOUND') return res.status(404).json({ error: 'Not Found' });
+    if (error.message === 'FORBIDDEN') return res.status(403).json({ error: 'Forbidden' });
+    res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 });
 

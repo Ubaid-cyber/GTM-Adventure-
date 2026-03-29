@@ -4,7 +4,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useDebounce } from '@/hooks/use-debounce';
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
+const DIFFICULTY_COLORS: Record<string, string> = {
+  EASY:     'bg-emerald-100 text-emerald-700',
+  MODERATE: 'bg-blue-100 text-blue-700',
+  HARD:     'bg-orange-100 text-orange-700',
+  EXTREME:  'bg-red-100 text-red-700',
+};
 
 export default function TreksClient() {
   const [treks, setTreks] = useState<any[]>([]);
@@ -18,36 +23,32 @@ export default function TreksClient() {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
   const [minDays, setMinDays] = useState('');
-  const [maxDays, setMaxDays] = useState('');
   const [sort, setSort] = useState('');
 
-  const hasActiveFilters = Boolean(difficulty || minPrice || maxPrice || minDays || maxDays || sort);
-  const clearFilters = () => { setDifficulty(''); setMinPrice(''); setMaxPrice(''); setMinDays(''); setMaxDays(''); setSort(''); };
+  const hasActiveFilters = Boolean(difficulty || minPrice || maxPrice || minDays || sort);
+  const clearFilters = () => { setDifficulty(''); setMinPrice(''); setMaxPrice(''); setMinDays(''); setSort(''); };
 
-  const debouncedQuery = useDebounce(query, 300);
-  const debouncedDifficulty = useDebounce(difficulty, 300);
-  const debouncedMinPrice = useDebounce(minPrice, 500);
-  const debouncedMaxPrice = useDebounce(maxPrice, 500);
-  const debouncedMinDays = useDebounce(minDays, 500);
-  const debouncedMaxDays = useDebounce(maxDays, 500);
-  const debouncedSort = useDebounce(sort, 300);
+  const debouncedQuery     = useDebounce(query, 300);
+  const debouncedDifficulty  = useDebounce(difficulty, 300);
+  const debouncedMinPrice  = useDebounce(minPrice, 500);
+  const debouncedMaxPrice  = useDebounce(maxPrice, 500);
+  const debouncedMinDays   = useDebounce(minDays, 500);
+  const debouncedSort      = useDebounce(sort, 300);
 
   const fetchTreks = useCallback(async (pageToFetch = 1, isLoadMore = false) => {
     if (isLoadMore) setLoadingMore(true); else setLoading(true);
     try {
       const params = new URLSearchParams();
-      if (debouncedQuery) params.append('q', debouncedQuery);
+      if (debouncedQuery)      params.append('q', debouncedQuery);
       if (debouncedDifficulty) params.append('difficulty', debouncedDifficulty);
-      if (debouncedMinPrice) params.append('minPrice', debouncedMinPrice);
-      if (debouncedMaxPrice) params.append('maxPrice', debouncedMaxPrice);
-      if (debouncedMinDays) params.append('minDays', debouncedMinDays);
-      if (debouncedMaxDays) params.append('maxDays', debouncedMaxDays);
-      if (debouncedSort) params.append('sort', debouncedSort);
+      if (debouncedMinPrice)   params.append('minPrice', debouncedMinPrice);
+      if (debouncedMaxPrice)   params.append('maxPrice', debouncedMaxPrice);
+      if (debouncedMinDays)    params.append('minDays', debouncedMinDays);
+      if (debouncedSort)       params.append('sort', debouncedSort);
       params.append('page', pageToFetch.toString());
       params.append('limit', '6');
 
-      // ← Now calls the Express backend directly
-      const res = await fetch(`${BACKEND_URL}/api/treks?${params.toString()}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/treks?${params.toString()}`);
       if (!res.ok) throw new Error('Failed to fetch treks');
       const data = await res.json();
 
@@ -61,7 +62,7 @@ export default function TreksClient() {
     } finally {
       setLoading(false); setLoadingMore(false);
     }
-  }, [debouncedQuery, debouncedDifficulty, debouncedMinPrice, debouncedMaxPrice, debouncedMinDays, debouncedMaxDays, debouncedSort]);
+  }, [debouncedQuery, debouncedDifficulty, debouncedMinPrice, debouncedMaxPrice, debouncedMinDays, debouncedSort]);
 
   useEffect(() => { fetchTreks(1, false); }, [fetchTreks]);
 
@@ -70,107 +71,269 @@ export default function TreksClient() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 text-gray-900">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-extrabold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-blue-600">
-          Discover Your Next Adventure
-        </h1>
+    <div className="min-h-screen bg-background pt-16">
 
-        <div className="max-w-3xl mx-auto mb-10 relative group">
-          <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-            <svg className="w-7 h-7 text-purple-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-          </div>
-          <input
-            type="text"
-            placeholder="Ask AI: e.g. 'I want a short beginner trek with sunrise views'"
-            className="w-full pl-16 pr-16 py-5 rounded-full border-2 border-purple-100 bg-white focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-500/10 shadow-lg text-[1.1rem] text-gray-800 placeholder-gray-400 transition-all duration-300"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
+      {/* ── Hero Image ── */}
+      <div className="relative w-full h-[55vh] md:h-[65vh] overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&q=85&w=2070"
+          alt="Himalayan Mountains"
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2070';
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30" />
+        <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10">
+          <h1 className="text-white text-3xl md:text-5xl font-bold drop-shadow-lg">
+            Discover Your Next<br />
+            <span className="text-[#38bdf8]">Himalayan</span> Adventure
+          </h1>
         </div>
+      </div>
 
-        <div className="mb-10 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-4">
-          <div className="flex justify-between items-center">
-            <h3 className="font-semibold text-gray-700">Refine Your Search</h3>
-            {hasActiveFilters && (
-              <button onClick={clearFilters} className="text-sm text-red-500 hover:text-red-700 font-medium px-3 py-1.5 rounded-lg bg-red-50">
-                Clear Filters
-              </button>
-            )}
+      {/* ── Main Content Card ── */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-10">
+        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border border-border">
+
+          {/* AI Search */}
+          <div className="flex flex-col sm:flex-row gap-3 mb-6">
+            <div className="relative flex-1">
+              <svg className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+              <input
+                type="text"
+                placeholder="Search Treks, Peaks, or Plan with AI (e.g., '10-day Nepal trek under $2k')..."
+                className="w-full pl-11 pr-4 py-3.5 rounded-full border border-border bg-surface text-foreground text-sm placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+              />
+            </div>
+            <button className="flex items-center justify-center gap-2.5 bg-primary hover:bg-primary-hover text-white px-7 py-3.5 rounded-full font-bold text-sm transition-all shadow-lg hover:shadow-primary/20 group shrink-0">
+              <div className="relative flex items-center justify-center">
+                <span className="text-lg relative z-10 filter drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] drop-shadow-[0_0_12px_rgba(59,130,246,0.6)] animate-pulse">
+                  ✨
+                </span>
+                {/* Intense Neon Bloom */}
+                <div className="absolute inset-0 w-6 h-6 bg-blue-400 blur-xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
+              </div>
+              <span className="relative z-10 ml-1">
+                {searchMode === 'semantic' ? 'AI Active' : 'Start AI Scouting'}
+              </span>
+            </button>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            <select className="px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-500 bg-white" value={difficulty} onChange={(e) => setDifficulty(e.target.value)}>
+
+          {/* Filters */}
+          <div className="flex flex-wrap items-center gap-3 pb-6 border-b border-border mb-6">
+            <span className="text-xs font-semibold text-muted uppercase tracking-wider">Filters:</span>
+
+            <select
+              className="px-4 py-2 rounded-lg border border-border bg-white text-sm text-foreground font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
+              value={difficulty} onChange={(e) => setDifficulty(e.target.value)}
+            >
               <option value="">All Difficulties</option>
               <option value="EASY">Easy</option>
               <option value="MODERATE">Moderate</option>
               <option value="HARD">Hard</option>
               <option value="EXTREME">Extreme</option>
             </select>
-            <select className="px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-500 bg-white" value={sort} onChange={(e) => setSort(e.target.value)}>
-              <option value="">AI Recommended</option>
+
+            <input
+              type="number" placeholder="Min Price ($)" value={minPrice}
+              onChange={e => setMinPrice(e.target.value)}
+              className="w-32 px-4 py-2 rounded-lg border border-border bg-white text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            />
+            <input
+              type="number" placeholder="Max Price ($)" value={maxPrice}
+              onChange={e => setMaxPrice(e.target.value)}
+              className="w-32 px-4 py-2 rounded-lg border border-border bg-white text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            />
+            <input
+              type="number" placeholder="Min Days" value={minDays}
+              onChange={e => setMinDays(e.target.value)}
+              className="w-28 px-4 py-2 rounded-lg border border-border bg-white text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+            />
+
+            <select
+              className="px-4 py-2 rounded-lg border border-border bg-white text-sm text-foreground font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
+              value={sort} onChange={(e) => setSort(e.target.value)}
+            >
+              <option value="">Sort By</option>
               <option value="price_asc">Price: Low to High</option>
               <option value="price_desc">Price: High to Low</option>
-              <option value="duration_asc">Shortest First</option>
-              <option value="duration_desc">Longest First</option>
             </select>
-            <input type="number" className="px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none" placeholder="Min Price ($)" value={minPrice} onChange={e => setMinPrice(e.target.value)} />
-            <input type="number" className="px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none" placeholder="Max Price ($)" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
-            <input type="number" className="px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none" placeholder="Min Days" value={minDays} onChange={e => setMinDays(e.target.value)} />
-            <input type="number" className="px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-green-500 outline-none" placeholder="Max Days" value={maxDays} onChange={e => setMaxDays(e.target.value)} />
-          </div>
-        </div>
 
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[1,2,3,4,5,6].map(i => (
-              <div key={i} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm animate-pulse">
-                <div className="aspect-[4/3] bg-gray-200"></div>
-                <div className="p-6 space-y-3"><div className="h-6 bg-gray-200 rounded w-3/4"></div><div className="h-4 bg-gray-200 rounded w-1/2"></div><div className="h-4 bg-gray-200 rounded w-full"></div></div>
-              </div>
-            ))}
-          </div>
-        ) : treks.length === 0 ? (
-          <div className="text-center py-20 text-gray-500 text-lg">No treks found matching your criteria.</div>
-        ) : (
-          <>
-            {searchMode === 'semantic' && (
-              <div className="mb-8 bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100 p-4 rounded-xl flex items-center text-purple-800">
-                <span className="text-2xl mr-3">✨</span>
-                <div><h3 className="font-bold">AI Semantic Search Active</h3><p className="text-sm">Showing treks conceptually matching your query using Google Gemini AI.</p></div>
-              </div>
+            {hasActiveFilters && (
+              <button onClick={clearFilters} className="flex items-center gap-1.5 text-sm text-accent hover:text-primary font-medium transition-colors ml-auto">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+                Clear Filters
+              </button>
             )}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {treks.map((trek) => (
-                <div key={trek.id} className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-md transition-all hover:-translate-y-1 hover:shadow-xl group">
-                  <div className="aspect-[4/3] bg-gray-200 relative overflow-hidden">
-                    {trek.coverImage && <img src={trek.coverImage} alt={trek.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />}
-                    {trek._relevance && <div className="absolute top-4 left-4 bg-purple-600/90 px-3 py-1 rounded-full text-xs font-bold text-white">✨ {trek._relevance}% Match</div>}
-                    <div className="absolute top-4 right-4 bg-white/90 px-3 py-1 rounded-full text-xs font-bold text-gray-700 uppercase">{trek.difficulty}</div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold mb-2 text-gray-900 line-clamp-1">{trek.title}</h3>
-                    <div className="text-gray-500 text-sm mb-4">{trek.location} · {trek.durationDays} Days</div>
-                    <p className="text-gray-600 text-sm mb-6 line-clamp-2">{trek.description}</p>
-                    <div className="flex items-center justify-between border-t border-gray-50 pt-4">
-                      <span className="text-2xl font-bold text-green-600">${trek.price}<span className="text-gray-400 text-sm font-normal ml-1">/ person</span></span>
-                      <Link href={`/treks/${trek.id}`} className="text-green-600 font-semibold text-sm hover:text-green-700 flex items-center">
-                        Details <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path></svg>
-                      </Link>
+          </div>
+
+          {/* ── Main Grid Layout ── */}
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            
+            {/* Left Column: Treks */}
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-xl font-bold text-foreground">Featured Treks</h2>
+                {!loading && (
+                  <span className="text-sm text-muted">{treks.length} treks found</span>
+                )}
+              </div>
+
+              {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                  {[1,2,3,4,5,6].map(i => (
+                    <div key={i} className="rounded-2xl border border-border overflow-hidden animate-pulse">
+                      <div className="bg-surface h-52"></div>
+                      <div className="p-5 space-y-3">
+                        <div className="h-4 bg-surface rounded w-3/4"></div>
+                        <div className="h-3 bg-surface rounded w-1/2"></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : treks.length === 0 ? (
+                <div className="text-center py-24 border-2 border-dashed border-border rounded-2xl">
+                  <p className="text-muted font-medium">No treks found. Try adjusting your search.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {treks.map((trek) => (
+                    <div key={trek.id} className="group rounded-2xl border border-border overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow duration-200">
+                      <div className="relative h-48 overflow-hidden bg-surface">
+                        {trek.coverImage && (
+                          <img
+                            src={trek.coverImage}
+                            alt={trek.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        )}
+                      </div>
+
+                      <div className="p-4">
+                        <h3 className="font-bold text-foreground text-base mb-0.5 leading-tight">
+                          {trek.title}
+                        </h3>
+                        <p className="text-[13px] text-muted mb-5">
+                          {trek.difficulty.charAt(0) + trek.difficulty.slice(1).toLowerCase()} · {trek.durationDays} Days
+                        </p>
+
+                        <div className="flex items-center justify-between">
+                          <span className="text-lg font-bold text-foreground">${trek.price}+</span>
+                          <Link
+                            href={`/treks/${trek.id}`}
+                            className="bg-primary hover:bg-primary-hover text-white px-5 py-1.5 rounded-full text-sm font-bold transition-all shadow-sm"
+                          >
+                            Explore
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Load More */}
+              {pagination.page < pagination.totalPages && (
+                <div className="mt-10 text-center">
+                  <button
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className="border border-border text-foreground hover:border-primary hover:text-primary px-10 py-3 rounded-full text-sm font-bold transition-all disabled:opacity-50"
+                  >
+                    {loadingMore ? 'Loading...' : 'Load More Treks'}
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Right Column: Sidebar */}
+            <div className="lg:w-[450px] shrink-0 space-y-8">
+              {/* Our Services */}
+              <div className="bg-white rounded-2xl p-6 border border-border shadow-sm">
+                <div className="flex items-center justify-between mb-8">
+                  <h2 className="text-lg font-bold text-foreground">Our Services</h2>
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  {[
+                    { 
+                      icon: (
+                        <svg className="w-5 h-5 text-[#1e3a8a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197" />
+                        </svg>
+                      ),
+                      title: 'Expert Guides', 
+                      desc: 'Expert enter-ion ivsvkirs guides, imnumission.' 
+                    },
+                    { 
+                      icon: (
+                        <svg className="w-5 h-5 text-[#1e3a8a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04a11.357 11.357 0 00-1.026 5.413c0 5.38 3.515 9.928 8.351 11.439a11.977 11.977 0 008.351-11.44c0-1.928-.47-3.742-1.307-5.322z" />
+                        </svg>
+                      ),
+                      title: 'Safety First', 
+                      desc: 'Shranr-quality safety arroni, scommlsss.' 
+                    },
+                    { 
+                      icon: (
+                        <svg className="w-5 h-5 text-[#1e3a8a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1" />
+                        </svg>
+                      ),
+                      title: 'Seamless Logistics', 
+                      desc: 'Get semless logistics expenues to help.' 
+                    },
+                  ].map(s => (
+                    <div key={s.title} className="flex flex-col gap-3">
+                      <div className="w-10 h-10 bg-blue-50 rounded-full border border-blue-100 flex items-center justify-center shrink-0 shadow-sm">
+                        {s.icon}
+                      </div>
+                      <div>
+                        <h1 className="font-bold text-foreground text-[12px] mb-1 leading-tight">{s.title}</h1>
+                        <p className="text-[10px] text-muted leading-relaxed line-clamp-3 font-medium">{s.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-12 pt-8 border-t border-border">
+                  <h2 className="text-lg font-bold text-foreground mb-4">Testimonial</h2>
+                  <div className="bg-surface/30 rounded-xl p-5 border border-border/50">
+                    <div className="flex items-center gap-1 mb-3">
+                      {[1,2,3,4,5].map(i => (
+                        <svg key={i} className="w-3 h-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
+                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                        </svg>
+                      ))}
+                    </div>
+                    <p className="text-xs text-muted italic leading-relaxed mb-4">
+                      "The most organized and breathtaking experience I've ever had in the mountains. Every detail was perfect."
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">RD</div>
+                      <div>
+                        <div className="text-[11px] font-bold text-foreground">Robert Davids</div>
+                        <div className="text-[9px] text-muted">Everest Base Camp Trek</div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              ))}
-            </div>
-            {pagination.page < pagination.totalPages && (
-              <div className="mt-12 text-center">
-                <button onClick={handleLoadMore} disabled={loadingMore} className="bg-white border-2 border-green-600 text-green-600 hover:bg-green-50 disabled:opacity-50 px-8 py-3 rounded-full font-bold transition-colors">
-                  {loadingMore ? 'Loading...' : 'Load More Treks'}
-                </button>
               </div>
-            )}
-          </>
-        )}
+            </div>
+
+          </div>
+
+        </div>
       </div>
+
+      <div className="h-12"></div>
     </div>
   );
 }

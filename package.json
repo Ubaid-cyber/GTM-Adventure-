@@ -7,16 +7,19 @@
     "backend"
   ],
   "scripts": {
-    "dev": "concurrently -k -c \"green,blue\" -n \"FRONTEND,BACKEND\" \"npm run dev -w frontend\" \"npm run dev -w backend\"",
+    "dev": "concurrently \"npm run dev -w frontend\" \"npm run dev -w backend\"",
     "dev:frontend": "npm run dev -w frontend",
     "dev:backend": "npm run dev -w backend",
-    "build": "npm run build -w backend && npm run build -w frontend",
-    "seed": "npm run seed -w backend",
-    "db:generate": "cd backend && npx prisma generate --schema=../prisma/schema.prisma",
-    "db:migrate": "cd backend && npx prisma migrate dev --schema=../prisma/schema.prisma",
-    "db:studio": "cd backend && npx prisma studio --schema=../prisma/schema.prisma"
+    "build": "npm run build -w frontend",
+    "seed": "npx tsx scripts/seed-treks.ts",
+    "db:generate": "npx prisma generate --schema=./prisma/schema.prisma",
+    "db:migrate": "npx prisma migrate dev --schema=./prisma/schema.prisma",
+    "db:studio": "npx prisma studio --schema=./prisma/schema.prisma"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "@prisma/client": "^5.21.1",
+    "@prisma/engines": "^7.6.0",
+    "concurrently": "^9.1.2",
+    "prisma": "^5.21.1"
   }
 }

@@ -1,0 +1,12 @@
+var R=require("../../../../chunks/[turbopack]_runtime.js")("server/app/api/razorpay/order/route.js")
+R.c("server/chunks/node_modules_next_bc326424._.js")
+R.c("server/chunks/464b8_mime-db_78a234b4._.js")
+R.c("server/chunks/node_modules_axios_dist_node_axios_cjs_ef84af05._.js")
+R.c("server/chunks/node_modules_@auth_core_889cc73b._.js")
+R.c("server/chunks/node_modules_jose_dist_webapi_ab03e039._.js")
+R.c("server/chunks/node_modules_ioredis_built_77e820c2._.js")
+R.c("server/chunks/[root-of-the-server]__a9485da3._.js")
+R.c("server/chunks/[root-of-the-server]__0a7ecf1d._.js")
+R.c("server/chunks/frontend__next-internal_server_app_api_razorpay_order_route_actions_22482f89.js")
+R.m("[project]/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/frontend/src/app/api/razorpay/order/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)")
+module.exports=R.m("[project]/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/frontend/src/app/api/razorpay/order/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)").exports

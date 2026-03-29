@@ -1,4 +1,4 @@
-# GTM Adventure — Himalayan Trek Booking Platform
+# GTM Adventures — Himalayan Trek Booking Platform
 
 A production-grade, full-stack adventure booking platform built with a clean **monorepo** structure.
 
@@ -84,16 +84,64 @@ npm run dev
 | GET | `/api/bookings?email=...` | Get user bookings |
 | POST | `/api/embeddings` | Generate AI embeddings (dev only) |
 
+## 🛡️ Payment & High-Concurrency Architecture (Module 3)
+
+We have engineered the booking engine to handle high-traffic bursts and unstable networks identically to a Tier-1 production SaaS setup.
+
+### 1. The "Flash Sale" Double Booking Edge Case
+* **Risk:** 50 users try to book the final 2 spots at exactly the same millisecond.
+* **Solution:** We implemented atomic, database-level **Pessimistic Row Locking** (`SELECT ... FOR UPDATE` via Prisma `$transaction`). The PostgreSQL engine physically queues the concurrent requests, ensuring the `availableSpots` tracker is decremented fairly without racing. The system throws a `NOT_ENOUGH_SPOTS` error gracefully to latecomers.
+
+### 2. The "Abandoned Cart" Edge Case
+* **Risk:** A user clicks "Secure Checkout", locking our strict inventory, but closes their tab, leaving the booking stuck in `PENDING` and permanently stealing spots from paying customers.
+* **Solution:** A **Spot Recovery Cron Mechanism** (`/api/cron/release-spots`). If a booking stays `PENDING` for more than 10 minutes, the background job autonomously releases the inventory back to the active pool. We also provided a manual "Cancel & Release Spots" button inside the Booking Widget.
+
+### 3. The "Dropped Internet" Edge Case
+* **Risk:** A user pays on their phone just as they lose cell service. Razorpay charges their card, but the frontend never sends the verification ping (`/api/razorpay/verify`) to Next.js.
+* **Solution:** The **Razorpay Webhook** endpoint (`/api/webhooks/razorpay`). Even if the frontend connection completely drops, Razorpay's massive servers independently dial our Next.js backend with a cryptographic signature, confirming the payment and autonomously forcing the booking status to `CONFIRMED`.
+
 ## Module Roadmap
 
-- ✅ Module 1: Auth & Multi-Role Security
-- 🟡 Module 2: AI-Powered Adventure Discovery
-- ⬜ Module 3: High-Concurrency Booking Engine
-- ⬜ Module 4: Live Expedition Monitoring
-- ⬜ Module 5: Health & Wellness (Medical Profiling)
-- ⬜ Module 6: Document & Compliance Center
-- ⬜ Module 7: Equipment Rental & Add-ons
-- ⬜ Module 8: Expedition Management
-- ⬜ Module 9: Gtm Miles & Loyalty Engine
-- ⬜ Module 10: Production Optimization & SEO
-- ⬜ Module 11: Partner & Vendor Portal
+- [x] **Module 1: High-Fidelity UI/UX Framework** (Visual Basecamp)
+- [x] **Module 2: AI-Powered Adventure Discovery** (Semantic Search)
+- [x] **Module 3: High-Concurrency Booking Engine** (Secure Payments)
+  - [x] Setup real Razorpay API keys (`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`) in `.env` (Live Test Mode).
+  - [x] Setup Webhook URL in Razorpay Dashboard to capture closed-browser payments and add `RAZORPAY_WEBHOOK_SECRET` to `.env`.
+  - [x] Implement 10-minute auto-cancellation script/timeout to release pending or abandoned cart spots back to the public pool so you don't lose upfront space.
+## 📡 Community & Social Ledger (Module 6: Mission Control)
+
+Mission Control is the high-tech "Digital Basecamp" for every GTM-Adventure expedition. It transforms a standard booking into a tactical, ongoing mission.
+
+### 1. The "Satellite Uplink" Concept
+* **Social Ledger:** A private communication feed for expedition members (Trekkers & Leaders) to share updates, milestones, and alerts.
+* **Connectivity Logic:** In the Himalayas, where cell towers are scarce, the app is designed to sync via **Satellite Hotspots** (e.g., Starlink, Iridium GO!). 
+* **Global Sync:** If any single member of the team gets a signal (Satellite or Basecamp WiFi) and sends an update, it is "beamed" to the cloud and becomes visible to the entire authorized crew.
+
+### 2. Personnel Roster
+A secure **Personnel Registry** that identifies the Expedition Leader (Guide) and all confirmed Trekkers. It builds community by showing participant roles and profiles before deployment.
+
+### 3. Technical Roadmap (Upcoming)
+
+| Feature | Technology | Rationale |
+|---|---|---|
+| **Real-Time Feed** | **Socket.io** | Implementation of Bi-directional WebSockets to ensure updates "pop-up" instantly on everyone's dashboard without a page refresh (NASA Mission Control style). |
+| **Media Transmissions** | **Cloudinary / AWS** | High-altitude photos and videos are stored in dedicated buckets. Cloudinary is used for automated compression to ensure 4K mountain photos can be sent even over slow satellite links. |
+
+## Module Roadmap
+
+- [x] **Module 1: High-Fidelity UI/UX Framework** (Visual Basecamp)
+- [x] **Module 2: AI-Powered Adventure Discovery** (Semantic Search)
+- [x] **Module 3: High-Concurrency Booking Engine** (Secure Payments)
+- [x] **Module 4: Live Expedition Monitoring** (Mission Control)
+- [x] **Module 5: Expedition Health & Wellness** (Vital Telemetry)
+- [x] **Module 6: Community & Social Ledger** (Shared Journeys)
+  - [x] **Personnel Roster:** Complete view of the expedition crew and leader.
+  - [x] **Mission Feed:** Basic Uplink architecture for text updates.
+  - [x] **Database Sync:** Restored schema for `ExpeditionPost` and `PostComment`.
+  - [ ] **Socket.io Integration:** Real-time bi-directional feed (Future Engineering).
+  - [ ] **Cloudinary Integration:** High-altitude media uploads (Future Enhancement).
+- [ ] Module 7: Equipment Rental & Add-ons
+- [ ] Module 8: Expedition Management
+- [ ] Module 9: Gtm Miles & Loyalty Engine
+- [ ] Module 10: Production Optimization & SEO
+- [ ] Module 11: Partner & Vendor Portal
