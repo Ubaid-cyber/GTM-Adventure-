@@ -1,6 +1,6 @@
 /**
- * GTM Adventures - Tactical Email Service
- * High-reliability event notification pipeline.
+ * GTM Adventures - Notification Service
+ * High-reliability event notification delivery.
  */
 
 export interface EmailOptions {
@@ -10,12 +10,12 @@ export interface EmailOptions {
   html?: string;
 }
 
-export async function sendTacticalEmail({ to, subject, body, html }: EmailOptions) {
+export async function sendNotificationEmail({ to, subject, body, html }: EmailOptions) {
   // In a production environment, integrate with Resend, SendGrid, or AWS SES.
   // For the current phase, we simulate the transmission and log to the clinical terminal.
   
   console.log(`
-[TACTICAL_EMAIL_DISPATCH]
+[ADVENTURE_EMAIL_NOTIFICATION]
 ---------------------------------------------------------
 TIME: ${new Date().toISOString()}
 TO: ${to}

@@ -30,12 +30,18 @@ export default auth((req) => {
   const isProtectedRoute = protectedRoutes.some((r) => nextUrl.pathname.startsWith(r));
 
   if (isProtectedRoute && !isLoggedIn) {
+    const ip = req.headers.get('x-forwarded-for') || 'unknown';
+    console.warn(`[SECURITY] Unauthorized access attempt to ${nextUrl.pathname} from ${ip}`);
     return NextResponse.redirect(new URL('/login', nextUrl));
   }
   if (nextUrl.pathname.startsWith('/leader') && role !== 'LEADER' && role !== 'ADMIN') {
+    const user = req.auth?.user?.email || 'anonymous';
+    console.warn(`[SECURITY] Restricted role access attempt to ${nextUrl.pathname} by ${user}`);
     return NextResponse.redirect(new URL('/login', nextUrl));
   }
   if (nextUrl.pathname.startsWith('/admin') && role !== 'ADMIN') {
+    const user = req.auth?.user?.email || 'anonymous';
+    console.warn(`[SECURITY] Admin access attempt to ${nextUrl.pathname} by ${user}`);
     return NextResponse.redirect(new URL('/login', nextUrl));
   }
   return NextResponse.next();

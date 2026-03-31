@@ -31,13 +31,17 @@ export async function POST(req: NextRequest) {
 
       if (spotsRemaining < numParticipants) throw new Error('NOT_ENOUGH_SPOTS');
 
-      const totalPrice = selectedTrek.price * numParticipants;
+      const basePrice = selectedTrek.price * numParticipants;
+      const gstAmount = Math.round(basePrice * 0.05); // 5% GST
+      const totalPrice = basePrice + gstAmount;
 
       const booking = await tx.booking.create({
         data: {
           userId: user.id,
           trekId: selectedTrek.id,
           participants: numParticipants,
+          basePrice,
+          gstAmount,
           totalPrice,
           status: 'PENDING',
         },
@@ -72,7 +76,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Sorry, not enough spots available for this trek.' }, { status: 400 });
     }
     console.error('Booking Error:', error);
-    return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ error: 'We encountered a technical issue while creating your booking. Please try again.' }, { status: 500 });
   }
 }
 

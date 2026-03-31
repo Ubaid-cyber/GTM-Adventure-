@@ -19,7 +19,7 @@ interface Post {
   user: Author;
 }
 
-export default function SocialLedger({ expeditionId }: { expeditionId: string }) {
+export default function GroupChat({ expeditionId }: { expeditionId: string }) {
   const { data: session } = useSession();
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPost, setNewPost] = useState('');
@@ -95,7 +95,7 @@ export default function SocialLedger({ expeditionId }: { expeditionId: string })
           <textarea
             value={newPost}
             onChange={(e) => setNewPost(e.target.value)}
-            placeholder="Transmit an update to the crew..."
+            placeholder="Send an update to the group..."
             className="w-full bg-black/40 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-primary transition-all resize-none min-h-[100px]"
           />
           <div className="flex justify-between items-center">
@@ -115,7 +115,7 @@ export default function SocialLedger({ expeditionId }: { expeditionId: string })
                disabled={submitting || !newPost.trim()}
                className="bg-primary hover:bg-blue-600 disabled:opacity-50 text-white px-6 py-2 rounded-xl text-xs font-bold font-mono tracking-widest uppercase transition-all shadow-[0_0_20px_rgba(30,58,138,0.3)]"
              >
-               {submitting ? 'Transmitting...' : 'Send Uplink'}
+               {submitting ? 'Sending...' : 'Send Message'}
              </button>
           </div>
         </form>
@@ -145,6 +145,10 @@ export default function SocialLedger({ expeditionId }: { expeditionId: string })
                     <div>
                       <span className="text-sm font-black tracking-tight mr-2">{post.user.name}</span>
                       <span className="text-[10px] font-mono text-white/30">{new Date(post.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="w-1 h-1 bg-primary rounded-full"></div>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Member</span>
+                      </div>
                     </div>
                     <span className={`px-2 py-0.5 rounded-sm text-[8px] font-bold uppercase tracking-widest border ${getTypeStyles(post.type)}`}>
                       {post.type}
@@ -161,13 +165,13 @@ export default function SocialLedger({ expeditionId }: { expeditionId: string })
 
         {loading && (
           <div className="py-10 text-center animate-pulse">
-            <span className="text-primary/40 font-mono text-[10px] tracking-widest uppercase">Syncing Social Ledger...</span>
+            <span className="text-primary/40 font-mono text-[10px] tracking-widest uppercase">Loading chat...</span>
           </div>
         )}
 
         {!loading && posts.length === 0 && (
           <div className="py-20 text-center border-2 border-dashed border-white/5 rounded-3xl">
-             <div className="text-white/20 font-mono text-xs uppercase tracking-tighter italic">Silence on all channels...</div>
+             <div className="text-white/20 font-mono text-xs uppercase tracking-tighter italic">No messages yet...</div>
           </div>
         )}
       </div>

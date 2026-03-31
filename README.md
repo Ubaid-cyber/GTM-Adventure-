@@ -39,6 +39,17 @@ gtm-adventure/
 | Cache/Rate Limiting | Redis (IORedis) |
 | AI Search | Google Gemini (768-D embeddings) |
 
+## 🎨 Design System: "Elite Midnight"
+
+Our design philosophy for GTM Adventures prioritizes **High-Density, Engineering-First aesthetics** that match the standards of top-tier global trekking agencies.
+
+| Token | Value | Rationale |
+|---|---|---|
+| **Primary** | `#1e3a8a` (Midnight Blue) | Represents the deep Himalayan sky; provides a premium, trustworthy "Mission Control" feel. |
+| **Interface** | **Glassmorphism** | `backdrop-blur-3xl` with white glass overlays for a high-tech "Satellite HUD" look. |
+| **Verified Status** | **Brand Blue** | Unified "Elite Verification" status to match brand identity instead of generic green. |
+| **Geometry** | **Landscape Rectangle** | Optimized `720px` wide-screen layouts for professional data entry and status reporting. |
+
 ## Getting Started
 
 ### 1. Install dependencies
@@ -145,3 +156,4 @@ A secure **Personnel Registry** that identifies the Expedition Leader (Guide) an
 - [ ] Module 9: Gtm Miles & Loyalty Engine
 - [ ] Module 10: Production Optimization & SEO
 - [ ] Module 11: Partner & Vendor Portal
+- [ ] Module 12: Main Admin Panel (HQ Command Center)

@@ -84,11 +84,14 @@ export default function TreksClient() {
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30" />
-        <div className="absolute bottom-6 left-6 md:bottom-10 md:left-10">
-          <h1 className="text-white text-3xl md:text-5xl font-bold drop-shadow-lg">
-            Discover Your Next<br />
-            <span className="text-[#38bdf8]">Himalayan</span> Adventure
+        <div className="absolute bottom-8 left-6 md:bottom-12 md:left-10 max-w-2xl px-4 md:px-0">
+          <h1 className="text-white text-4xl md:text-7xl font-black tracking-tighter uppercase italic leading-none drop-shadow-2xl">
+            Featured <br />
+            <span className="text-primary italic">Treks</span>
           </h1>
+          <p className="text-white/60 mt-4 text-base md:text-xl font-medium tracking-wide">
+             Discover the standard of mountain trekking and adventure.
+          </p>
         </div>
       </div>
 
@@ -104,7 +107,7 @@ export default function TreksClient() {
               </svg>
               <input
                 type="text"
-                placeholder="Search Treks, Peaks, or Plan with AI (e.g., '10-day Nepal trek under $2k')..."
+                placeholder="Search destinations, peaks, or plan with our Trip Planner..."
                 className="w-full pl-11 pr-4 py-3.5 rounded-full border border-border bg-surface text-foreground text-sm placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
@@ -119,57 +122,63 @@ export default function TreksClient() {
                 <div className="absolute inset-0 w-6 h-6 bg-blue-400 blur-xl opacity-40 group-hover:opacity-60 transition-opacity"></div>
               </div>
               <span className="relative z-10 ml-1">
-                {searchMode === 'semantic' ? 'AI Active' : 'Start AI Scouting'}
+                {searchMode === 'semantic' ? 'Planning...' : 'Plan My Trip'}
               </span>
             </button>
           </div>
 
           {/* Filters */}
           <div className="flex flex-wrap items-center gap-3 pb-6 border-b border-border mb-6">
-            <span className="text-xs font-semibold text-muted uppercase tracking-wider">Filters:</span>
+            <div className="w-full sm:w-auto flex items-center gap-2">
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Filters:</span>
+            </div>
 
-            <select
-              className="px-4 py-2 rounded-lg border border-border bg-white text-sm text-foreground font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
-              value={difficulty} onChange={(e) => setDifficulty(e.target.value)}
-            >
-              <option value="">All Difficulties</option>
-              <option value="EASY">Easy</option>
-              <option value="MODERATE">Moderate</option>
-              <option value="HARD">Hard</option>
-              <option value="EXTREME">Extreme</option>
-            </select>
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-3 w-full sm:w-auto">
+              <select
+                className="px-4 py-2.5 rounded-xl border border-border bg-white text-[12px] text-foreground font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer w-full sm:w-auto"
+                value={difficulty} onChange={(e) => setDifficulty(e.target.value)}
+              >
+                <option value="">Difficulties</option>
+                <option value="EASY">Easy</option>
+                <option value="MODERATE">Moderate</option>
+                <option value="HARD">Hard</option>
+                <option value="EXTREME">Extreme</option>
+              </select>
 
-            <input
-              type="number" placeholder="Min Price ($)" value={minPrice}
-              onChange={e => setMinPrice(e.target.value)}
-              className="w-32 px-4 py-2 rounded-lg border border-border bg-white text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-            />
-            <input
-              type="number" placeholder="Max Price ($)" value={maxPrice}
-              onChange={e => setMaxPrice(e.target.value)}
-              className="w-32 px-4 py-2 rounded-lg border border-border bg-white text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-            />
-            <input
-              type="number" placeholder="Min Days" value={minDays}
-              onChange={e => setMinDays(e.target.value)}
-              className="w-28 px-4 py-2 rounded-lg border border-border bg-white text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-            />
+              <select
+                className="px-4 py-2.5 rounded-xl border border-border bg-white text-[12px] text-foreground font-bold focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer w-full sm:w-auto"
+                value={sort} onChange={(e) => setSort(e.target.value)}
+              >
+                <option value="">Sort By</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
+              </select>
+            </div>
 
-            <select
-              className="px-4 py-2 rounded-lg border border-border bg-white text-sm text-foreground font-medium focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
-              value={sort} onChange={(e) => setSort(e.target.value)}
-            >
-              <option value="">Sort By</option>
-              <option value="price_asc">Price: Low to High</option>
-              <option value="price_desc">Price: High to Low</option>
-            </select>
+            <div className="grid grid-cols-3 sm:flex sm:flex-wrap items-center gap-3 w-full sm:w-auto">
+              <input
+                type="number" placeholder="Min ₹" value={minPrice}
+                onChange={e => setMinPrice(e.target.value)}
+                className="px-4 py-2.5 rounded-xl border border-border bg-white text-[12px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary w-full"
+              />
+              <input
+                type="number" placeholder="Max ₹" value={maxPrice}
+                onChange={e => setMaxPrice(e.target.value)}
+                className="px-4 py-2.5 rounded-xl border border-border bg-white text-[12px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary w-full"
+              />
+              <input
+                type="number" placeholder="Days" value={minDays}
+                onChange={e => setMinDays(e.target.value)}
+                className="px-4 py-2.5 rounded-xl border border-border bg-white text-[12px] text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary w-full"
+              />
+            </div>
 
             {hasActiveFilters && (
-              <button onClick={clearFilters} className="flex items-center gap-1.5 text-sm text-accent hover:text-primary font-medium transition-colors ml-auto">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
+              <button onClick={clearFilters} className="flex items-center gap-1.5 text-[10px] font-black text-rose-500 hover:text-rose-600 uppercase tracking-widest transition-colors ml-auto pt-2 sm:pt-0">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
-                Clear Filters
+                Reset
               </button>
             )}
           </div>
@@ -224,13 +233,13 @@ export default function TreksClient() {
                           {trek.difficulty.charAt(0) + trek.difficulty.slice(1).toLowerCase()} · {trek.durationDays} Days
                         </p>
 
-                        <div className="flex items-center justify-between">
-                          <span className="text-lg font-bold text-foreground">${trek.price}+</span>
+                        <div className="flex items-center justify-between mt-auto">
+                          <span className="text-lg font-black text-slate-900 tracking-tight">₹{trek.price}<span className="text-[10px] text-slate-400 align-top ml-0.5">+</span></span>
                           <Link
                             href={`/treks/${trek.id}`}
-                            className="bg-primary hover:bg-primary-hover text-white px-5 py-1.5 rounded-full text-sm font-bold transition-all shadow-sm"
+                            className="bg-primary hover:bg-primary-hover text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-primary/10 active:scale-95"
                           >
-                            Explore
+                            Details
                           </Link>
                         </div>
                       </div>

@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-import { sendTacticalEmail } from '@/lib/email';
+import { sendNotificationEmail } from '@/lib/email';
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -51,7 +51,7 @@ export async function PATCH(req: NextRequest) {
 
     // ─── Automatic Email Trigger for Mission Clearance ───────────────────────
     if (status === 'CLEARED' && updated.user?.email) {
-      await sendTacticalEmail({
+      await sendNotificationEmail({
         to: updated.user.email,
         subject: '[SECURE] Mission Clearance: APPROVED',
         body: `SUBJECT: ${updated.user.name}\nSTATUS: MISSION CLEARANCE DETECTED\n\nYou have been authorized for high-altitude deployment by our Clinical Surgeons. This clearance remains active until manually terminated. Check your Mission Dashboard for deployment orders.`

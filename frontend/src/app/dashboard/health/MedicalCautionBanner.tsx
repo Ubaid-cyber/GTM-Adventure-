@@ -64,7 +64,7 @@ export default function MedicalCautionBanner({ trekId }: MedicalCautionBannerPro
               </svg>
             </div>
             <div>
-              <h2 className="text-2xl font-black text-foreground uppercase tracking-tight leading-tight">Mission Safety Advisory</h2>
+              <h2 className="text-2xl font-black text-foreground uppercase tracking-tight leading-tight">Safety Advisory</h2>
               <div className="flex items-center gap-1.5 mt-1">
                 <span className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse"></span>
                 <span className="text-[10px] font-bold text-rose-800 uppercase tracking-widest">Medical Override Active</span>
@@ -102,7 +102,7 @@ export default function MedicalCautionBanner({ trekId }: MedicalCautionBannerPro
 
           {/* Footer Disclaimer */}
           <p className="text-[10px] text-muted text-center mt-8 font-medium italic">
-            * This mission-specific guidance is based on your current Health Passport. Please ensure your vitals are updated.
+            * This guidance is based on your current Health Passport. Please ensure your vitals are updated.
           </p>
         </div>
 

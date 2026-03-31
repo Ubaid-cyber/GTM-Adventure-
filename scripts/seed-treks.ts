@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, UserRole } from '@prisma/client';
 
 // Use DIRECT_DATABASE_URL since seed runs outside Next.js
 const pool = new Pool({
@@ -146,7 +146,18 @@ async function main() {
   await prisma.booking.deleteMany({});
   await prisma.expedition.deleteMany({});
   await prisma.trek.deleteMany({});
-  console.log('  🗑  Cleared existing data (bookings, expeditions, treks)');
+  await prisma.user.deleteMany({});
+  console.log('  🗑  Cleared existing data (bookings, expeditions, treks, users)');
+
+  // Create Default User
+  const devUser = await prisma.user.create({
+    data: {
+      name: 'ubaid',
+      email: 'ubaid@example.com',
+      role: UserRole.TREKKER,
+    }
+  });
+  console.log(`  ✅ Created Dev User: ${devUser.name} (${devUser.email})`);
 
   const createdTreks = [];
   for (const trek of treks) {

@@ -1,16 +1,31 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Script from 'next/script';
 import { Suspense } from 'react';
 import MedicalCautionBanner from '@/app/dashboard/health/MedicalCautionBanner';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShieldCheck, ArrowRight } from 'lucide-react';
+import MedicalFormModal from './medical/MedicalFormModal';
+
+// Portal Helper for Global Overlays
+const Portal = ({ children }: { children: React.ReactNode }) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+  return mounted ? createPortal(children, document.body) : null;
+};
 
 interface BookingWidgetProps {
   trekId: string;
   price: number;
   availableSpots: number;
+  inclusions?: string[];
 }
 
 export default function BookingWidget(props: BookingWidgetProps) {
@@ -21,13 +36,17 @@ export default function BookingWidget(props: BookingWidgetProps) {
   );
 }
 
-function BookingWidgetContent({ trekId, price, availableSpots }: BookingWidgetProps) {
+function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }: BookingWidgetProps) {
   const [participants, setParticipants] = useState(1);
   const [initialParticipants, setInitialParticipants] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [pendingBookingId, setPendingBookingId] = useState<string | null>(null);
+  const [checkoutStage, setCheckoutStage] = useState<'selection' | 'review'>('selection');
+  const [agreedToSafety, setAgreedToSafety] = useState(false);
+  const [isMedicalModalOpen, setIsMedicalModalOpen] = useState(false);
+
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -50,6 +69,7 @@ function BookingWidgetContent({ trekId, price, availableSpots }: BookingWidgetPr
             setPendingBookingId(data.booking.id);
             setParticipants(data.booking.participants);
             setInitialParticipants(data.booking.participants);
+            setCheckoutStage('review'); // Jump to review if resuming
           }
         }
       } catch (err) {
@@ -61,9 +81,6 @@ function BookingWidgetContent({ trekId, price, availableSpots }: BookingWidgetPr
     resumeBooking();
   }, [retryId, session?.user]);
 
-  // Cleanup pending booking if component unmounts or user leaves without paying
-  // Note: Real apps might use a background worker for this, but here we offer a manual cancel.
-
   const handleCancelBooking = async () => {
     if (!pendingBookingId) return;
     setLoading(true);
@@ -74,7 +91,9 @@ function BookingWidgetContent({ trekId, price, availableSpots }: BookingWidgetPr
       });
       if (res.ok) {
         setPendingBookingId(null);
-        setError('Booking cancelled and spots released.');
+        setCheckoutStage('selection');
+        setError(null); // Clear errors
+        alert('Booking cancelled successfully.');
       }
     } catch (err) {
       console.error('Failed to cancel booking:', err);
@@ -87,7 +106,6 @@ function BookingWidgetContent({ trekId, price, availableSpots }: BookingWidgetPr
     setError(null);
     setLoading(true);
     try {
-      // 2. Create Razorpay order
       const orderRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/razorpay/order`, {
         method: 'POST',
         headers: { 
@@ -97,12 +115,10 @@ function BookingWidgetContent({ trekId, price, availableSpots }: BookingWidgetPr
         body: JSON.stringify({ bookingId })
       });
       const orderData = await orderRes.json();
-      if (!orderRes.ok) throw new Error(orderData.error || 'Failed to initialize payment gateway');
+      if (!orderRes.ok) throw new Error(orderData.error || 'Failed to initialize payment');
 
       if (orderData.order.id.startsWith('mock_')) {
-        console.log('Skipping Razorpay Modal - SIMULATION MODE');
-        setLoading(true);
-        // Simulate immediate success verification
+        console.log('SIMULATION MODE: Verification triggering...');
         try {
           const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/razorpay/verify`, {
             method: 'POST',
@@ -117,33 +133,29 @@ function BookingWidgetContent({ trekId, price, availableSpots }: BookingWidgetPr
               bookingId
             })
           });
-          const verifyData = await verifyRes.json();
           if (verifyRes.ok) {
             setSuccess(true);
             setPendingBookingId(null);
-            // Removed automatic redirect to keep user on the new "Step 2" UI
           } else {
-            setError(verifyData.error || 'Mock Verification failed.');
+            setError('Verification failed.');
           }
         } catch (err: any) {
-          setError('Mock Verification Request Failed');
+          setError('Verification Request Failed');
         } finally {
           setLoading(false);
         }
         return;
       }
 
-      // 3. Open Razorpay Checkout overlay
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_placeholder',
+        key: (orderData.keyId || '').replace(/['"]+/g, ''),
         amount: orderData.order.amount,
         currency: orderData.order.currency,
         name: 'GTM Adventures',
-        description: 'Trek Booking Secure Checkout',
+        description: 'Expedition Booking',
         order_id: orderData.order.id,
         handler: async function (response: any) {
           setLoading(true);
-          // 4. Verify signature on success
           try {
             const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/razorpay/verify`, {
               method: 'POST',
@@ -158,39 +170,29 @@ function BookingWidgetContent({ trekId, price, availableSpots }: BookingWidgetPr
                 bookingId
               })
             });
-            const verifyData = await verifyRes.json();
             if (verifyRes.ok) {
               setSuccess(true);
               setPendingBookingId(null);
-              // Removed automatic redirect to keep user on the new "Step 2" UI
             } else {
-              setError(verifyData.error || 'Payment verification failed. Please check your dashboard.');
+              setError('Payment verification failed.');
             }
           } catch(err: any) {
-            setError('Verification Request Failed: ' + err.message);
+            setError('Verification Request Failed');
           } finally {
             setLoading(false);
           }
         },
         modal: {
-          ondismiss: function() {
-            setLoading(false);
-            setError('Payment cancelled. You can retry or release your reserved spots.');
-          }
+          ondismiss: () => setLoading(false),
         },
         prefill: {
           name: session?.user?.name || '',
           email: session?.user?.email || '',
         },
-        theme: {
-          color: '#1e3a8a',
-        },
+        theme: { color: '#0f172a' },
       };
 
       const razorpayInstance = new (window as any).Razorpay(options);
-      razorpayInstance.on('payment.failed', function (response: any) {
-        setError(response.error.description || 'Payment Failed');
-      });
       razorpayInstance.open();
 
     } catch (err: any) {
@@ -199,18 +201,28 @@ function BookingWidgetContent({ trekId, price, availableSpots }: BookingWidgetPr
     }
   }
 
-  const handleBookingClick = async () => {
+  const handleInitialClick = async () => {
     if (!session?.user) {
       router.push('/login');
       return;
     }
+    setCheckoutStage('review');
+  };
 
-    // If we already have a pending booking record, check if participants changed
-    if (pendingBookingId) {
-      if (participants !== initialParticipants) {
-        setLoading(true);
-        try {
-          const updateRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings/${pendingBookingId}`, {
+  const finalizeBookingAndPay = async () => {
+    if (!agreedToSafety) {
+      setError('Please acknowledge the safety agreement.');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      if (pendingBookingId) {
+        // Update if participants changed
+        if (participants !== initialParticipants) {
+          await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings/${pendingBookingId}`, {
             method: 'PATCH',
             headers: { 
               'Content-Type': 'application/json',
@@ -218,312 +230,294 @@ function BookingWidgetContent({ trekId, price, availableSpots }: BookingWidgetPr
             },
             body: JSON.stringify({ participants })
           });
-          const updateData = await updateRes.json();
-          if (!updateRes.ok) throw new Error(updateData.error || 'Failed to update expedition manifest');
-          setInitialParticipants(participants);
-        } catch (err: any) {
-          setError(err.message);
-          setLoading(false);
-          return;
         }
+        await startPaymentFlow(pendingBookingId);
+      } else {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'x-user-email': (session?.user?.email as string) ?? ''
+          },
+          body: JSON.stringify({ trekId, participants }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Booking failed');
+        
+        setPendingBookingId(data.booking.id);
+        await startPaymentFlow(data.booking.id);
       }
-      startPaymentFlow(pendingBookingId);
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-    try {
-      // 1. Create the pending booking & secure spots
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-user-email': (session?.user?.email as string) ?? ''
-        },
-        body: JSON.stringify({ trekId, participants }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to create booking');
-      
-      const bId = data.booking.id;
-      setPendingBookingId(bId);
-      
-      // Proceed to payment
-      await startPaymentFlow(bId);
-
     } catch (err: any) {
       setError(err.message);
       setLoading(false);
-    } 
+    }
   };
 
+  // Success Overlay Scroll Lock - Robust Implementation
+  useEffect(() => {
+    if (success) {
+      const originalHtmlOverflow = document.documentElement.style.overflow;
+      const originalBodyOverflow = document.body.style.overflow;
+      
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      
+      return () => {
+        document.documentElement.style.overflow = originalHtmlOverflow;
+        document.body.style.overflow = originalBodyOverflow;
+      };
+    }
+  }, [success]);
+
   const isSoldOut = availableSpots <= 0;
-
-  const [showOther, setShowOther] = useState(false);
-  const [healthSubmitted, setHealthSubmitted] = useState(false);
-
-  if (success) {
-    return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xl animate-in fade-in duration-500">
-        <div className="bg-slate-950 border border-cyan-500/20 rounded-[2rem] max-w-lg w-full shadow-[0_0_50px_rgba(34,211,238,0.1)] animate-in zoom-in-95 duration-700 relative overflow-hidden flex flex-col max-h-[90vh]">
-          {/* Clinical HUD Brackets */}
-          <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-cyan-500/30 rounded-tl-2xl"></div>
-          <div className="absolute top-0 right-0 w-8 h-8 border-t-2 border-r-2 border-cyan-500/30 rounded-tr-2xl"></div>
-          <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-cyan-500/30 rounded-bl-2xl"></div>
-          <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-500/30 rounded-br-2xl"></div>
-          
-          {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto p-8 lg:p-10 custom-scrollbar">
-            <div className="relative z-10">
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-6 bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.8)]"></div>
-                  <div>
-                    <h2 className="text-2xl font-black text-white uppercase tracking-tighter leading-none">
-                      {healthSubmitted ? 'Mission Secured' : 'Bio-Sync Required'}
-                    </h2>
-                    <p className="text-[10px] font-bold text-cyan-500/60 uppercase tracking-widest mt-1">GTM-MED_CORPS // PHASE_02</p>
-                  </div>
-                </div>
-                <div className="text-right">
-                   <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">Auth_ID</div>
-                   <div className="text-[11px] font-mono font-black text-white">#GS-9201-CL</div>
-                </div>
-              </div>
-              
-              {!healthSubmitted && (
-                <form 
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    const formData = new FormData(e.currentTarget);
-                    const vitals = {
-                      height: formData.get('height')?.toString(),
-                      weight: formData.get('weight')?.toString(),
-                      bloodGroup: formData.get('bloodGroup')?.toString(),
-                      bp: formData.get('bp')?.toString()
-                    };
-                    const history = {
-                      heart: formData.get('heart') === 'on',
-                      asthma: formData.get('asthma') === 'on',
-                      hypertension: formData.get('hypertension') === 'on',
-                      diabetes: formData.get('diabetes') === 'on',
-                      other: formData.get('other') === 'on' ? formData.get('otherDetails')?.toString() : ''
-                    };
-                    
-                    setLoading(true);
-                    try {
-                      const res = await fetch('/api/user/medical', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ vitals, history })
-                      });
-                      if (res.ok) {
-                        setHealthSubmitted(true);
-                        setTimeout(() => router.push('/dashboard/health'), 2000);
-                      }
-                    } catch (err) {
-                      console.error(err);
-                    } finally {
-                      setLoading(false);
-                    }
-                  }}
-                  className="space-y-8"
-                >
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] pl-1">Body_Height (cm)</label>
-                      <input name="height" type="number" required placeholder="175" className="w-full bg-slate-900 border border-slate-800 rounded-xl px-5 py-3 text-sm font-mono font-bold text-white focus:ring-1 focus:ring-cyan-500/50 focus:border-cyan-500 outline-none transition-all placeholder:text-slate-700"/>
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] pl-1">Body_Weight (kg)</label>
-                      <input name="weight" type="number" required placeholder="70" className="w-full bg-slate-900 border border-slate-800 rounded-xl px-5 py-3 text-sm font-mono font-bold text-white focus:ring-1 focus:ring-cyan-500/50 focus:border-cyan-500 outline-none transition-all placeholder:text-slate-700"/>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] pl-1">Blood_Matrix</label>
-                      <select name="bloodGroup" required className="w-full bg-slate-900 border border-slate-800 rounded-xl px-5 py-3 text-sm font-bold text-white focus:ring-1 focus:ring-cyan-500/50 focus:border-cyan-500 outline-none appearance-none transition-all cursor-pointer">
-                        <option value="">Matrix...</option>
-                        <option value="A+">A+</option><option value="A-">A-</option>
-                        <option value="B+">B+</option><option value="B-">B-</option>
-                        <option value="AB+">AB+</option><option value="AB-">AB-</option>
-                        <option value="O+">O+</option><option value="O-">O-</option>
-                      </select>
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] pl-1">Systemic_BP</label>
-                      <input name="bp" placeholder="120/80" className="w-full bg-slate-900 border border-slate-800 rounded-xl px-5 py-3 text-sm font-mono font-bold text-white focus:ring-1 focus:ring-cyan-500/50 focus:border-cyan-500 outline-none transition-all placeholder:text-slate-700"/>
-                    </div>
-                  </div>
-      
-                  <div className="space-y-4 pt-6 border-t border-slate-900">
-                     <label className="text-[10px] font-black text-cyan-500 uppercase tracking-[0.3em] block mb-4">Risk Factor Analysis</label>
-                     <div className="grid grid-cols-2 gap-3">
-                        {[
-                          { id: 'heart', label: 'Cardiac History' },
-                          { id: 'asthma', label: 'Respiratory' },
-                          { id: 'hypertension', label: 'High BP' },
-                          { id: 'diabetes', label: 'Endocrine' },
-                        ].map(item => (
-                          <label key={item.id} className="flex items-center gap-3 p-4 bg-slate-900/50 border border-slate-800 rounded-xl cursor-pointer hover:border-cyan-500/30 group transition-all">
-                            <input type="checkbox" name={item.id} className="w-4 h-4 rounded-md border-slate-700 bg-slate-800 text-cyan-500 focus:ring-cyan-500/30 transition-all"/>
-                            <span className="text-[11px] font-black text-slate-500 group-hover:text-cyan-400 transition-colors uppercase tracking-widest">{item.label}</span>
-                          </label>
-                        ))}
-                        <label className="col-span-2 flex items-center gap-3 p-4 bg-slate-900/50 border border-slate-800 rounded-xl cursor-pointer hover:border-cyan-500/30 group transition-all">
-                          <input 
-                            type="checkbox" 
-                            name="other" 
-                            checked={showOther}
-                            onChange={(e) => setShowOther(e.target.checked)}
-                            className="w-4 h-4 rounded-md border-slate-700 bg-slate-800 text-cyan-500 focus:ring-cyan-500/30 transition-all"
-                          />
-                          <span className="text-[11px] font-black text-slate-500 group-hover:text-cyan-400 transition-colors uppercase tracking-widest">Other Bio-Anomalies</span>
-                        </label>
-                     </div>
-
-                     {showOther && (
-                       <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
-                         <label className="text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] pl-1">Detailed Log Requirement</label>
-                         <textarea 
-                           name="otherDetails" 
-                           required 
-                           placeholder="Detail conditions, surgeries, or limitations..."
-                           className="w-full bg-slate-900 border border-rose-500/20 rounded-xl px-5 py-4 text-sm font-medium text-white focus:ring-1 focus:ring-rose-500/50 focus:border-rose-500 outline-none transition-all placeholder:text-slate-700 h-28 resize-none"
-                         />
-                       </div>
-                     )}
-                  </div>
-      
-                  <button 
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-cyan-600 hover:bg-cyan-500 text-slate-950 py-5 rounded-xl font-black text-xs shadow-[0_0_25px_rgba(34,211,238,0.2)] transition-all flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50 uppercase tracking-[0.2em] relative overflow-hidden"
-                  >
-                    {loading ? (
-                       <div className="w-5 h-5 border-2 border-slate-950/30 border-t-slate-950 rounded-full animate-spin"></div>
-                    ) : (
-                      <>
-                        <span>Initialize Clearance</span>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-                        </svg>
-                      </>
-                    )}
-                  </button>
-                </form>
-              )}
-
-              {healthSubmitted && (
-                <div className="py-20 text-center space-y-6 animate-in zoom-in-95 duration-500">
-                   <div className="w-24 h-24 bg-cyan-500/10 border border-cyan-500/30 rounded-full flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(34,211,238,0.1)]">
-                      <svg className="w-12 h-12 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/>
-                      </svg>
-                   </div>
-                   <div className="space-y-2">
-                     <p className="text-2xl font-black text-white uppercase tracking-tighter">Bio-Sync Complete</p>
-                     <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Medical authorization pending surgeon review.</p>
-                   </div>
-                </div>
-              )}
-              
-              <div className="mt-8 flex items-center justify-center gap-4 opacity-30">
-                 <div className="h-[1px] flex-1 bg-slate-800"></div>
-                 <p className="text-[8px] text-slate-500 font-black uppercase tracking-[0.4em]">Protocol GS-9 // Secured</p>
-                 <div className="h-[1px] flex-1 bg-slate-800"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-      <div className="bg-white rounded-xl border border-border shadow-sm p-6 sticky top-24">
-        {/* Safety Warning */}
-        <MedicalCautionBanner trekId={trekId} />
+      <div className="bg-surface/80 backdrop-blur-2xl rounded-3xl border border-border shadow-2xl p-6 md:p-8 group relative">
+        <AnimatePresence mode="wait">
+          {success ? (
+            <Portal key="success-portal">
+              <motion.div 
+                key="booking-success-overlay"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-8 backdrop-blur-xl bg-slate-950/40"
+              >
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="relative w-full max-w-[720px] bg-white/95 backdrop-blur-3xl rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.3)] overflow-hidden border border-white/60"
+                >
+                  <div className="flex flex-row items-stretch min-h-[340px]">
+                    {/* Left Side - Success Brand Focus */}
+                    <div className="w-1/3 bg-primary/5 border-r border-primary/10 flex flex-col items-center justify-center p-8 gap-6">
+                      <div className="relative inline-block">
+                        <motion.div 
+                          initial={{ scale: 0, rotate: -45 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{ type: "spring", damping: 12, delay: 0.1 }}
+                          className="w-20 h-20 bg-primary text-white rounded-[28px] flex items-center justify-center mx-auto shadow-2xl shadow-primary/30 border-4 border-white"
+                        >
+                          <ShieldCheck size={40} strokeWidth={2.5} />
+                        </motion.div>
+                        <div className="absolute -inset-4 bg-primary/20 blur-3xl rounded-full -z-10 animate-pulse"></div>
+                      </div>
+                      <div className="flex items-center justify-center gap-2 py-1.5 px-4 bg-white text-primary rounded-full text-[8px] font-black uppercase tracking-widest border border-primary/20 shadow-sm">
+                        <div className="w-1 h-1 bg-primary rounded-full animate-pulse"></div>
+                         secure
+                      </div>
+                    </div>
 
-        {/* Price */}
-        <div className="flex items-end justify-between mb-6">
-          <div>
-            <span className="text-3xl font-bold text-foreground">${price}</span>
-            <span className="text-sm text-muted ml-1">/ person</span>
-          </div>
-          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${isSoldOut ? 'bg-red-100 text-red-600' : 'bg-emerald-100 text-emerald-700'}`}>
-            {isSoldOut ? 'Sold Out' : `${availableSpots} spots left`}
-          </span>
-        </div>
+                    {/* Right Side - Content & Action */}
+                    <div className="flex-1 p-10 flex flex-col justify-center space-y-8">
+                      <div className="space-y-3">
+                        <h3 className="text-3xl font-black text-slate-900 italic tracking-tighter uppercase leading-none">
+                          Great! <span className="text-primary italic">Confirmed.</span>
+                        </h3>
+                        <p className="text-slate-600 font-bold text-[13px] leading-relaxed max-w-[360px]">
+                          Payment processed successfully. Before we launch your dashboard, please complete your health report.
+                        </p>
+                      </div>
 
-        {/* Participants */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-foreground mb-2">Number of Trekkers</label>
-          <div className="flex items-center gap-3 border border-border rounded-lg p-1">
-            <button
-              onClick={() => setParticipants(p => Math.max(1, p - 1))}
-              disabled={participants <= 1 || isSoldOut}
-              className="w-10 h-10 rounded-md bg-surface flex items-center justify-center text-foreground hover:bg-border disabled:opacity-30 transition-colors"
+                      <div className="flex flex-col gap-4">
+                        <button 
+                          onClick={() => {
+                            setSuccess(false);
+                            setIsMedicalModalOpen(true);
+                          }}
+                          className="w-full bg-primary hover:bg-primary-hover text-white py-5 px-8 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-2xl shadow-primary/30 flex items-center justify-between group group/btn"
+                        >
+                          <span>Continue & Submit</span>
+                          <ArrowRight size={16} className="group-hover/btn:translate-x-2 transition-transform" />
+                        </button>
+                        
+                        <div className="text-[7px] font-black text-slate-400 uppercase tracking-[0.4em] opacity-80 pt-2 text-center">
+                          GTM Security // Verification 01
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </Portal>
+          ) : checkoutStage === 'selection' ? (
+            <motion.div
+              key="selection"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="space-y-8"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M20 12H4"/>
-              </svg>
-            </button>
-            <span className="flex-1 text-center font-semibold text-foreground">{participants}</span>
-            <button
-              onClick={() => setParticipants(p => Math.min(availableSpots, p + 1))}
-              disabled={participants >= availableSpots || isSoldOut}
-              className="w-10 h-10 rounded-md bg-surface flex items-center justify-center text-foreground hover:bg-border disabled:opacity-30 transition-colors"
+              <div className="flex items-center gap-3 bg-red-500/5 p-4 rounded-2xl border border-red-500/10 mb-4">
+                 <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                 <span className="text-[10px] font-black uppercase tracking-[0.1em] text-red-500/80">Secure Booking Active</span>
+              </div>
+
+              {/* Price Display */}
+              <div className="flex items-end justify-between">
+                <div>
+                  <div className="text-[9px] md:text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Trek Price</div>
+                  <div className="text-3xl md:text-4xl font-black text-foreground tracking-tighter">
+                    ₹{price}<span className="text-xs md:text-sm text-muted font-medium tracking-normal">/seat</span>
+                  </div>
+                </div>
+                <span className={`px-3 py-1 md:px-4 md:py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-widest border transition-all ${isSoldOut ? 'bg-red-50 border-red-200 text-red-600' : 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm'}`}>
+                  {isSoldOut ? 'Sold Out' : `${availableSpots} Open`}
+                </span>
+              </div>
+
+              {/* Participants Selection */}
+              <div className="space-y-3">
+                <label className="block text-[10px] font-black text-muted uppercase tracking-[0.2em] pl-1">Select Participants</label>
+                <div className="flex items-center gap-3 bg-background/50 border border-border rounded-2xl p-2 shadow-inner">
+                  <button
+                    onClick={() => setParticipants(p => Math.max(1, p - 1))}
+                    disabled={participants <= 1 || isSoldOut}
+                    className="w-12 h-12 rounded-xl bg-surface flex items-center justify-center text-foreground hover:bg-border disabled:opacity-30 transition-all active:scale-90"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M20 12H4"/></svg>
+                  </button>
+                  <span className="flex-1 text-center text-xl font-black text-foreground tabular-nums">{participants}</span>
+                  <button
+                    onClick={() => setParticipants(p => Math.min(availableSpots, p + 1))}
+                    disabled={participants >= availableSpots || isSoldOut}
+                    className="w-12 h-12 rounded-xl bg-surface flex items-center justify-center text-foreground hover:bg-border disabled:opacity-30 transition-all active:scale-90"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"/></svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* Total Display */}
+              <div className="pt-6 border-t border-border flex justify-between items-center">
+                  <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-muted">Total Price</span>
+                 <span className="text-xl md:text-2xl font-black text-primary tracking-tighter">₹{price * participants}</span>
+              </div>
+
+              {error && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-4 bg-red-50 border border-red-100 rounded-2xl text-xs font-bold text-red-600 flex items-center gap-3">
+                   <div className="w-1 h-4 bg-red-500 rounded-full"></div>
+                   {error}
+                </motion.div>
+              )}
+
+              <button
+                onClick={handleInitialClick}
+                disabled={loading || isSoldOut}
+                className="w-full bg-primary hover:bg-primary/90 text-white py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-[0_10px_20px_rgba(30,58,138,0.2)] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 group"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  <>
+                    <span>Continue to Booking</span>
+                    <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                  </>
+                )}
+              </button>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="review"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="space-y-8"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"/>
-              </svg>
-            </button>
-          </div>
-        </div>
+              <div className="flex items-center gap-4 mb-4">
+                <button onClick={() => setCheckoutStage('selection')} className="text-muted hover:text-primary p-2 -ml-2 transition-colors">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M11 19l-7-7 7-7"/></svg>
+                </button>
+                <h3 className="text-lg font-black uppercase tracking-widest italic">Booking Summary</h3>
+              </div>
 
-        {/* Total */}
-        <div className="flex justify-between items-center py-4 border-t border-border mb-4">
-          <span className="text-sm font-medium text-muted">Total</span>
-          <span className="text-xl font-bold text-foreground">${price * participants}</span>
-        </div>
+              {/* Manifest Summary */}
+              <div className="bg-surface/50 border border-border rounded-2xl p-6 space-y-4">
+                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-muted">
+                    <span>Your Booking</span>
+                    <span className="text-primary">{participants} Seats Reserved</span>
+                 </div>
+                 
+                 <div className="space-y-3 pt-4 border-t border-border/50">
+                    <div className="text-[10px] font-black text-primary uppercase tracking-[0.15em] mb-2">What's Included:</div>
+                    <div className="grid grid-cols-1 gap-2">
+                       {inclusions.length > 0 ? inclusions.slice(0, 4).map((inc, i) => (
+                         <div key={i} className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground">
+                            <svg className="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>
+                            {inc}
+                         </div>
+                       )) : (
+                         <div className="text-[10px] text-muted italic">Full inclusions listed in the exploration tab.</div>
+                       )}
+                    </div>
+                 </div>
+              </div>
 
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 font-medium">
-            {error}
-          </div>
-        )}
+              {/* Safety Agreement */}
+              <label className="flex items-start gap-4 p-5 bg-primary/5 border border-primary/10 rounded-2xl cursor-pointer group transition-all hover:bg-primary/10">
+                 <input 
+                   type="checkbox" 
+                   checked={agreedToSafety} 
+                   onChange={(e) => setAgreedToSafety(e.target.checked)}
+                   className="w-5 h-5 rounded-md border-primary/30 bg-background text-primary focus:ring-primary/20 mt-0.5"
+                 />
+                 <span className="text-[11px] font-bold text-muted-foreground leading-relaxed">
+                    I acknowledge that mountain trekking involves physical risk. I agree to the <span className="text-primary hover:underline">Safety Rules</span> and medical review process.
+                 </span>
+              </label>
 
-        <div className="space-y-3">
-          <button
-            onClick={handleBookingClick}
-            disabled={loading || isSoldOut}
-            className="w-full bg-primary hover:bg-primary-hover text-white py-3 rounded-lg font-bold text-sm transition-all disabled:opacity-50 shadow-md flex items-center justify-center gap-2"
-          >
-            {loading ? (
-              <>
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                Processing...
-              </>
-            ) : pendingBookingId ? 'Retry Payment' : (isSoldOut ? 'Sold Out' : (!session?.user ? 'Login to Book' : 'Secure Checkout'))}
-          </button>
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-xs font-bold text-red-600 flex items-center gap-3">
+                   {error}
+                </div>
+              )}
 
-          {pendingBookingId && !loading && (
-            <button
-              onClick={handleCancelBooking}
-              className="w-full bg-surface hover:bg-border text-muted py-2 rounded-lg font-medium text-xs transition-colors border border-border"
-            >
-              Cancel & Release Spots
-            </button>
+              <div className="space-y-4">
+                <button
+                  onClick={finalizeBookingAndPay}
+                  disabled={loading || !agreedToSafety}
+                  className="w-full bg-primary hover:bg-primary-hover text-white py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-2xl active:scale-[0.98] disabled:opacity-30 flex items-center justify-center gap-3"
+                >
+                  {loading ? (
+                    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  ) : (
+                    <>
+                      <span>Pay Securely</span>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </>
+                  )}
+                </button>
+
+                {pendingBookingId && !loading && (
+                  <button
+                    onClick={handleCancelBooking}
+                    className="w-full text-muted hover:text-red-500 text-[10px] font-black uppercase tracking-[0.2em] transition-all py-2"
+                  >
+                    Cancel Booking
+                  </button>
+                )}
+              </div>
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
 
-        <p className="text-[10px] text-muted text-center mt-4 uppercase tracking-widest font-bold">Secure Bank-Level Encryption</p>
+        {/* Footer Shield */}
+        <div className="mt-8 flex items-center justify-center gap-4 opacity-20">
+           <div className="h-[1px] flex-1 bg-muted"></div>
+           <svg className="w-4 h-4 text-muted" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-9-5z"/></svg>
+           <div className="h-[1px] flex-1 bg-muted"></div>
+        </div>
+        <p className="text-[8px] text-muted text-center mt-4 font-black uppercase tracking-[0.4em] opacity-40">Encrypted & Protected</p>
       </div>
+
+      {/* Medical Form Modal Overlay */}
+      <MedicalFormModal 
+        isOpen={isMedicalModalOpen}
+        onClose={() => setIsMedicalModalOpen(false)}
+        userEmail={session?.user?.email || ''}
+      />
     </>
   );
 }

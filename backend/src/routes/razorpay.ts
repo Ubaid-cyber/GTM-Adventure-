@@ -7,9 +7,12 @@ import Razorpay from 'razorpay';
 const router = Router();
 router.use(authenticateToken);
 
+const keyId = (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '').replace(/['"]+/g, '');
+const keySecret = (process.env.RAZORPAY_KEY_SECRET || '').replace(/['"]+/g, '');
+
 const razorpay = new Razorpay({
-  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || '',
+  key_id: keyId,
+  key_secret: keySecret,
 });
 
 // POST /api/razorpay/order (Legacy)
@@ -30,7 +33,7 @@ router.post('/order', async (req, res) => {
       notes: { bookingId, trekTitle: booking.trek.title }
     });
 
-    res.json({ order });
+    res.json({ order, keyId });
   } catch (error: any) {
     res.status(500).json({ error: 'Failed to create order' });
   }
@@ -54,11 +57,40 @@ router.post('/verify', async (req, res) => {
       }
     }
 
-    await prisma.booking.update({
-      where: { id: bookingId },
-      data: { 
-        status: 'CONFIRMED',
-        razorpayPaymentId: razorpay_payment_id 
+    await prisma.$transaction(async (tx: any) => {
+      const booking = await tx.booking.findUnique({
+        where: { id: bookingId },
+        include: { trek: true }
+      });
+
+      if (!booking) throw new Error('Booking not found');
+
+      if (booking.status !== 'CONFIRMED') {
+          // 1. Create Expedition
+          const durationDays = (booking.trek as any)?.durationDays || 5;
+          const startDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); 
+          const endDate = new Date(startDate.getTime() + durationDays * 24 * 60 * 60 * 1000);
+          
+          const expedition = await tx.expedition.create({
+            data: {
+              trekId: booking.trekId,
+              status: 'UPCOMING',
+              startDate,
+              endDate
+            }
+          });
+
+          // 2. Confirm Booking and relate Expedition
+          await tx.booking.update({
+            where: { id: bookingId },
+            data: { 
+              status: 'CONFIRMED', 
+              razorpayPaymentId: razorpay_payment_id,
+              expeditionId: expedition.id
+            }
+          });
+          
+          console.log(`[RAZORPAY_VERIFY] Created Expedition ${expedition.id} for Booking ${bookingId}`);
       }
     });
 

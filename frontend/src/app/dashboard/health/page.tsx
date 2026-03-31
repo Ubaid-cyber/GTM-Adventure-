@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ShieldCheck, ArrowRight } from 'lucide-react';
 
 interface MedicalProfile {
   vitals?: {
@@ -31,6 +33,7 @@ export default function HealthDashboard() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [showOther, setShowOther] = useState(false);
 
@@ -82,6 +85,7 @@ export default function HealthDashboard() {
       });
       if (res.ok) {
         setSuccess(true);
+        setIsModalOpen(true);
         // @ts-ignore
         setProfile(prev => ({
           ...prev,
@@ -111,32 +115,32 @@ export default function HealthDashboard() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-1">
-          <h1 className="text-4xl font-black text-foreground tracking-tighter uppercase mb-2">Health Passport</h1>
-          <p className="text-muted text-sm max-w-lg font-medium">Your medical identity for high-altitude success. Keep your vitals updated for a safer trekking experience.</p>
+          <h1 className="text-4xl font-black text-foreground tracking-tighter uppercase mb-2">Medical Information</h1>
+          <p className="text-muted text-sm max-w-lg font-medium">Your health details for a safe mountain experience. Keep your vitals updated for a better trekking journey.</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           {profile?.status === 'CLEARED' && (
             <div className="flex items-center gap-2.5 px-4 py-2 bg-emerald-50 border border-emerald-100 rounded-2xl shadow-sm">
               <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full shadow-[0_0_12px_rgba(16,185,129,0.8)]"></span>
-              <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-widest">Mission Ready: Cleared</span>
+              <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-widest">Cleared for Trekking</span>
             </div>
           )}
           {profile?.status === 'IN_REVIEW' && (
             <div className="flex items-center gap-2.5 px-4 py-2 bg-blue-50 border border-blue-100 rounded-2xl shadow-sm">
               <span className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_12px_rgba(59,130,246,0.6)]"></span>
-              <span className="text-[11px] font-bold text-blue-700 uppercase tracking-widest">Status: In Surgeon Review</span>
+              <span className="text-[11px] font-bold text-blue-700 uppercase tracking-widest">Status: In Medical Review</span>
             </div>
           )}
           {profile?.status === 'AWAITING_CLEARANCE' && (
             <div className="flex items-center gap-2.5 px-4 py-2 bg-amber-50 border border-amber-100 rounded-2xl shadow-sm">
               <span className="w-2.5 h-2.5 bg-amber-500 rounded-full animate-pulse shadow-[0_0_12px_rgba(245,158,11,0.6)]"></span>
-              <span className="text-[11px] font-bold text-amber-700 uppercase tracking-widest">Mission Clearance: IN PROCESS</span>
+              <span className="text-[11px] font-bold text-amber-700 uppercase tracking-widest">Medical Review: IN PROCESS</span>
             </div>
           )}
           {(!profile?.status || profile?.status === 'NONE') && (
             <div className="flex items-center gap-2.5 px-4 py-2 bg-slate-50 border border-slate-200 rounded-2xl shadow-sm">
               <span className="w-2.5 h-2.5 bg-slate-400 rounded-full"></span>
-              <span className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">Medical Identity Verified</span>
+              <span className="text-[11px] font-bold text-slate-600 uppercase tracking-widest">Medical Info Recorded</span>
             </div>
           )}
         </div>
@@ -145,10 +149,10 @@ export default function HealthDashboard() {
       {/* Vital Telemetry Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
-          { label: 'Stature', val: profile?.vitals?.height, unit: 'cm', color: 'blue', icon: 'M7 16V4m0 12l-3-3m3 3l3-3M17 8v12m0-12l-3 3m3-3l3 3' },
-          { label: 'Mass', val: profile?.vitals?.weight, unit: 'kg', color: 'emerald', icon: 'M3 6l3 12h12l3-12H3z' },
-          { label: 'Hemo-Type', val: profile?.vitals?.bloodGroup, unit: '', color: 'rose', icon: 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z' },
-          { label: 'Pressure', val: profile?.vitals?.bp, unit: '', color: 'amber', icon: 'M13 10V3L4 14h7v7l9-11h-7z' }
+          { label: 'Height', val: profile?.vitals?.height, unit: 'cm', color: 'blue', icon: 'M7 16V4m0 12l-3-3m3 3l3-3M17 8v12m0-12l-3 3m3-3l3 3' },
+          { label: 'Weight', val: profile?.vitals?.weight, unit: 'kg', color: 'emerald', icon: 'M3 6l3 12h12l3-12H3z' },
+          { label: 'Blood Group', val: profile?.vitals?.bloodGroup, unit: '', color: 'rose', icon: 'M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z' },
+          { label: 'Blood Pressure', val: profile?.vitals?.bp, unit: '', color: 'amber', icon: 'M13 10V3L4 14h7v7l9-11h-7z' }
         ].map((stat, idx) => (
           <div key={idx} className="bg-white border border-border p-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all group relative overflow-hidden">
             <div className="absolute top-0 right-0 w-24 h-24 bg-slate-50 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-110 opacity-50"></div>
@@ -176,7 +180,7 @@ export default function HealthDashboard() {
             <div className="bg-slate-50/50 px-8 py-6 border-b border-border flex items-center justify-between">
               <h3 className="text-sm font-black text-foreground uppercase tracking-widest flex items-center gap-2">
                 <span className="w-2.5 h-2.5 bg-primary rounded-full"></span>
-                Update Mission Telemetry
+                Update Your Health Info
               </h3>
               <span className="text-[10px] font-bold text-muted uppercase tracking-widest">Secure Sync Enabled</span>
             </div>
@@ -229,7 +233,7 @@ export default function HealthDashboard() {
 
             <div className="p-8 pt-0 space-y-8">
               <div className="border-t border-slate-100 pt-8">
-                <label className="text-[10px] font-bold text-muted uppercase tracking-widest block mb-5 pl-1">Medical Risk Discovery</label>
+                <label className="text-[10px] font-bold text-muted uppercase tracking-widest block mb-5 pl-1">Health Conditions Check</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {[
                     { id: 'heart', label: 'Cardiovascular Condition' },
@@ -284,7 +288,7 @@ export default function HealthDashboard() {
                     <div className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin"></div>
                   ) : (
                     <>
-                      <span>Secure Vital Sync</span>
+                      <span>Save & Continue</span>
                       <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                       </svg>
@@ -293,9 +297,7 @@ export default function HealthDashboard() {
                 </button>
               </div>
               
-              {success && (
-                <p className="text-emerald-600 text-[10px] font-black uppercase text-center tracking-[0.2em] animate-pulse">✓ Mission Clearance Database Synchronized</p>
-              )}
+              {/* Modal will handle success flow */}
               {error && (
                 <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl text-[10px] font-bold text-rose-600 uppercase tracking-widest text-center">
                    🚨 Critical System Error: {error}
@@ -309,7 +311,7 @@ export default function HealthDashboard() {
         <div className="space-y-6">
           <div className="bg-primary text-white p-6 rounded-2xl shadow-xl relative overflow-hidden">
              <div className="relative z-10">
-                <h4 className="font-bold text-lg mb-2">Our Mission Ethics</h4>
+                <h4 className="font-bold text-lg mb-2">Security & Privacy</h4>
                 <p className="text-blue-100 text-sm leading-relaxed mb-4">You are entering high-risk environments. Your health data is the primary bridge between you and our **GTM Medical Team**.</p>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
@@ -330,7 +332,7 @@ export default function HealthDashboard() {
           </div>
 
           <div className="bg-white border border-border p-6 rounded-2xl">
-             <h4 className="font-bold text-foreground mb-4">Clinical Guidance</h4>
+             <h4 className="font-bold text-foreground mb-4">Medical Support</h4>
              <div className="space-y-4">
                <div className="p-3 bg-amber-50 border border-amber-100 rounded-xl">
                  <p className="text-[10px] uppercase font-bold text-amber-600 mb-1 tracking-widest">Medical Team Note</p>
@@ -340,6 +342,66 @@ export default function HealthDashboard() {
           </div>
         </div>
       </div>
+
+      <SuccessModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onAction={() => router.push('/dashboard/bookings')}
+      />
     </div>
+  );
+}
+
+function SuccessModal({ isOpen, onClose, onAction }: { isOpen: boolean, onClose: () => void, onAction: () => void }) {
+  if (!isOpen) return null;
+
+  return (
+    <AnimatePresence>
+      <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-8">
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          onClick={onClose}
+          className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+        />
+        
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          className="relative w-full max-w-[600px] bg-white rounded-3xl shadow-[0_40px_120px_rgba(0,0,0,0.3)] overflow-hidden border border-slate-200"
+        >
+          {/* Header Section */}
+          <div className="p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+            <div className="w-16 h-16 bg-blue-50 text-primary rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm border border-blue-100">
+              <ShieldCheck size={32} strokeWidth={2.5} className="drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]" />
+            </div>
+            <div className="space-y-2 flex-1">
+              <h3 className="text-2xl font-black text-slate-900 italic tracking-tighter uppercase leading-none">
+                 All set! we've got your info!
+              </h3>
+              <p className="text-slate-500 font-medium text-sm leading-relaxed max-w-sm">
+                Our medical team is taking a quick look at your profile. You're now ready to explore your dashboard and get prepared for the climb!
+              </p>
+            </div>
+          </div>
+
+          {/* Action Section */}
+          <div className="bg-slate-50 p-6 md:p-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6 mt-auto">
+             <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] opacity-80 hidden sm:block">
+                GTM Adventures // Medical Safety
+             </div>
+             <button 
+                onClick={onAction}
+                className="w-full sm:w-auto bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-xl font-black text-xs uppercase tracking-[0.15em] transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-3 active:scale-95 group hover:shadow-xl"
+              >
+                <span>Go to My Dashboard</span>
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+          </div>
+        </motion.div>
+      </div>
+    </AnimatePresence>
   );
 }

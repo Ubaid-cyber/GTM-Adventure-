@@ -10,9 +10,12 @@ const router = Router();
 router.use(authenticateToken); // Apply to all routes in this router
 
 
+const keyId = (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '').replace(/['"]+/g, '');
+const keySecret = (process.env.RAZORPAY_KEY_SECRET || '').replace(/['"]+/g, '');
+
 const razorpay = new Razorpay({
-  key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '',
-  key_secret: process.env.RAZORPAY_KEY_SECRET || '',
+  key_id: keyId,
+  key_secret: keySecret,
 });
 
 // GET /api/bookings
@@ -64,7 +67,7 @@ router.post('/', async (req, res) => {
       const selectedTrek = trek[0];
       const spotsRemaining = selectedTrek.availableSpots ?? 15;
 
-      if (spotsRemaining < numParticipants) throw new Error('NOT_ENOUGH_SPOTS');
+      if (spotsRemaining < numParticipants) throw new Error('All Tickets are sold out');
 
       const totalPrice = selectedTrek.price * numParticipants;
 
@@ -106,6 +109,7 @@ router.post('/', async (req, res) => {
       success: true,
       booking: result.booking,
       order: result.order,
+      keyId,
       message: `Successfully reserved ${numParticipants} spot(s) for ${result.trekTitle}`
     });
 
@@ -172,7 +176,7 @@ router.patch('/:id', async (req, res) => {
 
       return await tx.booking.update({
         where: { id: booking.id },
-        data: { 
+        data: {
           participants: newParticipants,
           totalPrice: (booking.trek.price || 0) * newParticipants
         }

@@ -4,38 +4,31 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DIRECT_DATABASE_URL")
-}
-
-enum UserRole {
-  TREKKER
-  LEADER
-  ADMIN
+  provider = "postgresql"
+  url      = env("DIRECT_DATABASE_URL")
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  profileImage  String?
-  bio           String?   
-  country       String?
-  password      String?
-  role          UserRole  @default(TREKKER)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-
-  // Relations
+  id             String           @id @default(cuid())
+  name           String?
+  email          String?          @unique
+  phone          String?          @unique
+  emailVerified  DateTime?
+  profileImage   String?
+  password       String?
+  role           UserRole         @default(TREKKER)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  bio            String?
+  country        String?
   accounts       Account[]
-  sessions       Session[]
-  medicalProfile MedicalProfile?
   bookings       Booking[]
-  treks          Trek[]          @relation("GuideTreks")
-  reviews        Review[]
   posts          ExpeditionPost[]
+  medicalProfile MedicalProfile?
   comments       PostComment[]
+  reviews        Review[]
+  sessions       Session[]
+  treks          Trek[]           @relation("GuideTreks")
 }
 
 model Account {
@@ -44,15 +37,14 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? 
-  access_token      String? 
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? 
+  id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -73,142 +65,116 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-enum MedicalStatus {
-  NONE
-  AWAITING_CLEARANCE
-  IN_REVIEW
-  CLEARED
-}
-
 model MedicalProfile {
-  id        String        @id @unique @default(cuid())
-  userId    String        @unique
-  user      User          @relation(fields: [userId], references: [id])
-  vitals    Json?
-  history   Json?
-  fitness   Json?
-  status    MedicalStatus @default(NONE)
-  medicalNotes String?    
-  updatedAt DateTime      @updatedAt
-}
-
-enum BookingStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-}
-
-enum ExpeditionStatus {
-  UPCOMING
-  ONGOING
-  COMPLETED
-  CANCELLED
+  id           String        @id @unique @default(cuid())
+  userId       String        @unique
+  vitals       Json?
+  history      Json?
+  fitness      Json?
+  updatedAt    DateTime      @updatedAt
+  medicalNotes String?
+  status       MedicalStatus @default(NONE)
+  user         User          @relation(fields: [userId], references: [id])
 }
 
 model Expedition {
-  id        String           @id @default(cuid())
-  trekId    String
-  trek      Trek             @relation(fields: [trekId], references: [id])
-  startDate DateTime
-  endDate   DateTime
-  status    ExpeditionStatus @default(UPCOMING)
-
+  id                  String           @id @default(cuid())
+  trekId              String
+  startDate           DateTime
+  endDate             DateTime
+  status              ExpeditionStatus @default(UPCOMING)
   currentLocationName String?
   currentAltitude     Int?
   currentLat          Float?
   currentLong         Float?
-  progressPercent     Int     @default(0)
-
-  bookings Booking[]
-  posts    ExpeditionPost[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-enum PostType {
-  MESSAGE
-  UPDATE
-  MILESTONE
-  IMAGE
-  ALERT
+  progressPercent     Int              @default(0)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  bookings            Booking[]
+  trek                Trek             @relation(fields: [trekId], references: [id])
+  posts               ExpeditionPost[]
 }
 
 model ExpeditionPost {
-  id           String     @id @default(cuid())
+  id           String        @id @default(cuid())
   expeditionId String
-  expedition   Expedition @relation(fields: [expeditionId], references: [id], onDelete: Cascade)
   userId       String
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  content      String     
-  type         PostType   @default(MESSAGE)
+  content      String
+  type         PostType      @default(MESSAGE)
   mediaUrl     String?
-  
-  comments     PostComment[]
   reactions    Json?
-
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  expedition   Expedition    @relation(fields: [expeditionId], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comments     PostComment[]
 
   @@index([expeditionId])
   @@index([userId])
 }
 
 model PostComment {
-  id      String         @id @default(cuid())
-  postId  String
-  post    ExpeditionPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  userId  String
-  user    User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  content String         
-  
-  createdAt DateTime     @default(now())
+  id        String         @id @default(cuid())
+  postId    String
+  userId    String
+  content   String
+  createdAt DateTime       @default(now())
+  post      ExpeditionPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([postId])
 }
 
 model Booking {
-  id String @id @default(cuid())
-  userId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  trekId String
-  trek   Trek   @relation(fields: [trekId], references: [id], onDelete: Restrict)
-  expeditionId String?
-  expedition   Expedition? @relation(fields: [expeditionId], references: [id])
-  participants Int           @default(1)
-  totalPrice   Float         @default(0)
-  status       BookingStatus @default(PENDING)
-  razorpayOrderId   String? @unique
-  razorpayPaymentId String? @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String        @id @default(cuid())
+  userId            String
+  trekId            String
+  expeditionId      String?
+  participants      Int           @default(1)
+  totalPrice        Float         @default(0)
+  status            BookingStatus @default(PENDING)
+  razorpayOrderId   String?       @unique
+  razorpayPaymentId String?       @unique
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  basePrice         Float?        @default(0)
+  gstAmount         Float?        @default(0)
+  refundAmount      Float?        @default(0)
+  refundId          String?       @unique
+  expedition        Expedition?   @relation(fields: [expeditionId], references: [id])
+  trek              Trek          @relation(fields: [trekId], references: [id])
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
   @@index([trekId])
 }
 
 model Trek {
-  id           String   @id @default(cuid())
-  title        String
-  description  String   
-  location     String
-  durationDays Int
-  difficulty   String
-  price        Float
-  maxAltitude  Int?
-  bestSeason   String?
-  highlights   String[]
-  coverImage   String?
-  availableSpots Int @default(15)
-  maxCapacity    Int @default(20)
-  embedding      Float[]
-  guideId  String?
-  guide    User?     @relation("GuideTreks", fields: [guideId], references: [id])
-  reviews  Review[]
-  bookings Booking[]
-  expeditions Expedition[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String       @id @default(cuid())
+  title            String
+  description      String
+  location         String
+  durationDays     Int
+  difficulty       String
+  price            Float
+  maxAltitude      Int?
+  bestSeason       String?
+  highlights       String[]
+  itinerary        Json?
+  inclusions       String[]     @default([])
+  exclusions       String[]     @default([])
+  gearRequirements String[]     @default([])
+  coverImage       String?
+  availableSpots   Int          @default(15)
+  maxCapacity      Int          @default(20)
+  embedding        Float[]
+  guideId          String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  bookings         Booking[]
+  expeditions      Expedition[]
+  reviews          Review[]
+  guide            User?        @relation("GuideTreks", fields: [guideId], references: [id])
 }
 
 model AuditLog {
@@ -226,8 +192,52 @@ model Review {
   rating    Int
   comment   String?
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   trekId    String
-  trek      Trek     @relation(fields: [trekId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+  trek      Trek     @relation(fields: [trekId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model OTP {
+  id        String   @id
+  phone     String
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+}
+
+enum UserRole {
+  TREKKER
+  LEADER
+  ADMIN
+}
+
+enum MedicalStatus {
+  NONE
+  AWAITING_CLEARANCE
+  IN_REVIEW
+  CLEARED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+enum ExpeditionStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum PostType {
+  MESSAGE
+  UPDATE
+  MILESTONE
+  IMAGE
+  ALERT
 }

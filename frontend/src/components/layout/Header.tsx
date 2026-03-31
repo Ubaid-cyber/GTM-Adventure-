@@ -2,6 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import { auth } from '@/lib/auth';
 import SearchBar from './SearchBar';
+import LogoutButton from './LogoutButton';
+import MobileMenu from './MobileMenu';
 
 export default async function Header() {
   const session = await auth();
@@ -25,7 +27,7 @@ export default async function Header() {
           <nav className="hidden md:flex items-center gap-6">
             <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Treks</Link>
             <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Destinations</Link>
-            <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Expeditions</Link>
+            <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Featured Treks</Link>
             <Link href="/about" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">About</Link>
             {isLoggedIn && (
               <>
@@ -35,7 +37,7 @@ export default async function Header() {
                 </Link>
                 <Link href="/dashboard/health" className="text-sm text-muted hover:text-foreground font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap">
                   <span className="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
-                  Health & Vitals
+                  Medical Info
                 </Link>
               </>
             )}
@@ -45,23 +47,28 @@ export default async function Header() {
           <SearchBar />
 
           {/* Right Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-4 ml-auto">
             {isLoggedIn ? (
-              <Link href="/dashboard/profile" className="flex items-center gap-2 group hover:opacity-80 transition-all">
-                <span className="hidden sm:block text-sm font-semibold text-foreground border-b border-transparent group-hover:border-primary transition-all">
-                  {session.user?.name?.split(' ')[0]}
-                </span>
-                <div className="w-9 h-9 bg-primary/10 border border-primary/20 rounded-full flex items-center justify-center text-primary text-xs font-bold overflow-hidden shadow-sm group-hover:shadow-md transition-all">
-                  {session.user?.image
-                    ? <img src={session.user.image} alt="User" className="w-full h-full object-cover" />
-                    : (session.user?.name ? session.user.name.charAt(0).toUpperCase() : 'U')}
-                </div>
-              </Link>
+              <div className="hidden sm:flex items-center gap-1.5 sm:gap-2">
+                <Link href="/dashboard/profile" className="flex items-center gap-2 group transition-all">
+                  <span className="hidden sm:block text-base font-bold text-slate-800 tracking-tight lowercase">
+                    {session.user?.name?.split(' ')[0] || 'user'}
+                  </span>
+                  <div className="w-10 h-10 bg-[#e8eef6] border border-[#d1dceb] rounded-full flex items-center justify-center text-[#1c398e] text-lg font-black shadow-sm group-hover:shadow-md transition-all">
+                    {session.user?.image
+                      ? <img src={session.user.image} alt="User" className="w-full h-full object-cover rounded-full" />
+                      : (session.user?.name ? session.user.name.charAt(0).toUpperCase() : 'U')}
+                  </div>
+                </Link>
+                <LogoutButton />
+              </div>
             ) : (
-              <Link href="/login" className="bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-full text-sm font-semibold transition-colors shadow-sm">
-                Login
+              <Link href="/login" className="hidden sm:inline-flex bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-primary/20 hover:scale-105 active:scale-95">
+                Login / Signup
               </Link>
             )}
+            
+            <MobileMenu session={session} />
           </div>
         </div>
       </div>

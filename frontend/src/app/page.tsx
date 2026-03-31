@@ -27,15 +27,15 @@ export default function HomePage() {
             transition={{ duration: 0.8 }}
           >
             <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold uppercase tracking-[0.2em] mb-6">
-              The Gold Standard of Expeditions
+              Premier Himalayan Treks
             </span>
             <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight leading-[1.1] mb-8 max-w-4xl mx-auto">
               Your Journey, <br />
               <span className="italic font-serif text-white/90">Redefined.</span>
             </h1>
             <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto font-medium mb-10 leading-relaxed">
-              Experience the Himalayas with surgical precision. 
-              World-class expeditions powered by elite safety protocols and seamless connectivity.
+              Experience the Himalayas with unparalleled safety. 
+              World-class treks led by expert guides and supported by a dedicated safety team.
             </p>
             
             {/* 2. DISCOVERY ENGINE (Luxury Search) */}
@@ -86,28 +86,28 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. THE ASSURANCE PROTOCOL (Tech/Safety) */}
+      {/* 4. THE SAFETY FRAMEWORK (Tech/Safety) */}
       <section className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="max-w-3xl mb-16">
             <span className="text-primary text-xs font-black uppercase tracking-[0.3em] mb-4 block">The GTM Difference</span>
-            <h2 className="text-4xl font-bold text-slate-900 tracking-tight mb-6">Unseen Engineering for Unbeatable Safety.</h2>
+            <h2 className="text-4xl font-bold text-slate-900 tracking-tight mb-6">Expert Planning for Unbeatable Safety.</h2>
             <p className="text-lg text-slate-600 leading-relaxed font-medium">
-              We operate a silent safety ecosystem that follows you to the summit. 
-              Behind every trek is a complex layer of technology designed to ensure you return with stories, not scars.
+              We operate a comprehensive safety framework that supports you to the summit. 
+              Behind every trek is a dedicated team and robust infrastructure designed to ensure you return with incredible memories.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               { 
-                title: "Seamless Connectivity", 
-                desc: "Proprietary satellite relays ensure you remain connected to Mission Control and your family, even in the most remote valleys.",
+                title: "Seamless Support", 
+                desc: "Our dedicated support team ensures you remain connected to our basecamp and your family, even in the most remote valleys.",
                 icon: Zap
               },
               { 
                 title: "Precision Vitals", 
-                desc: "Optional biometric tracking monitored by experts to detect hypoxia and fatigue before they become critical.",
+                desc: "Professional health monitoring by our mountain experts to ensure your well-being throughout the journey.",
                 icon: Shield
               },
               { 
@@ -186,11 +186,11 @@ export default function HomePage() {
             <div className="relative z-10">
               <h2 className="text-4xl md:text-6xl font-bold text-white tracking-tight mb-8">Ready to transcend the <br /> ordinary?</h2>
               <p className="text-white/60 text-lg max-w-xl mx-auto mb-12 leading-relaxed">
-                Connect with our expedition specialists and begin the clearance process for your next high-altitude mission.
+                Connect with our trek specialists and begin the registration process for your next mountain journey.
               </p>
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <Link href="/register" className="px-10 py-4 bg-white text-slate-900 rounded-full font-bold text-sm tracking-widest uppercase hover:bg-slate-100 transition-all">
-                  Join the Registry
+                  Register Now
                 </Link>
                 <Link href="/about" className="px-10 py-4 bg-white/10 text-white border border-white/20 rounded-full font-bold text-sm tracking-widest uppercase hover:bg-white/20 transition-all">
                   Our Philosophy
@@ -212,7 +212,7 @@ export default function HomePage() {
           <div className="flex gap-8 text-xs font-bold text-slate-400 uppercase tracking-widest">
             <Link href="/treks" className="hover:text-primary transition-colors">Treks</Link>
             <Link href="/about" className="hover:text-primary transition-colors">Philosophy</Link>
-            <Link href="/login" className="hover:text-primary transition-colors">Login</Link>
+            <Link href="/login" className="hover:text-primary transition-colors">Login / Signup</Link>
             <Link href="#" className="hover:text-primary transition-colors">Privacy</Link>
           </div>
           <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">© 2026 GTM ADVENTURES LTD.</p>

@@ -16,7 +16,7 @@ interface MedicalProfile {
   }
 }
 
-export default function MedicalTeamCockpit() {
+export default function MedicalReviewDashboard() {
   const { data: session } = useSession();
   const [profiles, setProfiles] = useState<MedicalProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,7 +50,7 @@ export default function MedicalTeamCockpit() {
   };
 
   const deleteProfile = async (profileId: string) => {
-    if (!window.confirm('TERMINATE MISSION PROTOCOL? This will remove the subject from your active registry.')) return;
+    if (!window.confirm('Delete this medical record permanently? This will remove the trekker from your active records.')) return;
     setUpdatingId(profileId);
     try {
       const res = await fetch('/api/admin/medical', {
@@ -102,15 +102,15 @@ export default function MedicalTeamCockpit() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04M12 2.944z"/>
                 </svg>
               </div>
-              <p className="text-[10px] font-black uppercase tracking-[0.4em]">Auth: GS-LEVEL-4 SURGEON</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.4em]">Auth: MEDICAL REVIEW OFFICER</p>
             </div>
             <h1 className="text-5xl font-black text-white uppercase tracking-tighter flex items-center gap-4">
-              Mission Control
+              Admin
               <span className="text-slate-800">/</span>
               <span className="text-cyan-500/80">Medical</span>
             </h1>
             <div className="flex items-center gap-6 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-              <span>Terminal: GTM-ALFA-09</span>
+              <span>Service: GTM-MED-01</span>
               <span className="w-1 h-1 bg-slate-800 rounded-full"></span>
               <span>Secure Layer: Encrypted</span>
               <span className="w-1 h-1 bg-slate-800 rounded-full"></span>
@@ -121,7 +121,7 @@ export default function MedicalTeamCockpit() {
           <div className="flex items-center gap-4">
             <div className="px-5 py-3 bg-slate-900/40 border border-slate-900 rounded-xl flex items-center gap-4 group hover:border-cyan-500/30 transition-all cursor-crosshair">
               <div className="w-2 h-2 bg-cyan-500 rounded-full shadow-[0_0_10px_rgba(34,211,238,0.8)] animate-pulse"></div>
-              <span className="text-[10px] font-black text-slate-200 uppercase tracking-[0.2em]">Operational Pulse: Stable</span>
+              <span className="text-[10px] font-black text-slate-200 uppercase tracking-[0.2em]">System Status: Stable</span>
             </div>
             <button className="w-12 h-12 bg-slate-900/40 border border-slate-900 rounded-xl flex items-center justify-center text-slate-500 hover:text-white hover:border-cyan-500 transition-all">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -132,10 +132,10 @@ export default function MedicalTeamCockpit() {
         {/* Tactical Telemetry Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { label: 'Pending Clearance', val: Array.isArray(profiles) ? profiles.filter(p => p.status === 'AWAITING_CLEARANCE').length : 0, color: 'text-amber-500', bg: 'bg-amber-500/5', border: 'border-amber-500/20' },
-            { label: 'Surgeon Review', val: Array.isArray(profiles) ? profiles.filter(p => p.status === 'IN_REVIEW').length : 0, color: 'text-blue-500', bg: 'bg-blue-500/5', border: 'border-blue-500/20' },
-            { label: 'Cleared Mission', val: Array.isArray(profiles) ? profiles.filter(p => p.status === 'CLEARED').length : 0, color: 'text-cyan-500', bg: 'bg-cyan-500/5', border: 'border-cyan-500/20' },
-            { label: 'Registry Total', val: Array.isArray(profiles) ? profiles.length : 0, color: 'text-white', bg: 'bg-slate-900/40', border: 'border-slate-800' }
+            { label: 'Awaiting Review', val: Array.isArray(profiles) ? profiles.filter(p => p.status === 'AWAITING_CLEARANCE').length : 0, color: 'text-amber-500', bg: 'bg-amber-500/5', border: 'border-amber-500/20' },
+            { label: 'In Medical Review', val: Array.isArray(profiles) ? profiles.filter(p => p.status === 'IN_REVIEW').length : 0, color: 'text-blue-500', bg: 'bg-blue-500/5', border: 'border-blue-500/20' },
+            { label: 'Approved Trekkers', val: Array.isArray(profiles) ? profiles.filter(p => p.status === 'CLEARED').length : 0, color: 'text-cyan-500', bg: 'bg-cyan-500/5', border: 'border-cyan-500/20' },
+            { label: 'Total Records', val: Array.isArray(profiles) ? profiles.length : 0, color: 'text-white', bg: 'bg-slate-900/40', border: 'border-slate-800' }
           ].map((stat, idx) => (
             <div key={idx} className={`relative p-8 rounded-2xl border ${stat.border} ${stat.bg} group overflow-hidden`}>
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-30 transition-opacity">
@@ -165,8 +165,8 @@ export default function MedicalTeamCockpit() {
                 <svg className="w-5 h-5 text-cyan-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
               </div>
               <div>
-                <h3 className="text-xl font-black text-white uppercase tracking-tight">Biometric Registry</h3>
-                <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest mt-0.5">Tactical Deployment Clearing</p>
+                <h3 className="text-xl font-black text-white uppercase tracking-tight">Health Records</h3>
+                <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest mt-0.5">Trekker Health Verification</p>
               </div>
             </div>
             <div className="hidden md:flex items-center gap-3">
@@ -182,9 +182,9 @@ export default function MedicalTeamCockpit() {
             <table className="w-full text-left border-separate border-spacing-0">
               <thead>
                 <tr className="bg-slate-900/40">
-                  <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] border-b border-slate-900">Subject Identification</th>
-                  <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] border-b border-slate-900">Risk Matrix Telemetry</th>
-                  <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] border-b border-slate-900">Clinical Vitals</th>
+                  <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] border-b border-slate-900">Trekker Details</th>
+                  <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] border-b border-slate-900">Medical History</th>
+                  <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] border-b border-slate-900">Health Vitals</th>
                   <th className="px-10 py-6 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] border-b border-slate-900 text-right">Operations</th>
                 </tr>
               </thead>
@@ -217,7 +217,7 @@ export default function MedicalTeamCockpit() {
                             return (
                               <div key={key} className="w-full mt-3 p-4 bg-rose-500/[0.03] border border-rose-500/10 rounded-xl group/note relative overflow-hidden">
                                 <div className="absolute top-0 left-0 w-1 h-full bg-rose-500/30"></div>
-                                <span className="text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] block mb-1">Manual Flag Entry</span>
+                                <span className="text-[9px] font-black text-rose-500 uppercase tracking-[0.2em] block mb-1">Medical Note</span>
                                 <p className="text-[11px] text-rose-200/70 font-mono leading-relaxed italic line-clamp-2">"{value}"</p>
                               </div>
                             );
@@ -260,19 +260,19 @@ export default function MedicalTeamCockpit() {
                         <div className="flex items-center justify-end gap-3">
                            {profile.status === 'CLEARED' && (
                              <div className="flex items-center gap-2 group/status">
-                               <span className="text-[9px] font-black text-cyan-400 uppercase tracking-[0.2em]">Clearance_OK</span>
+                               <span className="text-[9px] font-black text-cyan-400 uppercase tracking-[0.2em]">Approved</span>
                                <div className="w-2.5 h-2.5 bg-cyan-500 rounded-full shadow-[0_0_8px_rgba(34,211,238,0.8)]"></div>
                              </div>
                            )}
                            {profile.status === 'IN_REVIEW' && (
                              <div className="flex items-center gap-2 group/status">
-                               <span className="text-[9px] font-black text-blue-400 uppercase tracking-[0.2em]">Live_Review</span>
+                               <span className="text-[9px] font-black text-blue-400 uppercase tracking-[0.2em]">In Review</span>
                                <div className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.8)]"></div>
                              </div>
                            )}
                            {profile.status === 'AWAITING_CLEARANCE' && (
                              <div className="flex items-center gap-2 group/status">
-                               <span className="text-[9px] font-black text-amber-500 uppercase tracking-[0.2em]">Pending_Sync</span>
+                               <span className="text-[9px] font-black text-amber-500 uppercase tracking-[0.2em]">Pending Review</span>
                                <div className="w-2.5 h-2.5 bg-amber-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]"></div>
                              </div>
                            )}
@@ -283,14 +283,14 @@ export default function MedicalTeamCockpit() {
                              className="px-6 py-2.5 bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-xl text-[10px] font-black text-slate-400 hover:text-white transition-all uppercase tracking-widest disabled:opacity-30"
                              disabled={updatingId === profile.id}
                            >
-                             Log Review
+                             Start Review
                            </button>
                            <button 
                              onClick={() => updateStatus(profile.id, 'CLEARED')}
                              className="px-6 py-2.5 bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-500 rounded-xl text-[10px] font-black transition-all active:scale-95 uppercase tracking-widest disabled:opacity-30"
                              disabled={updatingId === profile.id}
                            >
-                             Authorize
+                             Approve
                            </button>
                         </div>
 

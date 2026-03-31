@@ -1,21 +1,21 @@
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import MissionControlClient from './MissionControlClient';
+import TrekBasecampClient from './TrekBasecampClient';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Mission Control | GTM-Adventure',
-  description: 'Real-time expedition tracking and telemetry.',
+  title: 'Trek Dashboard | GTM-Adventure',
+  description: 'Real-time trek tracking and progress monitoring.',
 };
 
-export default async function MissionControlPage({ params }: { params: { id: string } }) {
+export default async function ExpeditionBasecampPage({ params }: { params: { id: string } }) {
   const session = await auth();
   
   if (!session?.user?.email) {
     redirect('/login');
   }
 
-  const expeditionId = (await params).id;
+  const { id } = await params;
 
-  return <MissionControlClient expeditionId={expeditionId} />;
+  return <TrekBasecampClient expeditionId={id} />;
 }

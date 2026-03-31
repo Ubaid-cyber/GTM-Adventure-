@@ -18,7 +18,7 @@ interface RosterData {
   leader: Participant | null;
 }
 
-export default function Roster({ expeditionId }: { expeditionId: string }) {
+export default function GroupMembers({ expeditionId }: { expeditionId: string }) {
   const { data: session } = useSession();
   const [data, setData] = useState<RosterData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,7 +40,7 @@ export default function Roster({ expeditionId }: { expeditionId: string }) {
     fetchRoster();
   }, [expeditionId]);
 
-  if (loading) return <div className="p-10 text-center text-primary font-mono text-xs animate-pulse">Accessing Personnel Files...</div>;
+  if (loading) return <div className="p-10 text-center text-primary font-mono text-xs animate-pulse">Loading members...</div>;
 
   return (
     <div className="space-y-12 pb-20">
@@ -49,7 +49,7 @@ export default function Roster({ expeditionId }: { expeditionId: string }) {
         <section>
           <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-primary mb-6 flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(30,58,138,1)]"></div>
-            Expedition Leader
+            Trek Leader
           </h3>
           <div className="bg-gradient-to-br from-primary/10 to-blue-900/10 border border-primary/20 rounded-3xl p-8 backdrop-blur-md flex flex-col md:flex-row gap-8 items-center md:items-start group hover:border-primary/40 transition-all">
              <div className="w-32 h-32 rounded-2xl border-2 border-primary/30 p-1 overflow-hidden">
@@ -62,14 +62,14 @@ export default function Roster({ expeditionId }: { expeditionId: string }) {
              <div className="flex-1 space-y-4 text-center md:text-left">
                 <div>
                   <h4 className="text-3xl font-black tracking-tight">{data.leader.name}</h4>
-                  <p className="text-primary font-mono text-[10px] uppercase tracking-widest mt-1">Lead Guide // Grade A Certified</p>
+                  <p className="text-primary font-mono text-[10px] uppercase tracking-widest mt-1">Lead Guide</p>
                 </div>
                 <p className="text-sm text-white/60 font-medium leading-relaxed max-w-xl">
-                  {data.leader.bio || "No bio available in central registry."}
+                  {data.leader.bio || "No bio available."}
                 </p>
                 <div className="flex justify-center md:justify-start gap-3">
-                   <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold">Basecamp India</span>
-                   <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold">128 Expeditions</span>
+                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold">Basecamp</span>
+                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold">128 Treks</span>
                 </div>
              </div>
           </div>
@@ -80,7 +80,7 @@ export default function Roster({ expeditionId }: { expeditionId: string }) {
       <section>
         <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-6 flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-white/20"></div>
-          Confirmed Trekker Roster
+          Group Members
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {data?.participants.map((person, idx) => (
@@ -103,7 +103,7 @@ export default function Roster({ expeditionId }: { expeditionId: string }) {
                   <h5 className="text-sm font-bold truncate">{person.name}</h5>
                   {person.country && <span className="text-xs opacity-60">({person.country})</span>}
                 </div>
-                <p className="text-[10px] text-white/30 truncate font-mono uppercase tracking-tighter">Status: Confirmed // Ready for Ascent</p>
+                <p className="text-[10px] text-white/30 truncate font-mono uppercase tracking-tighter">Status: Confirmed // Ready</p>
               </div>
               <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
             </motion.div>
