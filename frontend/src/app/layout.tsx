@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
 import AuthProvider from "@/components/AuthProvider";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
@@ -18,7 +19,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased pt-16`}>
         <AuthProvider>
           <Header />
-          {children}
+          <div className="w-full overflow-x-hidden relative min-h-screen">
+            {children}
+          </div>
+          <Footer />
         </AuthProvider>
       </body>
     </html>

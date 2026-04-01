@@ -188,7 +188,7 @@ export default function UserProfile() {
                         <span className="text-[10px] font-black uppercase tracking-widest">Global Status</span>
                      </div>
                      <h4 className="text-xl font-bold text-slate-900 mb-2">Connection: Optimal</h4>
-                     <p className="text-xs text-slate-500 mb-6">Satellite Connection: Stable. Local Basecamp Node: Active.</p>
+                     <p className="text-xs text-slate-500 mb-6">Satellite Connection: Stable. Local Command Center Node: Active.</p>
                      <div className="flex gap-2">
                         <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
                         <div className="w-2 h-2 rounded-full bg-emerald-500"></div>

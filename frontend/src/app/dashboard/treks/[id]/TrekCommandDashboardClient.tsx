@@ -22,7 +22,7 @@ interface ExpeditionData {
   };
 }
 
-export default function TrekDashboardClient({ expeditionId }: { expeditionId: string }) {
+export default function TrekCommandDashboardClient({ expeditionId }: { expeditionId: string }) {
   const { data: session } = useSession();
   const [data, setData] = useState<ExpeditionData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -34,8 +34,8 @@ export default function TrekDashboardClient({ expeditionId }: { expeditionId: st
       if (!session?.user?.email) return;
 
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/expeditions/${expeditionId}`, {
-          headers: { 'x-user-email': 'bhatubaid341@gmail.com' }
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/active-bookings/${expeditionId}`, {
+          headers: { 'x-user-email': session?.user?.email || '' }
         });
         const result = await res.json();
         if (res.ok) {
@@ -164,7 +164,7 @@ export default function TrekDashboardClient({ expeditionId }: { expeditionId: st
                       <div className="flex justify-between mt-4">
                         <div className="text-center">
                           <div className="text-[10px] text-muted font-bold uppercase tracking-wider mb-1">Start</div>
-                          <div className="text-sm font-bold">Basecamp</div>
+                          <div className="text-sm font-bold uppercase">CC</div>
                         </div>
                         <div className="text-center">
                           <div className="text-[10px] text-primary font-bold uppercase tracking-wider mb-1">Status</div>

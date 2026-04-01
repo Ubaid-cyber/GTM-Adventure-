@@ -22,18 +22,46 @@ const razorpay = new Razorpay({
 router.get('/', async (req, res) => {
   try {
     const user = (req as any).user;
+    let bookings;
 
-
-    const bookings = await prisma.booking.findMany({
-      where: { userId: user.id },
-      include: {
-        trek: {
-          select: { id: true, title: true, coverImage: true, location: true, durationDays: true }
+    if (user.role === 'ADMIN') {
+      // Admins see everything
+      bookings = await prisma.booking.findMany({
+        where: { status: 'CONFIRMED' },
+        include: {
+          user: { select: { name: true, email: true, profileImage: true, id: true } },
+          trek: true,
+          expedition: true
         },
-        expedition: true
-      },
-      orderBy: { createdAt: 'desc' }
-    });
+        orderBy: { createdAt: 'desc' }
+      });
+    } else if (user.role === 'LEADER') {
+      // Group Leaders see only bookings for treks they are guiding
+      bookings = await prisma.booking.findMany({
+        where: {
+          status: 'CONFIRMED',
+          trek: {
+            guideId: user.id
+          }
+        },
+        include: {
+          user: { select: { name: true, email: true, profileImage: true, id: true } },
+          trek: true,
+          expedition: true
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+    } else {
+      // Trekkers see only their own
+      bookings = await prisma.booking.findMany({
+        where: { userId: user.id },
+        include: {
+          trek: true,
+          expedition: true
+        },
+        orderBy: { createdAt: 'desc' }
+      });
+    }
     res.json(bookings);
   } catch (error: any) {
     res.status(500).json({ error: 'Internal Server Error' });

@@ -3,7 +3,15 @@ import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const prisma = new PrismaClient();
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
+
+// Use DIRECT_DATABASE_URL since seed runs outside Next.js
+const pool = new Pool({
+  connectionString: process.env.DIRECT_DATABASE_URL || process.env.DATABASE_URL
+});
+const adapter = new PrismaPg(pool as any);
+const prisma = new PrismaClient({ adapter });
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
 
 const SEED_TREKS = [

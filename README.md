@@ -39,13 +39,48 @@ gtm-adventure/
 | Cache/Rate Limiting | Redis (IORedis) |
 | AI Search | Google Gemini (768-D embeddings) |
 
+## 🛡️ Security Architecture: 
+
+Our platform is built on a **Zero-Trust** foundation, ensuring every action is verified and every role is isolated.
+
+### 1. Zero-Trust Access Control
+* **Middleware Interception:** We use Next.js Middleware to intercept every request, enforcing role-based permissions (`TREKKER`, `LEADER`, `ADMIN`) before any page logic executes.
+
+### 2. Multi-Layer Authentication
+* **Social Auth:** 1-tap integration via **Auth.js (NextAuth)** for seamless Google/Gmail login.
+* **Phone + OTP:** High-fidelity mobile login using **Twilio Verify** to securely capture and verify high-intent users.
+* **Traditional:** Industrial email/password with salted `bcrypt` hashing.
+
+### 3. Production Hardening ("Must-Haves")
+* **Account Lockout:** Integrated **Redis-based rate limiting** that blocks IPs after 5 failed attempts, neutralizing brute-force attacks.
+* **Session Audit Logs:** Automated logging of IP, device, and timestamp for every successful sign-in—crucial for forensic auditing.
+* **Elevated 2FA:** Mandatory second factor (**TOTP**) for every `ADMIN` and `LEADER` account to prevent credential theft.
+
+### 4. Role Hierarchy & Operational Protocols
+* **TREKKER:** Consumer-level access to personal bookings, medical history, and specific expedition HUDs.
+* **GROUP LEADER (Team Leader):** Tactical field oversight.
+    1. **🛡️ The "Guide Assignment" Logic**:
+       In the database, every Trek has an optional `guideID`.
+       - **Assignment**: An Admin assigns a Group Leader to a specific trek (or multiple treks).
+       - **Strict Filtering**: When a Group Leader logs in, the backend automatically filters all data. They do not "search" for participants; the system only delivers the participants and bookings linked to the treks they are officially guiding.
+    2. **🛡️ Strategic "No-Access" Guarantee**:
+       Because this filtering happens at the Database level (not just the UI), a Group Leader has zero technical way to see:
+       - Global revenue or total platform bookings.
+       - The participants of other Group Leaders.
+       - Platform-wide analytics.
+    3. **🛡️ What the Group Leader Sees**:
+       When they open their "My Participants" or "Safety Records" links:
+       - If they are assigned to "Everest Base Camp - April Batch", they see only those 15 trekkers.
+       - If they have no assignments yet, their dashboard will professionally state: "No active tactical deployments assigned. Contact administration for group allocation."
+* **ADMIN:** HQ-level control. Strategic oversight of global revenue, platform-wide treks, user management, and system-wide audit logs.
+
 ## 🎨 Design System: "Elite Midnight"
 
 Our design philosophy for GTM Adventures prioritizes **High-Density, Engineering-First aesthetics** that match the standards of top-tier global trekking agencies.
 
 | Token | Value | Rationale |
 |---|---|---|
-| **Primary** | `#1e3a8a` (Midnight Blue) | Represents the deep Himalayan sky; provides a premium, trustworthy "Mission Control" feel. |
+| **Primary** | `#1e3a8a` (Midnight Blue) | Represents the deep Himalayan sky; provides a premium, trustworthy "Command Center" feel. |
 | **Interface** | **Glassmorphism** | `backdrop-blur-3xl` with white glass overlays for a high-tech "Satellite HUD" look. |
 | **Verified Status** | **Brand Blue** | Unified "Elite Verification" status to match brand identity instead of generic green. |
 | **Geometry** | **Landscape Rectangle** | Optimized `720px` wide-screen layouts for professional data entry and status reporting. |
@@ -69,7 +104,14 @@ npm run db:generate
 npm run db:migrate
 ```
 
-### 4. Seed the database
+### 🔍 Member & Operations Directory
+To verify all registered personnel, guides, and leadership status, run:
+```bash
+npx tsx scripts/audit-personnel.ts
+```
+
+### 🏔️ Booking Management
+To reseed the base trekking data and mock expeditions:
 ```bash
 npm run seed
 ```
@@ -113,15 +155,15 @@ We have engineered the booking engine to handle high-traffic bursts and unstable
 
 ## Module Roadmap
 
-- [x] **Module 1: High-Fidelity UI/UX Framework** (Visual Basecamp)
+- [x] **Module 1: High-Fidelity UI/UX Framework** (Visual Command Center)
 - [x] **Module 2: AI-Powered Adventure Discovery** (Semantic Search)
 - [x] **Module 3: High-Concurrency Booking Engine** (Secure Payments)
   - [x] Setup real Razorpay API keys (`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`) in `.env` (Live Test Mode).
   - [x] Setup Webhook URL in Razorpay Dashboard to capture closed-browser payments and add `RAZORPAY_WEBHOOK_SECRET` to `.env`.
   - [x] Implement 10-minute auto-cancellation script/timeout to release pending or abandoned cart spots back to the public pool so you don't lose upfront space.
-## 📡 Community & Social Ledger (Module 6: Mission Control)
+## 📡 Community & Social Ledger (Module 6: Command Center)
 
-Mission Control is the high-tech "Digital Basecamp" for every GTM-Adventure expedition. It transforms a standard booking into a tactical, ongoing mission.
+Command Center is the high-tech "Digital Command Center" for every GTM-Adventure expedition. It transforms a standard booking into a tactical, ongoing mission.
 
 ### 1. The "Satellite Uplink" Concept
 * **Social Ledger:** A private communication feed for expedition members (Trekkers & Leaders) to share updates, milestones, and alerts.
@@ -135,15 +177,15 @@ A secure **Personnel Registry** that identifies the Expedition Leader (Guide) an
 
 | Feature | Technology | Rationale |
 |---|---|---|
-| **Real-Time Feed** | **Socket.io** | Implementation of Bi-directional WebSockets to ensure updates "pop-up" instantly on everyone's dashboard without a page refresh (NASA Mission Control style). |
+| **Real-Time Feed** | **Socket.io** | Implementation of Bi-directional WebSockets to ensure updates "pop-up" instantly on everyone's dashboard without a page refresh (NASA Command Center style). |
 | **Media Transmissions** | **Cloudinary / AWS** | High-altitude photos and videos are stored in dedicated buckets. Cloudinary is used for automated compression to ensure 4K mountain photos can be sent even over slow satellite links. |
 
 ## Module Roadmap
 
-- [x] **Module 1: High-Fidelity UI/UX Framework** (Visual Basecamp)
+- [x] **Module 1: High-Fidelity UI/UX Framework** (Visual Command Center)
 - [x] **Module 2: AI-Powered Adventure Discovery** (Semantic Search)
 - [x] **Module 3: High-Concurrency Booking Engine** (Secure Payments)
-- [x] **Module 4: Live Expedition Monitoring** (Mission Control)
+- [x] **Module 4: Live Expedition Monitoring** (Command Center)
 - [x] **Module 5: Expedition Health & Wellness** (Vital Telemetry)
 - [x] **Module 6: Community & Social Ledger** (Shared Journeys)
   - [x] **Personnel Roster:** Complete view of the expedition crew and leader.
@@ -157,3 +199,6 @@ A secure **Personnel Registry** that identifies the Expedition Leader (Guide) an
 - [ ] Module 10: Production Optimization & SEO
 - [ ] Module 11: Partner & Vendor Portal
 - [ ] Module 12: Main Admin Panel (HQ Command Center)
+
+
+

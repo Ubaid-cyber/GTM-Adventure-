@@ -132,7 +132,7 @@ export default function BookingsClient() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12">
           <div>
             <h1 className="text-4xl font-black text-slate-900 tracking-tighter uppercase mb-2">My Upcoming <span className="text-primary">Treks</span></h1>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Manage your confirmed bookings and upcoming expeditions</p>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Manage your confirmed bookings and scheduled treks</p>
           </div>
           <Link href="/treks" className="bg-slate-900 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all hover:bg-slate-800 shadow-xl shadow-slate-900/10">
             Book New Trek
@@ -224,11 +224,11 @@ export default function BookingsClient() {
                     <div className="flex flex-wrap items-center gap-4">
                       {booking.status === 'CONFIRMED' && booking.expedition && (
                           <Link 
-                          href={`/dashboard/expeditions/${booking.expedition.id}`}
+                          href={`/dashboard/treks/${booking.expedition.id}`}
                           className="flex items-center gap-3 px-8 py-3.5 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-primary transition-all group/btn shadow-xl shadow-slate-900/10"
                         >
                           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                          Expedition Details
+                          Trek Details
                         </Link>
                       )}
                       
@@ -284,13 +284,13 @@ export default function BookingsClient() {
           phone={(session?.user as any)?.phone || ''} 
         />
 
-        {/* Result/Success Modal */}
         <SuccessModal 
           isOpen={resultModalOpen}
           onClose={() => setResultModalOpen(false)}
           title={resultTitle}
           message={resultMessage}
           isError={isError}
+          buttonText={isError ? 'Try Again' : 'Back to My Bookings'}
         />
       </div>
     </div>

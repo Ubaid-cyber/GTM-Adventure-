@@ -22,7 +22,7 @@ interface ExpeditionData {
   };
 }
 
-export default function TrekBasecampClient({ expeditionId }: { expeditionId: string }) {
+export default function TrekCommandCenterClient({ expeditionId }: { expeditionId: string }) {
   const { data: session } = useSession();
   const [data, setData] = useState<ExpeditionData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -34,7 +34,7 @@ export default function TrekBasecampClient({ expeditionId }: { expeditionId: str
       if (!session?.user?.email) return;
 
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/expeditions/${expeditionId}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/active-bookings/${expeditionId}`, {
           headers: { 'x-user-email': session.user.email }
         });
         const result = await res.json();
@@ -89,7 +89,7 @@ export default function TrekBasecampClient({ expeditionId }: { expeditionId: str
               <span className={`px-2 py-0.5 md:px-3 md:py-1 rounded-sm text-[9px] md:text-[10px] font-bold uppercase tracking-widest ${isOngoing ? 'bg-primary text-white shadow-[0_0_15px_rgba(30,58,138,0.5)]' : 'bg-gray-800 text-gray-400'}`}>
                 {data.status}
               </span>
-              <span className="text-primary/50 font-mono text-[10px] md:text-xs">DASHBOARD_ACTIVE</span>
+              <span className="text-primary/50 font-mono text-[10px] md:text-xs">COMMAND_CENTER_ACTIVE</span>
             </div>
             <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase italic text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40 leading-none">{data.trek.title}</h1>
             <p className="text-muted text-[11px] md:text-sm font-medium opacity-60">Trek Status // Height: {data.trek.maxAltitude}m</p>
@@ -164,7 +164,7 @@ export default function TrekBasecampClient({ expeditionId }: { expeditionId: str
                        <div className="flex justify-between mt-4">
                         <div className="text-center">
                           <div className="text-[9px] md:text-[10px] text-muted font-bold uppercase tracking-wider mb-1">Origin</div>
-                          <div className="text-[12px] md:text-sm font-bold">BC</div>
+                          <div className="text-[12px] md:text-sm font-bold uppercase">CC</div>
                         </div>
                         <div className="text-center">
                           <div className="text-[9px] md:text-[10px] text-primary font-bold uppercase tracking-wider mb-1">Distance Covered</div>

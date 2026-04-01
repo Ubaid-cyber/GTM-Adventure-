@@ -1,9 +1,11 @@
+import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
+
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🚀 Backfilling missing expeditions for CONFIRMED bookings...');
-
+  console.log('\n--- 🛡️ GTM-Adventure: Expedition Synchronization Service ---\n');
+  
   const missingExpeditionsBookings = await prisma.booking.findMany({
     where: {
       status: 'CONFIRMED',

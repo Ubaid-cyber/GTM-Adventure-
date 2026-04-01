@@ -17,6 +17,8 @@ model User {
   profileImage   String?
   password       String?
   role           UserRole         @default(TREKKER)
+  twoFactorSecret String?
+  twoFactorEnabled Boolean          @default(false)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   bio            String?

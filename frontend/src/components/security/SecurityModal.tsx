@@ -147,46 +147,44 @@ export default function SecurityModal({ isOpen, onClose, onVerified, actionName,
                   initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.98 }}
-                  className="flex flex-col md:flex-row items-center gap-10"
+                  className="flex flex-col items-center text-center space-y-8 py-4"
                 >
-                   <div className="w-16 h-16 bg-blue-50 text-primary rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm border border-blue-100">
-                      <ShieldCheck size={30} strokeWidth={2.5} />
+                   <div className="w-20 h-20 bg-blue-50 text-primary rounded-3xl flex items-center justify-center flex-shrink-0 shadow-sm border border-blue-100">
+                      <ShieldCheck size={36} strokeWidth={2.5} className="drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]" />
                    </div>
-                   <div className="space-y-3 text-center md:text-left flex-1 min-w-0">
-                      <h2 className="text-xl font-black text-slate-900 tracking-tighter italic uppercase leading-none">Security Check</h2>
-                      <p className="text-slate-500 font-medium text-sm leading-relaxed">
+                   <div className="space-y-3 flex-1 min-w-0">
+                      <h2 className="text-3xl font-black text-slate-900 tracking-tighter italic uppercase leading-none">Security Check</h2>
+                      <p className="text-slate-500 font-medium text-sm leading-relaxed max-w-sm mx-auto">
                         To {actionName.toLowerCase() || 'continue'}, we'll send a quick verification code to your phone.
                       </p>
                       
-                      <div className="space-y-4">
-                        <div className="space-y-1.5">
-                          <div className="flex flex-col">
-                            <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest leading-none mb-1">
+                      <div className="space-y-6 pt-4">
+                        <div className="space-y-2">
+                           <span className="text-[10px] font-black text-slate-900 uppercase tracking-widest leading-none block mb-1">
                               Phone Number
-                            </span>
-                          </div>
-                          <input 
-                            type="tel"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            placeholder="+91..."
-                            className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all outline-none"
-                          />
+                           </span>
+                           <input 
+                             type="tel"
+                             value={phone}
+                             onChange={(e) => setPhone(e.target.value)}
+                             placeholder="+91..."
+                             className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 focus:bg-white focus:ring-2 focus:ring-primary/10 transition-all outline-none text-center"
+                           />
                         </div>
 
                         {error && (
-                          <div className="p-3 bg-rose-50 border border-rose-100 rounded-xl text-[10px] font-bold text-rose-600 uppercase tracking-widest leading-normal">
-                             Error: {error}
+                          <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl text-[10px] font-bold text-rose-600 uppercase tracking-widest leading-normal">
+                             🚨 Verification Error: {error}
                           </div>
                         )}
 
                         <button 
                           onClick={handleRequestOtp} 
                           disabled={loading || !phone}
-                          className="w-full bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-xl font-black text-xs uppercase tracking-[0.15em] transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-3 active:scale-95 group hover:shadow-xl disabled:opacity-50 h-14"
+                          className="w-full bg-[#1e3a8a] hover:bg-blue-900 text-white px-8 py-4.5 rounded-2xl font-black text-xs uppercase tracking-[0.15em] transition-all shadow-xl shadow-blue-900/10 flex items-center justify-center gap-3 active:scale-95 group hover:shadow-2xl disabled:opacity-50 h-16"
                         >
-                        {loading ? 'Sending...' : 'Send Code to my Phone'}
-                        <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                        {loading ? 'Routing Request...' : 'Send Code to my Phone'}
+                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                         </button>
                       </div>
                    </div>

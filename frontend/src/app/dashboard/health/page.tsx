@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, ArrowRight } from 'lucide-react';
+import SuccessModal from '@/components/security/SuccessModal';
 
 interface MedicalProfile {
   vitals?: {
@@ -346,62 +347,12 @@ export default function HealthDashboard() {
       <SuccessModal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
-        onAction={() => router.push('/dashboard/bookings')}
+        onConfirm={() => router.push('/dashboard/bookings')}
+        title="All set! Confirmed!"
+        message="Our medical team is taking a quick look at your profile. You're now ready to explore your dashboard and get prepared for the climb!"
+        buttonText="Go to My Dashboard"
       />
     </div>
   );
 }
 
-function SuccessModal({ isOpen, onClose, onAction }: { isOpen: boolean, onClose: () => void, onAction: () => void }) {
-  if (!isOpen) return null;
-
-  return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-8">
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-        />
-        
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-[600px] bg-white rounded-3xl shadow-[0_40px_120px_rgba(0,0,0,0.3)] overflow-hidden border border-slate-200"
-        >
-          {/* Header Section */}
-          <div className="p-8 md:p-10 flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-            <div className="w-16 h-16 bg-blue-50 text-primary rounded-2xl flex items-center justify-center flex-shrink-0 shadow-sm border border-blue-100">
-              <ShieldCheck size={32} strokeWidth={2.5} className="drop-shadow-[0_0_8px_rgba(59,130,246,0.3)]" />
-            </div>
-            <div className="space-y-2 flex-1">
-              <h3 className="text-2xl font-black text-slate-900 italic tracking-tighter uppercase leading-none">
-                 All set! we've got your info!
-              </h3>
-              <p className="text-slate-500 font-medium text-sm leading-relaxed max-w-sm">
-                Our medical team is taking a quick look at your profile. You're now ready to explore your dashboard and get prepared for the climb!
-              </p>
-            </div>
-          </div>
-
-          {/* Action Section */}
-          <div className="bg-slate-50 p-6 md:p-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6 mt-auto">
-             <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] opacity-80 hidden sm:block">
-                GTM Adventures // Medical Safety
-             </div>
-             <button 
-                onClick={onAction}
-                className="w-full sm:w-auto bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-xl font-black text-xs uppercase tracking-[0.15em] transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-3 active:scale-95 group hover:shadow-xl"
-              >
-                <span>Go to My Dashboard</span>
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </button>
-          </div>
-        </motion.div>
-      </div>
-    </AnimatePresence>
-  );
-}

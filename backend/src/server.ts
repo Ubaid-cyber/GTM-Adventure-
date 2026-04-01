@@ -23,7 +23,7 @@ app.get('/api/health', (req, res) => {
 // Import Routes
 import trekRoutes from './routes/treks.js';
 import bookingRoutes from './routes/bookings.js';
-import expeditionRoutes from './routes/expeditions.js';
+import activeBookingRoutes from './routes/active-bookings.js';
 import cronRoutes from './routes/cron.js';
 import webhookRoutes from './routes/webhooks.js';
 import razorpayRoutes from './routes/razorpay.js';
@@ -31,11 +31,11 @@ import communityRoutes from './routes/community.js';
 
 app.use('/api/treks', trekRoutes);
 app.use('/api/bookings', bookingRoutes);
-app.use('/api/expeditions', expeditionRoutes);
+app.use('/api/active-bookings', activeBookingRoutes);
 app.use('/api/cron', cronRoutes);
 app.use('/api/webhooks', webhookRoutes);
 app.use('/api/razorpay', razorpayRoutes);
-app.use('/api/expeditions', communityRoutes); // Shared with community logic
+app.use('/api/active-bookings', communityRoutes); // Shared with community logic
 
 app.listen(PORT, () => {
   console.log(`\n🚀 GTM Adventures Backend running at http://localhost:${PORT}`);

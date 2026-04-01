@@ -15,7 +15,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
         phone: { label: "Phone", type: "text" },
-        code: { label: "Code", type: "text" }
+        code: { label: "Code", type: "text" },
+        totpCode: { label: "2FA Code", type: "text" }
       },
       async authorize(credentials) {
         // --- 1. PHONE AUTH (New) ---
@@ -65,14 +66,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             credentials.password as string
           );
 
-          if (user) {
-            const { logSecurityEvent } = await import("./audit");
-            await logSecurityEvent("LOGIN_SUCCESS", user.id, { email: user.email }, ip, userAgent);
-            return user;
-          }
+          if (!user) return null;
+
+          // --- 3. MANDATORY ADMIN/LEADER 2FA (TOTP) ---
+          const { prisma } = await import("./prisma");
+          const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
           
-          return null;
+          if (dbUser && (dbUser.role === 'ADMIN' || dbUser.role === 'LEADER') && dbUser.twoFactorEnabled) {
+            if (!credentials.totpCode) {
+              throw new Error("2FA_REQUIRED");
+            }
+            const { verifyTOTP } = await import("./totp");
+            const isValidTOTP = await verifyTOTP(credentials.totpCode as string, dbUser.twoFactorSecret!);
+            if (!isValidTOTP) {
+              const { logSecurityEvent } = await import("./audit");
+              await logSecurityEvent("2FA_FAILED", user.id, { email: user.email }, ip, userAgent);
+              throw new Error("INVALID_2FA_CODE");
+            }
+          }
+
+          const { logSecurityEvent } = await import("./audit");
+          await logSecurityEvent("LOGIN_SUCCESS", user.id, { email: user.email }, ip, userAgent);
+          return user;
+
         } catch (error: any) {
+          if (error.message === "2FA_REQUIRED" || error.message === "INVALID_2FA_CODE") {
+             throw error; // Re-throw to handle in UI
+          }
           const { logSecurityEvent } = await import("./audit");
           await logSecurityEvent("LOGIN_FAILED", undefined, { email: credentials.email, error: error.message }, ip, userAgent);
           console.error('[NextAuth] Auth error:', error.message);

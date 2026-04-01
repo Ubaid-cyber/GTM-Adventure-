@@ -1,40 +1,46 @@
 import 'dotenv/config';
-import { PrismaClient, BookingStatus } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const user = await prisma.user.findFirst({
-    where: { name: 'ubaid' }
-  });
+  console.log('\n--- 🛡️ GTM-Adventure: Expedition Booking Reseed ---\n');
+  try {
+    const user = await prisma.user.findFirst({
+      where: { name: { contains: 'ubaid', mode: 'insensitive' } }
+    });
 
-  if (!user) {
-    console.error('User ubaid not found. Seed the treks first!');
-    return;
-  }
+    const trek = await prisma.trek.findFirst({
+      where: { title: { contains: 'Everest', mode: 'insensitive' } }
+    });
 
-  const trek = await prisma.trek.findFirst({
-    where: { title: 'Everest Base Camp Trek' }
-  });
-
-  if (!trek) {
-    console.error('Trek not found. Seed the treks first!');
-    return;
-  }
-
-  const booking = await prisma.booking.create({
-    data: {
-      userId: user.id,
-      trekId: trek.id,
-      participants: 2,
-      totalPrice: trek.price * 2,
-      status: BookingStatus.CONFIRMED,
+    if (!user || !trek) {
+      console.log(`  ⚠️ Required records missing (User: ${!!user}, Trek: ${!!trek})`);
+      return;
     }
-  });
 
-  console.log(`✅ Success! Created a confirmed booking for ${user.name} on ${trek.title}.`);
+    const booking = await prisma.booking.upsert({
+      where: { id: 'test-booking-id-123' },
+      update: { status: 'CONFIRMED' },
+      create: {
+        id: 'test-booking-id-123',
+        userId: user.id,
+        trekId: trek.id,
+        participants: 2,
+        totalPrice: trek.price * 2,
+        status: 'CONFIRMED',
+      }
+    });
+
+    console.log(`  ✅ Confirmed booking synchronized for ${user.name} on ${trek.title}.`);
+  } catch (err: any) {
+    console.error('  ❌ Reseed Error:', err.message);
+  }
 }
 
 main()
-  .catch(e => console.error(e))
-  .finally(() => prisma.$disconnect());
+  .catch(console.error)
+  .finally(async () => {
+    await prisma.$disconnect();
+    console.log('\n--- 🚀 Reseed Completed ---\n');
+  });

@@ -12,6 +12,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState('');
+  const [totpCode, setTotpCode] = useState('');
+  const [show2FA, setShow2FA] = useState(false);
   const [step, setStep] = useState<'phone' | 'otp'>('phone');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,8 +27,11 @@ export default function LoginPage() {
       const result = await signIn('credentials', {
         email, password, redirect: false, callbackUrl: '/dashboard',
       });
+      
       if (result?.error) {
-        if (result.error === 'ACCOUNT_LOCKED') {
+        if (result.error === '2FA_REQUIRED') {
+          setShow2FA(true);
+        } else if (result.error === 'ACCOUNT_LOCKED') {
           setError('Account locked for security. Please try again in 10 minutes.');
         } else {
           setError('Invalid email or password.');
@@ -41,7 +46,37 @@ export default function LoginPage() {
     }
   };
 
-  // 2. Phone OTP Phase 1: Send
+  // 2. 2FA (TOTP) Submission
+  const handle2FASubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await signIn('credentials', {
+        email, 
+        password, 
+        totpCode,
+        redirect: false, 
+        callbackUrl: '/dashboard',
+      });
+
+      if (result?.error) {
+        if (result.error === 'INVALID_2FA_CODE') {
+          setError('Invalid 2FA code. Please check your authenticator app.');
+        } else {
+          setError('Authentication failed. Please try again.');
+        }
+      } else {
+        window.location.href = '/dashboard';
+      }
+    } catch {
+      setError('An unexpected error occurred.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // 3. Phone OTP Phase 1: Send
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -62,7 +97,7 @@ export default function LoginPage() {
     }
   };
 
-  // 3. Phone OTP Phase 2: Verify
+  // 4. Phone OTP Phase 2: Verify
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -106,30 +141,79 @@ export default function LoginPage() {
             </div>
             <span className="font-black text-xs text-slate-900 tracking-widest uppercase">GTM ADVENTURES</span>
           </motion.div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Login to Adventure</h1>
-          <p className="text-slate-500 text-sm mt-2 font-medium tracking-tight whitespace-nowrap">Manage your bookings and upcoming treks</p>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+            {show2FA ? 'Security Verification' : 'Login to Adventure'}
+          </h1>
+          <p className="text-slate-500 text-sm mt-2 font-medium tracking-tight whitespace-nowrap">
+            {show2FA ? 'Enter your 6-digit authenticator code' : 'Manage your bookings and upcoming treks'}
+          </p>
         </div>
 
         <div className="bg-white rounded-[40px] border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.03)] p-10">
           
-          {/* TAB TOGGLE */}
-          <div className="flex bg-slate-100 p-1.5 rounded-2xl mb-8">
-            <button 
-              onClick={() => setTab('email')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'email' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-            >
-              <Mail className="w-3.5 h-3.5" /> Email
-            </button>
-            <button 
-              onClick={() => setTab('phone')}
-              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'phone' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
-            >
-              <Smartphone className="w-3.5 h-3.5" /> Phone
-            </button>
-          </div>
+          {/* TAB TOGGLE (Only show if not in 2FA mode) */}
+          {!show2FA && (
+            <div className="flex bg-slate-100 p-1.5 rounded-2xl mb-8">
+              <button 
+                onClick={() => setTab('email')}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'email' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+              >
+                <Mail className="w-3.5 h-3.5" /> Email
+              </button>
+              <button 
+                onClick={() => setTab('phone')}
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'phone' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+              >
+                <Smartphone className="w-3.5 h-3.5" /> Phone
+              </button>
+            </div>
+          )}
 
           <AnimatePresence mode="wait">
-            {tab === 'email' ? (
+            {show2FA ? (
+              <motion.form 
+                key="2fa"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                onSubmit={handle2FASubmit} 
+                className="space-y-6"
+              >
+                <div className="space-y-4 text-center">
+                  <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                     <ShieldCheck className="w-8 h-8 text-primary" />
+                  </div>
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Authenticator Code</label>
+                  <input 
+                    type="text" 
+                    value={totpCode} 
+                    onChange={(e) => setTotpCode(e.target.value)} 
+                    required
+                    autoFocus
+                    className="w-full px-5 py-4 rounded-2xl border-2 border-primary/20 bg-primary/5 text-center text-3xl font-black tracking-[0.3em] text-slate-900 focus:outline-none focus:border-primary transition-all"
+                    placeholder="000 000" 
+                    maxLength={6}
+                  />
+                </div>
+
+                <button 
+                  type="submit" 
+                  disabled={loading}
+                  className="w-full bg-primary hover:bg-primary-hover text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-primary/20 active:scale-[0.98] flex items-center justify-center gap-2"
+                >
+                  {loading ? 'Verifying...' : 'Verify & Continue'}
+                  {!loading && <ArrowRight className="w-3.5 h-3.5" />}
+                </button>
+
+                <button 
+                  type="button" 
+                  onClick={() => setShow2FA(false)}
+                  className="w-full text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-primary transition-colors text-center"
+                >
+                  Back to Login
+                </button>
+              </motion.form>
+            ) : tab === 'email' ? (
               <motion.form 
                 key="email"
                 initial={{ opacity: 0, x: -10 }}
@@ -165,7 +249,7 @@ export default function LoginPage() {
 
                 <div className="flex items-center justify-between px-1">
                    <button type="button" className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-primary transition-colors">Forgot Password?</button>
-                   <Link href="/register" className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">Create Account</Link>
+                   <Link href="/signup" className="text-[10px] font-black text-primary uppercase tracking-widest hover:underline">Create Account</Link>
                 </div>
 
                 <button 
@@ -252,16 +336,18 @@ export default function LoginPage() {
             </motion.div>
           )}
 
-          <div className="mt-10 pt-10 border-t border-slate-100">
-            <p className="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Or continue with</p>
-            <button 
-              onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
-              className="w-full bg-white border border-slate-200 hover:border-slate-300 py-3.5 rounded-2xl flex items-center justify-center gap-3 text-[10px] font-black text-slate-600 uppercase tracking-widest transition-all hover:bg-slate-50 shadow-sm"
-            >
-              <Globe className="w-3.5 h-3.5 text-primary" />
-              Continue with Google
-            </button>
-          </div>
+          {!show2FA && (
+            <div className="mt-10 pt-10 border-t border-slate-100">
+              <p className="text-center text-[10px] font-black text-slate-400 uppercase tracking-widest mb-6">Or continue with</p>
+              <button 
+                onClick={() => signIn('google', { callbackUrl: '/dashboard' })}
+                className="w-full bg-white border border-slate-200 hover:border-slate-300 py-3.5 rounded-2xl flex items-center justify-center gap-3 text-[10px] font-black text-slate-600 uppercase tracking-widest transition-all hover:bg-slate-50 shadow-sm"
+              >
+                <Globe className="w-3.5 h-3.5 text-primary" />
+                Continue with Google
+              </button>
+            </div>
+          )}
         </div>
 
         <p className="mt-8 text-center text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">

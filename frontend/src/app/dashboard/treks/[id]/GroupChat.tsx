@@ -33,7 +33,7 @@ export default function GroupChat({ expeditionId }: { expeditionId: string }) {
 
   async function fetchPosts() {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/expeditions/${expeditionId}/feed`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/active-bookings/${expeditionId}/feed`, {
         headers: {
           'Authorization': `Bearer ${session?.user?.id}`,
           'x-user-email': session?.user?.email || ''
@@ -54,7 +54,7 @@ export default function GroupChat({ expeditionId }: { expeditionId: string }) {
 
     setSubmitting(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/expeditions/${expeditionId}/feed`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/active-bookings/${expeditionId}/feed`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

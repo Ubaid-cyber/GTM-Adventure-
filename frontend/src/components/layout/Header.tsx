@@ -23,22 +23,43 @@ export default async function Header() {
             <span className="font-bold text-primary text-base tracking-tight">GTM Adventures</span>
           </Link>
 
-          {/* Main Nav */}
+          {/* Role-Adaptive Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Treks</Link>
-            <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Destinations</Link>
-            <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Featured Treks</Link>
-            <Link href="/about" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">About</Link>
-            {isLoggedIn && (
+            {(session?.user as any)?.role === 'LEADER' ? (
+              // 🏛️ GROUP LEADER: Operational View
               <>
-                <Link href="/dashboard/bookings" className="text-sm text-muted hover:text-foreground font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 bg-accent rounded-full"></span>
-                  My Bookings
+                <Link href="/dashboard" className="text-sm text-primary hover:text-primary-hover font-extrabold transition-colors flex items-center gap-1.5 whitespace-nowrap uppercase tracking-widest">
+                  <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
+                  Dashboard
                 </Link>
-                <Link href="/dashboard/health" className="text-sm text-muted hover:text-foreground font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
-                  Medical Info
+                <Link href="/dashboard/participants" className="text-sm text-slate-600 hover:text-cyan-600 font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap uppercase tracking-widest">
+                  <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
+                  My Participants
                 </Link>
+                <Link href="/dashboard/safety" className="text-sm text-slate-600 hover:text-emerald-600 font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap uppercase tracking-widest">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                  Safety Records
+                </Link>
+              </>
+            ) : (
+              // 🧗 TREKKER / GUEST: Consumer View
+              <>
+                <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Treks</Link>
+                <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Destinations</Link>
+                <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Featured Treks</Link>
+                <Link href="/about" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">About</Link>
+                {isLoggedIn && (
+                  <>
+                    <Link href="/dashboard/bookings" className="text-sm text-muted hover:text-foreground font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap">
+                      <span className="w-1.5 h-1.5 bg-accent rounded-full"></span>
+                      My Bookings
+                    </Link>
+                    <Link href="/dashboard/health" className="text-sm text-muted hover:text-foreground font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap">
+                      <span className="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
+                      Medical Info
+                    </Link>
+                  </>
+                )}
               </>
             )}
           </nav>

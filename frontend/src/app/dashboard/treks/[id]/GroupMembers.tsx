@@ -26,8 +26,8 @@ export default function GroupMembers({ expeditionId }: { expeditionId: string })
   useEffect(() => {
     async function fetchRoster() {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/expeditions/${expeditionId}/roster`, {
-          headers: { 'x-user-email': 'bhatubaid341@gmail.com' }
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/active-bookings/${expeditionId}/roster`, {
+          headers: { 'x-user-email': session?.user?.email || '' }
         });
         const result = await res.json();
         if (res.ok) setData(result);
@@ -68,7 +68,7 @@ export default function GroupMembers({ expeditionId }: { expeditionId: string })
                   {data.leader.bio || "No bio available."}
                 </p>
                 <div className="flex justify-center md:justify-start gap-3">
-                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold">Basecamp</span>
+                    <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold uppercase tracking-widest">Command Center</span>
                     <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-bold">128 Treks</span>
                 </div>
              </div>
