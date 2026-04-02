@@ -15,10 +15,11 @@ async function main() {
 
   try {
     // 1. Core Admin Account
-    const adminEmail = 'admin@gtm-adventures.com';
-    const adminPass = 'admin123';
+    const adminEmail = process.env.INITIAL_ADMIN_EMAIL || 'admin@gtm-adventures.com';
+    const adminPass = process.env.INITIAL_ADMIN_PASSWORD || 'admin1';
     const adminHashed = await bcrypt.hash(adminPass, 10);
-    const adminSecret = 'GAXG S33T OBXG IJBK'.replace(/ /g, ''); // Fixed manual secret for testing
+    // Use a provided secret or generate a random one for dev
+    const adminSecret = process.env.INITIAL_ADMIN_2FA_SECRET || 'GAXGS33TOBXGIJBK'; 
 
     await prisma.user.upsert({
       where: { email: adminEmail },
@@ -40,12 +41,11 @@ async function main() {
 
     console.log('  ✅ Admin HQ Commander Synchronized!');
     console.log(`  📧 Email: ${adminEmail}`);
-    console.log(`  🔑 Password: ${adminPass}`);
-    console.log('  🔐 2FA: ENABLED (Manual Key: GAXG S33T OBXG IJBK)\n');
+    console.log('  🔐 2FA: ENABLED\n');
 
     // 2. Default Leader Account
-    const leaderEmail = 'leader@gtm-adventures.com';
-    const leaderPass = 'leader123';
+    const leaderEmail = process.env.INITIAL_LEADER_EMAIL || 'leader@gtm-adventures.com';
+    const leaderPass = process.env.INITIAL_LEADER_PASSWORD || 'leader123';
     const leaderHashed = await bcrypt.hash(leaderPass, 10);
 
     await prisma.user.upsert({

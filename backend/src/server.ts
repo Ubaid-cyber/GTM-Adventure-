@@ -5,8 +5,16 @@ import { prisma } from './lib/prisma.js';
 
 dotenv.config({ path: '../.env' }); // Load from root .env
 
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+
 const app = express();
 const PORT = process.env.PORT || 4000;
+
+// 🛡️ SECURITY PERIMETER
+app.use(helmet()); // Global security headers (XSS, CSP, etc.)
+const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 1000, message: 'Too many requests from this IP. Operational lockout in effect.' });
+app.use(limiter as any); // Global rate limiter
 
 app.use(cors({
   origin: process.env.NEXTAUTH_URL || 'http://localhost:3000',
@@ -23,19 +31,23 @@ app.get('/api/health', (req, res) => {
 // Import Routes
 import trekRoutes from './routes/treks.js';
 import bookingRoutes from './routes/bookings.js';
-import activeBookingRoutes from './routes/active-bookings.js';
+import expeditionOpsRouter from './routes/expedition-ops.js';
 import cronRoutes from './routes/cron.js';
 import webhookRoutes from './routes/webhooks.js';
 import razorpayRoutes from './routes/razorpay.js';
-import communityRoutes from './routes/community.js';
+import expeditionRoutes from './routes/expeditions.js';
+import leaderRoutes from './routes/leader.js';
+import adminOpsRouter from './routes/admin-ops.js';
 
 app.use('/api/treks', trekRoutes);
 app.use('/api/bookings', bookingRoutes);
-app.use('/api/active-bookings', activeBookingRoutes);
 app.use('/api/cron', cronRoutes);
 app.use('/api/webhooks', webhookRoutes);
 app.use('/api/razorpay', razorpayRoutes);
-app.use('/api/active-bookings', communityRoutes); // Shared with community logic
+app.use('/api/active-bookings', expeditionOpsRouter); // Unified Expedition Operations
+app.use('/api/expeditions', expeditionRoutes);
+app.use('/api/leader', leaderRoutes);
+app.use('/api/admin/ops', adminOpsRouter);
 
 app.listen(PORT, () => {
   console.log(`\n🚀 GTM Adventures Backend running at http://localhost:${PORT}`);

@@ -12,6 +12,7 @@
     "dev:backend": "npm run dev -w backend",
     "build": "npm run build -w frontend",
     "seed": "npx tsx scripts/seed-treks.ts",
+    "seed:admin": "npx tsx scripts/seed-admin.ts",
     "db:generate": "npx prisma generate --schema=./prisma/schema.prisma",
     "db:migrate": "npx prisma migrate dev --schema=./prisma/schema.prisma",
     "db:studio": "npx prisma studio --schema=./prisma/schema.prisma"

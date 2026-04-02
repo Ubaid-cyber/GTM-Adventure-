@@ -95,6 +95,8 @@ model Expedition {
   bookings            Booking[]
   trek                Trek             @relation(fields: [trekId], references: [id])
   posts               ExpeditionPost[]
+  sitreps             SituationReport[]
+  checklists          OperationalChecklist[]
 }
 
 model ExpeditionPost {
@@ -210,6 +212,32 @@ model OTP {
   @@index([phone])
 }
 
+model SituationReport {
+  id              String   @id @default(cuid())
+  expeditionId    String
+  leaderId        String
+  status          SitrepStatus @default(GREEN)
+  weather         String?
+  healthSummary   String?
+  safetyNotes     String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  expedition      Expedition @relation(fields: [expeditionId], references: [id], onDelete: Cascade)
+}
+
+model OperationalChecklist {
+  id              String   @id @default(cuid())
+  expeditionId    String
+  phase           TrekPhase
+  status          ChecklistStatus @default(PENDING)
+  completedBy     String?
+  verifiedAt      DateTime?
+  checkpointData  Json?
+  expedition      Expedition @relation(fields: [expeditionId], references: [id], onDelete: Cascade)
+
+  @@unique([expeditionId, phase])
+}
+
 enum UserRole {
   TREKKER
   LEADER
@@ -242,4 +270,23 @@ enum PostType {
   MILESTONE
   IMAGE
   ALERT
+}
+
+enum SitrepStatus {
+  GREEN
+  AMBER
+  RED
+}
+
+enum TrekPhase {
+  PRE_DEPARTURE
+  BASE_CAMP_ARRIVAL
+  CAMP_1_ARRIVAL
+  SUMMIT_PUSH
+}
+
+enum ChecklistStatus {
+  PENDING
+  VERIFIED
+  BLOCKED
 }

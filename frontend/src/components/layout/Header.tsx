@@ -26,7 +26,7 @@ export default async function Header() {
           {/* Role-Adaptive Navigation */}
           <nav className="hidden md:flex items-center gap-6">
             {(session?.user as any)?.role === 'LEADER' ? (
-              // 🏛️ GROUP LEADER: Operational View
+              // 🧗 GROUP LEADER: Operational View
               <>
                 <Link href="/dashboard" className="text-sm text-primary hover:text-primary-hover font-extrabold transition-colors flex items-center gap-1.5 whitespace-nowrap uppercase tracking-widest">
                   <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
@@ -42,7 +42,7 @@ export default async function Header() {
                 </Link>
               </>
             ) : (
-              // 🧗 TREKKER / GUEST: Consumer View
+              // 🏔️ TREKKER / GUEST: Consumer View
               <>
                 <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Treks</Link>
                 <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Destinations</Link>

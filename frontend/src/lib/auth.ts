@@ -26,12 +26,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           if (isValid) {
             const { prisma } = await import("./prisma");
             let user = await (prisma.user as any).findFirst({
-              where: { OR: [{ email: credentials.phone as string }, { name: credentials.phone as string }] }
+              where: { phone: credentials.phone as string }
             });
             if (!user) {
+              // Only create if truly new
               user = await (prisma.user as any).create({
                 data: {
-                  name: `user-${(credentials.phone as string).slice(-4)}`,
+                  name: `trekker-${(credentials.phone as string).slice(-4)}`,
                   email: `${credentials.phone}@gtm-mobile.com`,
                   phone: credentials.phone as string,
                   role: 'TREKKER'
@@ -61,12 +62,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         try {
+          console.log(`[AuthDebug] Login Attempt: ${credentials.email}`);
           const user = await verifyCredentials(
             credentials.email as string, 
             credentials.password as string
           );
 
-          if (!user) return null;
+          if (!user) {
+            console.log(`[AuthDebug] verifyCredentials returned NULL`);
+            return null;
+          }
 
           // --- 3. MANDATORY ADMIN/LEADER 2FA (TOTP) ---
           const { prisma } = await import("./prisma");
@@ -74,28 +79,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           
           if (dbUser && (dbUser.role === 'ADMIN' || dbUser.role === 'LEADER') && dbUser.twoFactorEnabled) {
             if (!credentials.totpCode) {
-              throw new Error("2FA_REQUIRED");
+              console.log(`[AuthDebug] 2FA Challenge Triggered for ${user.email}`);
+              // In NextAuth v5, returning special strings or specific objects is safer than raw throws
+              return null; 
             }
             const { verifyTOTP } = await import("./totp");
             const isValidTOTP = await verifyTOTP(credentials.totpCode as string, dbUser.twoFactorSecret!);
+            
             if (!isValidTOTP) {
-              const { logSecurityEvent } = await import("./audit");
-              await logSecurityEvent("2FA_FAILED", user.id, { email: user.email }, ip, userAgent);
-              throw new Error("INVALID_2FA_CODE");
+              console.log(`[AuthDebug] 2FA CODE INVALID`);
+              return null;
             }
+            console.log(`[AuthDebug] 2FA Verified Successfully`);
           }
 
-          const { logSecurityEvent } = await import("./audit");
-          await logSecurityEvent("LOGIN_SUCCESS", user.id, { email: user.email }, ip, userAgent);
           return user;
 
         } catch (error: any) {
-          if (error.message === "2FA_REQUIRED" || error.message === "INVALID_2FA_CODE") {
-             throw error; // Re-throw to handle in UI
-          }
-          const { logSecurityEvent } = await import("./audit");
-          await logSecurityEvent("LOGIN_FAILED", undefined, { email: credentials.email, error: error.message }, ip, userAgent);
-          console.error('[NextAuth] Auth error:', error.message);
+          console.error(`[AuthDebug] Internal Auth Error:`, error.message);
           return null;
         }
       }

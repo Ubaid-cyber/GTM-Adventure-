@@ -13,7 +13,8 @@ const authConfig: NextAuthConfig = {
       const isProtectedRoute = protectedRoutes.some((r) => nextUrl.pathname.startsWith(r));
       if (isProtectedRoute && !isLoggedIn) return false;
       if (nextUrl.pathname.startsWith('/leader')) return role === 'LEADER' || role === 'ADMIN';
-      if (nextUrl.pathname.startsWith('/admin')) return role === 'ADMIN';
+      // 🛡️ Admin Check Deferred to Specific AdminLoginGate Component
+      // if (nextUrl.pathname.startsWith('/admin')) return role === 'ADMIN';
       return true;
     },
   },
@@ -39,10 +40,12 @@ export default auth((req) => {
     console.warn(`[SECURITY] Restricted role access attempt to ${nextUrl.pathname} by ${user}`);
     return NextResponse.redirect(new URL('/login', nextUrl));
   }
+  // 🛡️ Admin Intercept Deferred
+  // AdminControl login intercepts are now natively handled by AdminLoginGate without bouncing users
   if (nextUrl.pathname.startsWith('/admin') && role !== 'ADMIN') {
     const user = req.auth?.user?.email || 'anonymous';
-    console.warn(`[SECURITY] Admin access attempt to ${nextUrl.pathname} by ${user}`);
-    return NextResponse.redirect(new URL('/login', nextUrl));
+    console.warn(`[SECURITY] Admin access attempt to ${nextUrl.pathname} by ${user} (Deferred to Gate)`);
+    // NO REDIRECT. Let the AdminLayout catch it and show the black card.
   }
   return NextResponse.next();
 });

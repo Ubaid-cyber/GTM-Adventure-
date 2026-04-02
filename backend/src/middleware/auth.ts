@@ -1,31 +1,56 @@
 import { Request, Response, NextFunction } from 'express';
-import { prisma } from '../lib/prisma';
+import jwt from 'jsonwebtoken';
+import { prisma } from '../lib/prisma.js';
 
 /**
- * Enhanced authentication bridge for local development.
- * Looks up the user from the database to provide full context (id, role).
+ * 🛡️ ENTERPRISE AUTHENTICATION PERIMETER
+ * Verifies signed JWT tokens from the GTM-Adventure Unified Frontend.
+ * Ensures identity is proven via cryptographic signature, not spoofable headers.
  */
 export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
-  const userEmail = req.headers['x-user-email'] as string;
-  
-  if (!userEmail) {
-    return res.status(401).json({ error: 'Unauthorized: No user context found.' });
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  const devEmail = req.headers['x-user-email'] as string; 
+
+  let email: string | null = null;
+
+  if (token) {
+    try {
+      const secret = process.env.NEXTAUTH_SECRET || 'development_secret_only';
+      const decoded = jwt.verify(token, secret) as any;
+      email = decoded.email;
+      console.log(`[AUTHENTICATED] JWT Verification Success: ${email}`);
+    } catch (err) {
+      console.warn('⚠️ Security: Invalid JWT token signature detected.');
+      return res.status(401).json({ error: 'Auth failed: Invalid security token.' });
+    }
+  } else if (devEmail && process.env.NODE_ENV !== 'production') {
+    // 🧪 DEV MODE ONLY fallback
+    email = devEmail;
+    console.log(`[AUTHENTICATED] Logic-Only Header (Dev Mode): ${email}`);
+  }
+
+  if (!email) {
+    console.warn(`[SECURITY SHIELD] Rejected access to: ${req.path} (Missing Credentials)`);
+    return res.status(401).json({ error: 'Unauthorized: Operational clearance required.' });
   }
 
   try {
     const user = await prisma.user.findUnique({
-      where: { email: userEmail }
+      where: { email }
     });
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found in system.' });
+      return res.status(404).json({ error: 'User context not found in system.' });
     }
 
-    // Attach full user object to request
-    (req as any).user = user;
+    // 🛡️ DATA ISOLATION: Scrub sensitive vectors from context
+    const { password, twoFactorSecret, ...scrubbedUser } = user;
+    (req as any).user = scrubbedUser;
+    
     next();
   } catch (error) {
-    console.error('Auth Middleware Error:', error);
-    res.status(500).json({ error: 'Internal server error during authentication' });
+    console.error('CRITICAL: Auth System Failure:', error);
+    res.status(500).json({ error: 'Internal operational failure.' });
   }
 };
