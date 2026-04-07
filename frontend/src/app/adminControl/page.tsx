@@ -9,9 +9,12 @@ import {
   ShieldCheck,
   AlertTriangle,
   CreditCard,
-  Briefcase
+  Briefcase,
+  Zap
 } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
+import { getAdminFinancialStats } from '@/lib/actions/admin-actions';
+import { StatCard } from './components/StatCard';
 
 export default async function AdminDashboardPage() {
   // 📊 Professional Business Data Fetching
@@ -20,7 +23,8 @@ export default async function AdminDashboardPage() {
     activeTreks,
     pendingApprovals,
     totalCustomers,
-    recentBookings
+    recentBookings,
+    finStats
   ] = await Promise.all([
     prisma.booking.aggregate({
       _sum: { totalPrice: true },
@@ -39,18 +43,12 @@ export default async function AdminDashboardPage() {
       take: 5,
       orderBy: { createdAt: 'desc' },
       include: { user: true, trek: true }
-    })
+    }),
+    getAdminFinancialStats()
   ]);
 
-  const stats = [
-    { name: 'Total Revenue', value: `$${(totalRevenue._sum.totalPrice || 0).toLocaleString()}`, icon: CreditCard, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-    { name: 'Active Treks', value: activeTreks.toString(), icon: Map, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-    { name: 'Health Approvals', value: pendingApprovals.toString(), icon: Activity, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-    { name: 'Customer Directory', value: totalCustomers.toString(), icon: Users, color: 'text-blue-500', bg: 'bg-blue-500/10' },
-  ];
-
   return (
-    <div className="space-y-10 animate-in fade-in duration-1000">
+    <div className="space-y-10 animate-in fade-in duration-1000 text-left">
       {/* 💼 Business Identification */}
       <div className="flex items-end justify-between">
         <div className="space-y-1 text-left">
@@ -65,23 +63,42 @@ export default async function AdminDashboardPage() {
 
       {/* 📋 Metrics Summary Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
-          <div key={stat.name} className="bg-white/[0.02] border border-white/5 p-6 rounded-[24px] group hover:border-blue-500/30 transition-all duration-500 shadow-xl">
-            <div className="flex items-start justify-between mb-4">
-              <div className={`p-3 rounded-xl ${stat.bg}`}>
-                <stat.icon className={`w-5 h-5 ${stat.color} group-hover:scale-110 transition-transform`} />
-              </div>
-              <div className="flex items-center gap-1 text-green-500 text-[9px] font-bold tracking-widest bg-green-500/5 px-2 py-1 rounded-full border border-green-500/10">
-                <ArrowUpRight className="w-3 h-3" />
-                +4.2%
-              </div>
-            </div>
-            <div className="space-y-1 text-left">
-              <h3 className="text-white/30 text-[10px] font-black uppercase tracking-widest">{stat.name}</h3>
-              <p className="text-2xl font-bold text-white tracking-tight">{stat.value}</p>
-            </div>
-          </div>
-        ))}
+        <StatCard 
+          name="Total Revenue" 
+          value={`$${(totalRevenue._sum.totalPrice || 0).toLocaleString()}`} 
+          icon={CreditCard} 
+          color="text-blue-500" 
+          bg="bg-blue-500/10" 
+          growth={`${finStats.growth}%`}
+          growthColor={finStats.growth >= 0 ? 'text-green-500' : 'text-rose-500'}
+        />
+        <StatCard 
+          name="Active Treks" 
+          value={activeTreks.toString()} 
+          icon={Map} 
+          color="text-blue-500" 
+          bg="bg-blue-500/10" 
+          growth="Live"
+          growthColor="text-blue-500"
+        />
+        <StatCard 
+          name="Health Approvals" 
+          value={pendingApprovals.toString()} 
+          icon={Activity} 
+          color="text-amber-500" 
+          bg="bg-amber-500/10" 
+          growth="Action"
+          growthColor="text-amber-500"
+        />
+        <StatCard 
+          name="Customer Directory" 
+          value={totalCustomers.toString()} 
+          icon={Users} 
+          color="text-blue-500" 
+          bg="bg-blue-500/10" 
+          growth="Verified"
+          growthColor="text-green-500"
+        />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

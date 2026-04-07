@@ -10,7 +10,7 @@ export default function MarketingLayout({
   return (
     <>
       <Header />
-      <div className="w-full overflow-x-hidden relative min-h-screen">
+      <div className="w-full overflow-x-hidden relative min-h-screen pt-16">
         {children}
       </div>
       <Footer />

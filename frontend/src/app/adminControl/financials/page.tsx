@@ -1,5 +1,3 @@
-import React from 'react';
-import { getAdminTransactions } from '@/lib/actions/admin-actions';
 import { 
   CreditCard, 
   ArrowUpRight, 
@@ -8,11 +6,18 @@ import {
   Download, 
   Calendar,
   Wallet,
-  Receipt
+  Receipt,
+  PieChart,
+  TrendingUp
 } from 'lucide-react';
+import { getAdminTransactions, getAdminFinancialStats } from '@/lib/actions/admin-actions';
+import { StatCard } from '../components/StatCard';
 
 export default async function AccountingPage() {
-  const transactions = await getAdminTransactions();
+  const [transactions, finStats] = await Promise.all([
+    getAdminTransactions(),
+    getAdminFinancialStats()
+  ]);
   
   // 💹 Professional Fiscal Analytics
   const totalGross = transactions.filter(t => t.status === 'CONFIRMED').reduce((acc, t) => acc + (t.totalPrice || 0), 0);
@@ -23,52 +28,72 @@ export default async function AccountingPage() {
     <div className="space-y-8 animate-in fade-in duration-700">
       {/* 🧾 Page Header */}
       <div className="flex items-center justify-between">
-        <div>
+        <div className="text-left">
           <h1 className="text-3xl font-bold tracking-tight text-white">Accounting</h1>
           <p className="text-white/40 text-sm mt-1">Universal transaction ledger and revenue auditing center.</p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white border border-white/5 rounded-lg text-sm font-bold transition-all">
-          <Download className="w-4 h-4" />
-          Export CSV
-        </button>
+        <div className="flex items-center gap-3">
+           <button className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 text-white border border-white/5 rounded-lg text-sm font-bold transition-all">
+            <Download className="w-4 h-4" />
+            Export Ledger
+          </button>
+        </div>
       </div>
 
-      {/* 📊 Strategic Financial Overview */}
-      <div className="grid grid-cols-3 gap-6">
-        <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center">
-              <Wallet className="w-5 h-5 text-green-500" />
-            </div>
-            <div className="flex items-center gap-1 text-green-500 text-[10px] font-bold uppercase transition-transform group-hover:scale-105">
-              <ArrowUpRight className="w-3 h-3" />
-              +14% Growth
-            </div>
-          </div>
-          <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-1">Gross Revenue</div>
-          <div className="text-2xl font-bold text-white">${totalGross.toLocaleString()}</div>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* 📊 Strategic Financial Overview */}
+        <div className="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6">
+          <StatCard 
+            name="Gross Revenue" 
+            value={`$${totalGross.toLocaleString()}`} 
+            icon={Wallet} 
+            color="text-green-500" 
+            bg="bg-green-500/10" 
+            growth={`+${finStats.growth}%`}
+            description="Total lifetime confirmed revenue."
+          />
+          <StatCard 
+            name="Unconfirmed Bookings" 
+            value={`$${pendingRevenue.toLocaleString()}`} 
+            icon={Receipt} 
+            color="text-amber-500" 
+            bg="bg-amber-500/10" 
+            growth="Settlement Pending"
+            growthColor="text-amber-500"
+          />
+          <StatCard 
+            name="GST Estimate (18%)" 
+            value={`$${taxEstimate.toLocaleString()}`} 
+            icon={CreditCard} 
+            color="text-blue-500" 
+            bg="bg-blue-500/10" 
+            growth="Fiscal Liability"
+            growthColor="text-blue-200"
+          />
         </div>
 
-        <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-              <Receipt className="w-5 h-5 text-amber-500" />
-            </div>
-            <div className="text-amber-500 text-[10px] font-bold uppercase">Pending Settlement</div>
-          </div>
-          <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-1">Unconfirmed Bookings</div>
-          <div className="text-2xl font-bold text-white">${pendingRevenue.toLocaleString()}</div>
-        </div>
-
-        <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-6 shadow-xl relative overflow-hidden group">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-              <CreditCard className="w-5 h-5 text-blue-500" />
-            </div>
-            <div className="text-blue-500 text-[10px] font-bold uppercase">Tax Deduction</div>
-          </div>
-          <div className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-1">GST Estimate (18%)</div>
-          <div className="text-2xl font-bold text-white">${taxEstimate.toLocaleString()}</div>
+        {/* 🏔️ Trek-wise Revenue breakdown */}
+        <div className="bg-white/[0.02] border border-white/5 rounded-[32px] p-6 space-y-4 shadow-2xl relative overflow-hidden group border-blue-500/10">
+           <div className="flex items-center gap-3 mb-2">
+              <PieChart className="w-4 h-4 text-blue-500" />
+              <h3 className="text-xs font-black uppercase tracking-widest text-white/40">Revenue by Trek</h3>
+           </div>
+           <div className="space-y-4 max-h-[160px] overflow-y-auto pr-2 custom-scrollbar">
+              {finStats.revenueByTrek.map(rev => (
+                <div key={rev.trekId} className="flex items-center justify-between group/trek">
+                   <div className="text-left max-w-[140px] truncate">
+                      <p className="text-[11px] font-bold text-white/80 group-hover/trek:text-white transition-colors truncate">{rev.title}</p>
+                      <div className="w-24 h-1 bg-white/5 rounded-full mt-1.5 overflow-hidden">
+                         <div 
+                           className="h-full bg-blue-500 rounded-full" 
+                           style={{ width: `${Math.min(100, (rev.total / (totalGross || 1)) * 100)}%` }} 
+                         />
+                      </div>
+                   </div>
+                   <p className="text-[11px] font-black tracking-tight text-white">${rev.total.toLocaleString()}</p>
+                </div>
+              ))}
+           </div>
         </div>
       </div>
 

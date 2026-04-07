@@ -73,24 +73,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             return null;
           }
 
-          // --- 3. MANDATORY ADMIN/LEADER 2FA (TOTP) ---
+          // --- 3. ROLE-BASED 2FA (MANDATORY FOR STAFF ONLY) ---
+          // Trekkers are bypassed (protected by rate-limiters & security headers)
           const { prisma } = await import("./prisma");
           const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
           
-          if (dbUser && (dbUser.role === 'ADMIN' || dbUser.role === 'LEADER') && dbUser.twoFactorEnabled) {
+          const isStaff = dbUser?.role === 'ADMIN' || dbUser?.role === 'LEADER';
+          
+          if (isStaff && dbUser?.twoFactorEnabled) {
             if (!credentials.totpCode) {
-              console.log(`[AuthDebug] 2FA Challenge Triggered for ${user.email}`);
-              // In NextAuth v5, returning special strings or specific objects is safer than raw throws
-              return null; 
+              console.log(`[AuthDebug] 2FA Mandate Triggered for Staff: ${user.email}`);
+              throw new Error("2FA_REQUIRED"); 
             }
             const { verifyTOTP } = await import("./totp");
             const isValidTOTP = await verifyTOTP(credentials.totpCode as string, dbUser.twoFactorSecret!);
             
             if (!isValidTOTP) {
-              console.log(`[AuthDebug] 2FA CODE INVALID`);
-              return null;
+              console.log(`[AuthDebug] 2FA INVALID CODE FOR STAFF`);
+              throw new Error("INVALID_2FA_CODE");
             }
-            console.log(`[AuthDebug] 2FA Verified Successfully`);
+            console.log(`[AuthDebug] Staff 2FA Verified Successfully`);
           }
 
           return user;

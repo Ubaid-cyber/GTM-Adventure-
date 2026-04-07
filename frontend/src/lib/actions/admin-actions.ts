@@ -156,16 +156,79 @@ export async function updateUserRole(userId: string, role: any) {
 }
 
 /**
- * Fetches all audit logs for the governance dashboard.
+ * Fetches all audit logs for the governance dashboard with optional search.
  */
-export async function getAdminAuditLogs() {
+export async function getAdminAuditLogs(query?: string) {
   await validateAdmin();
   return await prisma.auditLog.findMany({
+    where: query ? {
+      OR: [
+        { action: { contains: query, mode: 'insensitive' } },
+        { ip: { contains: query } },
+        { userId: { contains: query } }
+      ]
+    } : {},
     orderBy: {
       createdAt: 'desc'
     },
-    take: 100 // Limit to latest 100 for performance
+    take: 100
   });
+}
+
+/**
+ * Fetches aggregated financial statistics for the HQ Command Center.
+ */
+export async function getAdminFinancialStats() {
+  await validateAdmin();
+
+  // 1. Get total revenue breakdown by trek
+  const trekRevenue = await prisma.booking.groupBy({
+    by: ['trekId'],
+    _sum: { totalPrice: true },
+    where: { status: 'CONFIRMED' }
+  });
+
+  // 2. Hydrate trek titles for the breakdown
+  const treks = await prisma.trek.findMany({
+    where: { id: { in: trekRevenue.map(r => r.trekId) } },
+    select: { id: true, title: true }
+  });
+
+  const revenueByTrek = trekRevenue.map(rev => ({
+    trekId: rev.trekId,
+    title: treks.find(t => t.id === rev.trekId)?.title || 'Unknown Trek',
+    total: rev._sum.totalPrice || 0
+  })).sort((a, b) => b.total - a.total);
+
+  // 3. Get recent growth (Revenue this month vs last month)
+  const now = new Date();
+  const startOfThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+
+  const [thisMonthRev, lastMonthRev] = await Promise.all([
+    prisma.booking.aggregate({
+      _sum: { totalPrice: true },
+      where: { status: 'CONFIRMED', createdAt: { gte: startOfThisMonth } }
+    }),
+    prisma.booking.aggregate({
+      _sum: { totalPrice: true },
+      where: { 
+        status: 'CONFIRMED', 
+        createdAt: { gte: startOfLastMonth, lt: startOfThisMonth } 
+      }
+    })
+  ]);
+
+  const thisMonthTotal = thisMonthRev._sum.totalPrice || 0;
+  const lastMonthTotal = lastMonthRev._sum.totalPrice || 0;
+  const growth = lastMonthTotal > 0 ? ((thisMonthTotal - lastMonthTotal) / lastMonthTotal) * 100 : 0;
+
+  return {
+    revenueByTrek,
+    thisMonthTotal,
+    lastMonthTotal,
+    growth: parseFloat(growth.toFixed(1))
+  };
 }
 
 /**

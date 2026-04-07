@@ -33,10 +33,8 @@ export default function LoginPage() {
       });
       
       if (result?.error) {
-        // Broad check for 2FA signal in various Auth.js error formats
-        const is2FA = result.error.includes('2FA_REQUIRED') || 
-                      result.error.includes('CredentialsSignin') || 
-                      result.error === '2FA_REQUIRED';
+        // 🔒 Explicit 2FA signal only - never show for general login failures (CredentialsSignin)
+        const is2FA = result.error === '2FA_REQUIRED' || result.error.includes('2FA_REQUIRED');
 
         if (is2FA) {
           setShow2FA(true);

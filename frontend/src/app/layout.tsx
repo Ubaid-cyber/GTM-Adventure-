@@ -66,7 +66,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased pt-16 bg-[#0a0a0a]`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0a0a0a]`}>
         <AuthProvider>
           <JsonLd />
           <div className="w-full overflow-x-hidden relative min-h-screen">

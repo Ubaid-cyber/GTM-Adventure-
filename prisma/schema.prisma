@@ -31,6 +31,7 @@ model User {
   reviews        Review[]
   sessions       Session[]
   treks          Trek[]           @relation("GuideTreks")
+  staffBookings  Booking[]        @relation("StaffBookings")
 }
 
 model Account {
@@ -145,6 +146,10 @@ model Booking {
   gstAmount         Float?        @default(0)
   refundAmount      Float?        @default(0)
   refundId          String?       @unique
+  internalNotes     String?
+  medicalCleared    Boolean       @default(false)
+  assignedStaffId   String?
+  assignedStaff     User?         @relation("StaffBookings", fields: [assignedStaffId], references: [id])
   expedition        Expedition?   @relation(fields: [expeditionId], references: [id])
   trek              Trek          @relation(fields: [trekId], references: [id])
   user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)

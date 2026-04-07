@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
   BarChart3, 
-  Map, 
+  MapPin, 
   Users, 
   CreditCard, 
   Settings, 
@@ -23,7 +23,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const NAV_ITEMS = [
   { name: 'Dashboard', icon: BarChart3, href: '/adminControl' },
-  { name: 'Tour Packages', icon: Map, href: '/adminControl/tours' },
+  { name: 'Tour Packages', icon: MapPin, href: '/adminControl/tours' },
   { name: 'Bookings', icon: CalendarCheck, href: '/adminControl/bookings' },
   { name: 'Customers', icon: Users, href: '/adminControl/customers' },
   { name: 'Leads & Inquiries', icon: Inbox, href: '/adminControl/leads' },
@@ -39,7 +39,7 @@ export default function AdminSidebar() {
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-64 bg-[#0a0a0a] border-r border-white/5 flex flex-col z-[100]">
-      {/* 🏔️ Business Brand Area */}
+      {/* 🏔️ Brand Area */}
       <div className="p-6 border-b border-white/5">
         <Link href="/" className="flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-600 flex items-center justify-center rounded-lg shadow-lg shadow-blue-600/20">
@@ -54,7 +54,7 @@ export default function AdminSidebar() {
         </Link>
       </div>
 
-      {/* 🔍 Operations Search */}
+      {/* 🔍 Search Tools */}
       <div className="px-4 pt-6 pb-2">
         <div className={`
           relative flex items-center gap-2 px-3 py-2 rounded-lg border transition-all duration-300
@@ -63,7 +63,7 @@ export default function AdminSidebar() {
           <Search className={`w-4 h-4 ${searchFocused ? 'text-blue-500' : 'text-white/20'}`} />
           <input 
             type="text" 
-            placeholder="Search operations..."
+            placeholder="Search dashboard..."
             onFocus={() => setSearchFocused(true)}
             onBlur={() => setSearchFocused(false)}
             className="bg-transparent border-none text-xs text-white placeholder:text-white/20 focus:ring-0 w-full"
