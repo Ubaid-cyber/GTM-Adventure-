@@ -23,7 +23,7 @@ export default async function AdventureDashboard() {
   }
   
   if (role === 'TREKKER') {
-    redirect('/'); // Instant bounce back to consumer home
+    redirect('/dashboard/bookings'); // Direct to user-specific content
   }
 
   // 🛡️ SECURE MISSION CLEARANCE
@@ -33,5 +33,5 @@ export default async function AdventureDashboard() {
     secret
   );
 
-  return <DashboardClient apiToken={apiToken} />;
+  return <DashboardClient apiToken={apiToken} isLeader={role === 'LEADER'} />;
 }

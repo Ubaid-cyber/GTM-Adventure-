@@ -40,9 +40,10 @@ router.get('/', async (req, res) => {
       bookings = await prisma.booking.findMany({
         where: {
           status: 'CONFIRMED',
-          trek: {
-            guideId: user.id
-          }
+          OR: [
+            { trek: { guideId: user.id } },
+            { assignedStaffId: user.id }
+          ]
         },
         include: {
           user: { select: { name: true, email: true, profileImage: true, id: true } },

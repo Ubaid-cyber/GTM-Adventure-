@@ -41,7 +41,7 @@ export default function AdminSidebar() {
     <aside className="fixed left-0 top-0 bottom-0 w-64 bg-[#0a0a0a] border-r border-white/5 flex flex-col z-[100]">
       {/* 🏔️ Brand Area */}
       <div className="p-6 border-b border-white/5">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/adminControl" className="flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-600 flex items-center justify-center rounded-lg shadow-lg shadow-blue-600/20">
             <svg viewBox="0 0 32 32" fill="none" className="w-5 h-5 text-white">
               <path d="M16 4L2 28H30L16 4Z" fill="currentColor"/>
@@ -100,10 +100,10 @@ export default function AdminSidebar() {
         {/* ➕ Quick Actions Group */}
         <div className="mt-8 pt-4 border-t border-white/5">
           <div className="text-white/20 text-[10px] uppercase font-bold tracking-widest px-4 mb-2">Quick Actions</div>
-          <button className="w-full flex items-center gap-3 px-4 py-2.5 text-white/40 hover:text-white hover:bg-white/[0.02] rounded-xl transition-all group">
+          <Link href="/adminControl/tours/new" className="w-full flex items-center gap-3 px-4 py-2.5 text-white/40 hover:text-white hover:bg-white/[0.02] rounded-xl transition-all group">
             <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
             <span className="text-[13px] font-medium leading-none">New Trek</span>
-          </button>
+          </Link>
         </div>
       </nav>
 

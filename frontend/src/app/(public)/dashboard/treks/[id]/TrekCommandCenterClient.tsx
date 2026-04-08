@@ -12,6 +12,12 @@ import {
 } from 'lucide-react';
 import GroupChat from './GroupChat';
 import GroupMembers from './GroupMembers';
+import { 
+  getExpeditionTelemetryAction, 
+  updateExpeditionTelemetryAction, 
+  postSitrepAction, 
+  updateChecklistAction 
+} from '@/lib/actions/leader-actions';
 
 interface ExpeditionData {
   id: string;
@@ -31,10 +37,10 @@ interface ExpeditionData {
 
 export default function TrekCommandCenterClient({ 
   expeditionId, 
-  apiToken 
+  isLeader
 }: { 
   expeditionId: string, 
-  apiToken: string 
+  isLeader: boolean
 }) {
   const { data: session } = useSession();
   const [data, setData] = useState<ExpeditionData | null>(null);
@@ -80,14 +86,8 @@ export default function TrekCommandCenterClient({
     if (!session?.user?.email) return;
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/active-bookings/${expeditionId}`, {
-        headers: { 
-          'Authorization': `Bearer ${apiToken}`,
-          'x-user-email': session.user.email 
-        }
-      });
-      const result = await res.json();
-      if (res.ok) {
+      const result = await getExpeditionTelemetryAction(expeditionId);
+      if (result) {
         setData(result);
         setTelemetry({
           currentLocationName: result.currentLocationName || '',
@@ -95,7 +95,7 @@ export default function TrekCommandCenterClient({
           progressPercent: result.progressPercent || 0
         });
       } else {
-        setError(result.error || 'Failed to load expedition telemetry.');
+        setError('Failed to load expedition telemetry.');
       }
     } catch (err) {
       setError('Failed to connect to expedition service.');
@@ -117,14 +117,7 @@ export default function TrekCommandCenterClient({
          console.log('📡 Reconnected. Syncing operational queue...');
          for (const update of pendingUpdates) {
             try {
-               await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/expeditions/${expeditionId}`, {
-                  method: 'PATCH',
-                  headers: { 
-                    'Content-Type': 'application/json',
-                    'x-user-email': session?.user?.email || ''
-                  },
-                  body: JSON.stringify(update)
-               });
+               await updateExpeditionTelemetryAction(expeditionId, update);
             } catch (err) {
                console.error('Sync failed for update:', update);
             }
@@ -134,7 +127,7 @@ export default function TrekCommandCenterClient({
       };
       syncUpdates();
     }
-  }, [isOnline, pendingUpdates, expeditionId, session?.user?.email, fetchExpedition]);
+  }, [isOnline, pendingUpdates, expeditionId, fetchExpedition]);
 
   const handleUpdateTelemetry = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,29 +135,20 @@ export default function TrekCommandCenterClient({
 
     if (!isOnline) {
        setPendingUpdates([...pendingUpdates, telemetry]);
-       alert('⚠️ Operational Sync: Connection lost. Update queued for satellite sync.');
+       alert('⚠️ Sync Status: Connection lost. Update queued for cloud sync.');
        setShowLeaderHud(false);
        return;
     }
 
     setIsUpdating(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/expeditions/${expeditionId}`, {
-        method: 'PATCH',
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-user-email': session.user.email
-        },
-        body: JSON.stringify(telemetry)
-      });
+      const result = await updateExpeditionTelemetryAction(expeditionId, telemetry);
 
-      if (res.ok) {
-        const updated = await res.json();
-        setData(updated);
+      if (result.success) {
+        await fetchExpedition();
         setShowLeaderHud(false);
       } else {
-        const err = await res.json();
-        alert(err.error || 'Failed to update telemetry');
+        alert(result.error || 'Failed to update telemetry');
       }
     } catch (err) {
       console.error('Update Error:', err);
@@ -178,17 +162,12 @@ export default function TrekCommandCenterClient({
     if (!session?.user?.email || !isOnline) return;
     setIsUpdating(true);
     try {
-       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leader/sitrep`, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'x-user-email': session.user.email
-          },
-          body: JSON.stringify({ ...sitrep, expeditionId })
-       });
-       if (res.ok) {
+       const result = await postSitrepAction({ ...sitrep, expeditionId });
+       if (result.success) {
           alert('✅ SITREP logged successfully. Logged in Command Center.');
           setShowLeaderHud(false);
+       } else {
+          alert(result.error || 'SITREP Submission Failed');
        }
     } catch (err) {
        console.error('SITREP Error:', err);
@@ -200,15 +179,8 @@ export default function TrekCommandCenterClient({
   const handleChecklistSubmit = async (phase: string) => {
      if (!isOnline) return;
      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leader/checklists`, {
-           method: 'POST',
-           headers: { 
-             'Content-Type': 'application/json',
-             'x-user-email': session?.user?.email || ''
-           },
-           body: JSON.stringify({ expeditionId, phase })
-        });
-        if (res.ok) fetchExpedition();
+        const result = await updateChecklistAction(expeditionId, phase);
+        if (result.success) fetchExpedition();
      } catch (err) {
         console.error('Checklist Error:', err);
      }
@@ -236,7 +208,6 @@ export default function TrekCommandCenterClient({
   }
 
   const user = session?.user as any;
-  const isLeader = (user?.role === 'LEADER' && data.trek.guideId === user?.id) || user?.role === 'ADMIN';
   const isOngoing = data.status === 'ONGOING';
 
   return (
@@ -263,9 +234,9 @@ export default function TrekCommandCenterClient({
                  className="flex-1 md:flex-none p-3 md:p-4 bg-cyan-600/10 border border-cyan-500/30 rounded-xl backdrop-blur-sm group hover:bg-cyan-600 transition-all shadow-[0_0_20px_rgba(6,182,212,0.1)]"
                >
                   <div className="text-[9px] md:text-[10px] font-bold text-cyan-400 group-hover:text-white uppercase tracking-widest mb-1 flex items-center gap-2">
-                     <Shield className="w-3 h-3" /> Mission Control
+                     <Shield className="w-3 h-3" /> Trip Support
                   </div>
-                  <div className="text-sm font-bold tracking-tighter">Leader Payload HUD</div>
+                  <div className="text-sm font-bold tracking-tighter">Leader Control Panel</div>
                </button>
              )}
              <div className="flex-1 md:flex-none p-3 md:p-4 bg-white/5 border border-white/10 rounded-xl backdrop-blur-sm">
@@ -364,11 +335,11 @@ export default function TrekCommandCenterClient({
                     {/* Data Grid */}
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-white/10">
                       <div className="group/stat">
-                        <div className="text-[10px] text-muted font-bold uppercase tracking-tighter mb-1 group-hover/stat:text-primary transition-colors">Current Altitude</div>
+                        <div className="text-[10px] text-muted font-bold uppercase tracking-tighter mb-1 group-hover/stat:text-primary transition-colors">Total Height</div>
                         <div className="text-2xl font-black tracking-tighter italic">{data.currentAltitude || '---'} <span className="text-xs text-primary not-italic">m</span></div>
                       </div>
                       <div className="group/stat">
-                        <div className="text-[10px] text-muted font-bold uppercase tracking-tighter mb-1 group-hover/stat:text-primary transition-colors">Current Sector</div>
+                        <div className="text-[10px] text-muted font-bold uppercase tracking-tighter mb-1 group-hover/stat:text-primary transition-colors">Current Base</div>
                         <div className="text-xl font-bold truncate italic">{data.currentLocationName || 'In Transit'}</div>
                       </div>
                       <div className="group/stat">
@@ -387,7 +358,7 @@ export default function TrekCommandCenterClient({
                      <div className="flex justify-between items-center mb-6">
                         <h3 className="text-lg font-bold flex items-center gap-2">
                            <Activity className="w-5 h-5 text-emerald-400" />
-                           Operational Log
+                           Activity Log
                         </h3>
                        <div className="flex items-center gap-2">
                          <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-emerald-500' : 'bg-amber-500'} animate-pulse`}></div>
@@ -397,7 +368,7 @@ export default function TrekCommandCenterClient({
                      <div className="space-y-3 font-mono text-[11px] text-white/40">
                        <div className="flex gap-4"><span className="text-primary/60">00:00:23</span> <span>Handshake with main network...</span></div>
                        <div className="flex gap-4"><span className="text-primary/60">00:01:05</span> <span>Signal strength: {isOnline ? '99.1%' : '0%'}</span></div>
-                       <div className="flex gap-4"><span className="text-primary/60">00:02:11</span> <span className="text-emerald-400 italic">Sector update protocol: Ready.</span></div>
+                       <div className="flex gap-4"><span className="text-primary/60">00:02:11</span> <span className="text-emerald-400 italic">Base update protocol: Ready.</span></div>
                        {!isOnline && <div className="flex gap-4 animate-pulse"><span className="text-amber-500">ERROR_404</span> <span className="text-amber-400 font-black">Satellite link severed. Queueing updates.</span></div>}
                      </div>
                   </div>
@@ -411,7 +382,7 @@ export default function TrekCommandCenterClient({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                 >
-                  <GroupChat expeditionId={expeditionId} apiToken={apiToken} />
+                  <GroupChat expeditionId={expeditionId} />
                 </motion.div>
               )}
 
@@ -425,7 +396,6 @@ export default function TrekCommandCenterClient({
                   <GroupMembers 
                     expeditionId={expeditionId} 
                     isLeader={(session?.user as any)?.role === 'LEADER'} 
-                    apiToken={apiToken}
                   />
                 </motion.div>
               )}

@@ -6,7 +6,10 @@ import Link from 'next/link';
 import SecurityModal from '@/components/security/SecurityModal';
 import SuccessModal from '@/components/security/SuccessModal';
 import RefundTracker from '@/components/bookings/RefundTracker';
-import { ShieldAlert, Trash2 } from 'lucide-react';
+import { ShieldAlert, Trash2, Info } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { formatDateOnly } from '@/lib/utils/date-safe';
+import { getUserBookingsAction, cancelUserBookingAction } from '@/lib/actions/booking-actions';
 
 const CountdownTimer = ({ createdAt }: { createdAt: string }) => {
   const [timeLeft, setTimeLeft] = useState('');
@@ -50,6 +53,11 @@ export default function BookingsClient() {
   const { data: session } = useSession();
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   // Security Perimeter State
   const [securityModalOpen, setSecurityModalOpen] = useState(false);
@@ -63,13 +71,8 @@ export default function BookingsClient() {
   const fetchBookings = async () => {
     if (!session?.user?.email) return;
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings`, {
-        headers: { 'x-user-email': session.user.email }
-      });
-      const data = await res.json();
-      if (Array.isArray(data)) {
-        setBookings(data);
-      }
+      const data = await getUserBookingsAction();
+      setBookings(data);
     } catch (err) {
       console.error('Failed to fetch bookings:', err);
     } finally {
@@ -90,18 +93,13 @@ export default function BookingsClient() {
     if (!targetBooking) return;
     setCancelling(true);
     try {
-      const res = await fetch('/api/bookings/cancel', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bookingId: targetBooking.id }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      const result = await cancelUserBookingAction(targetBooking.id);
+      if (!result.success) throw new Error(result.error);
 
       // Success Modal instead of Alert
       setIsError(false);
       setResultTitle('Trek Cancelled Successfully');
-      setResultMessage(`Your refund of ${data.refundPercentage}% has been processed and should arrive shortly. We're sorry to see you go!`);
+      setResultMessage(`Your refund (${result.refundPercentage}%) has been processed. We're sorry to see you go!`);
       setResultModalOpen(true);
       fetchBookings();
     } catch (err: any) {
@@ -116,15 +114,11 @@ export default function BookingsClient() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
+    return mounted ? formatDateOnly(dateString) : '-- --- ----';
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-28 pb-20 relative overflow-hidden">
+    <div className={`min-h-screen bg-slate-50 pt-28 pb-20 relative overflow-hidden ${securityModalOpen || resultModalOpen ? 'z-[500]' : ''}`}>
       {/* HUD Grid Background */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
 
@@ -138,6 +132,31 @@ export default function BookingsClient() {
             Book New Trek
           </Link>
         </div>
+        
+        {/* Reassurance Banner for Pending Payments */}
+        <AnimatePresence>
+          {bookings.some(b => b.status === 'PENDING') && (
+            <motion.div 
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="mb-8 p-6 bg-amber-500/5 border border-amber-500/20 rounded-[32px] backdrop-blur-xl flex flex-col md:flex-row items-center gap-4 group"
+            >
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-500">
+                <Info className="w-6 h-6 text-amber-600" />
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <h4 className="text-sm font-black text-amber-900 uppercase tracking-tight mb-1">Paid but still Pending?</h4>
+                <p className="text-[11px] font-bold text-amber-700/80 uppercase tracking-widest leading-relaxed">
+                  Don't worry! Our system automatically confirms successful payments within 2-5 minutes.
+                </p>
+              </div>
+              <div className="hidden md:block px-4 py-2 bg-amber-500/10 rounded-xl text-[9px] font-black text-amber-600 uppercase tracking-widest">
+                Verification in progress
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {loading ? (
           <div className="space-y-6">
@@ -166,7 +185,7 @@ export default function BookingsClient() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-6">
-            {bookings.map((booking) => (
+            {bookings.map((booking: any) => (
               <div key={booking.id} className="group bg-white rounded-[40px] p-6 sm:p-8 border border-slate-200 shadow-[0_10px_40px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.05)] transition-all duration-700 flex flex-col lg:flex-row gap-8 items-start lg:items-center">
                 
                 {/* Image / Unit Preview */}

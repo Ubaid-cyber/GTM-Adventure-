@@ -183,6 +183,7 @@ model Trek {
   bookings         Booking[]
   expeditions      Expedition[]
   reviews          Review[]
+  leads            Lead[]
   guide            User?        @relation("GuideTreks", fields: [guideId], references: [id])
 }
 
@@ -193,6 +194,14 @@ model AuditLog {
   ip        String
   userAgent String?
   metadata  Json?
+  createdAt DateTime @default(now())
+}
+
+model BlockedIP {
+  id        String   @id @default(cuid())
+  ip        String   @unique
+  reason    String?
+  blockedBy String?
   createdAt DateTime @default(now())
 }
 
@@ -241,6 +250,22 @@ model OperationalChecklist {
   expedition      Expedition @relation(fields: [expeditionId], references: [id], onDelete: Cascade)
 
   @@unique([expeditionId, phase])
+}
+
+model Lead {
+  id        String     @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String
+  status    LeadStatus @default(NEW)
+  trekId    String?
+  trek      Trek?      @relation(fields: [trekId], references: [id])
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([email])
 }
 
 enum UserRole {
@@ -294,4 +319,12 @@ enum ChecklistStatus {
   PENDING
   VERIFIED
   BLOCKED
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CONVERTED
+  LOST
 }

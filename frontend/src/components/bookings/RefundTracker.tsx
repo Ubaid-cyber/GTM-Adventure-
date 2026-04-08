@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Check, Clock, CreditCard, ReceiptIndianRupee } from 'lucide-react';
+import { formatINR } from '@/lib/utils/formatters';
 
 interface RefundTrackerProps {
   status: string;
@@ -29,7 +30,7 @@ export default function RefundTracker({ status, refundAmount, updatedAt }: Refun
           </div>
           <div>
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Estimated Refund</p>
-            <p className="text-xl font-black text-slate-900 tracking-tighter">₹{refundAmount}</p>
+            <p className="text-xl font-black text-slate-900 tracking-tighter">{formatINR(refundAmount)}</p>
           </div>
         </div>
         <div className="text-right">

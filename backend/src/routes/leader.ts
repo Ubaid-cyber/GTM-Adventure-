@@ -168,4 +168,70 @@ router.post('/checklists', async (req, res) => {
   }
 });
 
+// GET /api/leader/participants
+// Operational directory for Leaders to view their assigned trekkers.
+router.get('/participants', async (req, res) => {
+  try {
+    const user = (req as any).user;
+
+    if (user.role !== 'LEADER' && user.role !== 'ADMIN') {
+      return res.status(403).json({ error: 'Access Denied: Leadership clearance required.' });
+    }
+
+    // 1. Identify all Treks where this leader is the primary guide
+    const guidedTreks = await prisma.trek.findMany({
+      where: { guideId: user.id },
+      select: { id: true }
+    });
+    const guidedTrekIds = guidedTreks.map(t => t.id);
+
+    // 2. Fetch all confirmed bookings for those treks OR specifically assigned to this leader
+    const bookings = await prisma.booking.findMany({
+      where: {
+        OR: [
+          { trekId: { in: guidedTrekIds } },
+          { assignedStaffId: user.id }
+        ],
+        status: 'CONFIRMED'
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            profileImage: true,
+            phone: true
+          }
+        },
+        trek: {
+           select: {
+             title: true,
+             coverImage: true
+           }
+        }
+      }
+    });
+
+    // 3. AUDIT LOGGING: Forensic trace of participant contact access
+    await prisma.auditLog.create({
+      data: {
+        userId: user.id,
+        action: 'LEADER_PARTICIPANTS_VIEW_ACCESS',
+        ip: req.ip || '0.0.0.0',
+        userAgent: req.headers['user-agent'],
+        metadata: {
+           accessedCount: bookings.length,
+           trekIds: guidedTrekIds
+        }
+      }
+    });
+
+    res.json(bookings);
+  } catch (error: any) {
+    console.error('Leader Participants Fetch Error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 export default router;

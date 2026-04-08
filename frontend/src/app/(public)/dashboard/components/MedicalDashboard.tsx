@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { Activity, Shield, AlertCircle, Trash2, CheckCircle, Search, Filter } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+import { getAllMedicalProfiles, updateMedicalNotesStatus, resetMedicalClearance } from '@/lib/actions/admin-actions';
+
 interface MedicalProfile {
   id: string;
   status: 'NONE' | 'AWAITING_CLEARANCE' | 'IN_REVIEW' | 'CLEARED';
@@ -23,27 +25,24 @@ export const MedicalDashboard: React.FC = () => {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/admin/medical')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) setProfiles(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error('Fetch failed:', err);
-        setLoading(false);
-      });
+    async function loadData() {
+       try {
+          const data = await getAllMedicalProfiles();
+          if (Array.isArray(data)) setProfiles(data as any);
+       } catch (err) {
+          console.error('Fetch failed:', err);
+       } finally {
+          setLoading(false);
+       }
+    }
+    loadData();
   }, []);
 
   const updateStatus = async (profileId: string, newStatus: string, medicalNotes?: string) => {
     setUpdatingId(profileId);
     try {
-      const res = await fetch('/api/admin/medical', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profileId, status: newStatus, medicalNotes })
-      });
-      if (res.ok) {
+      const result = await updateMedicalNotesStatus(profileId, newStatus, medicalNotes);
+      if (result.success) {
         setProfiles(prev => prev.map(p => p.id === profileId ? { ...p, status: newStatus as any, medicalNotes } : p));
       }
     } catch (err) {
@@ -54,15 +53,11 @@ export const MedicalDashboard: React.FC = () => {
   };
 
   const deleteProfile = async (profileId: string) => {
-    if (!window.confirm('Delete this medical record permanently?')) return;
+    if (!window.confirm('Reset this medical record clearance?')) return;
     setUpdatingId(profileId);
     try {
-      const res = await fetch('/api/admin/medical', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profileId })
-      });
-      if (res.ok) {
+      const result = await resetMedicalClearance(profileId);
+      if (result.success) {
         setProfiles(prev => prev.filter(p => p.id !== profileId));
       }
     } catch (err) {

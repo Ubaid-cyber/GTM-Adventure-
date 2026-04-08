@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, ArrowRight } from 'lucide-react';
 import SuccessModal from '@/components/security/SuccessModal';
+import { getMedicalProfileAction, updateMedicalProfileAction } from '@/lib/actions/health-actions';
 
 interface MedicalProfile {
   vitals?: {
@@ -40,11 +41,13 @@ export default function HealthDashboard() {
 
   useEffect(() => {
     if (!session) return;
-    fetch('/api/user/medical')
-      .then(res => res.json())
-      .then(data => {
-        setProfile(data);
-        if (data?.history?.other) setShowOther(true);
+    getMedicalProfileAction()
+      .then(result => {
+        if (result.success) {
+          const prof = result.profile as unknown as MedicalProfile;
+          setProfile(prof);
+          if (prof?.history?.other) setShowOther(true);
+        }
         setLoading(false);
       })
       .catch(err => {
@@ -79,12 +82,9 @@ export default function HealthDashboard() {
     };
 
     try {
-      const res = await fetch('/api/user/medical', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedProfile)
-      });
-      if (res.ok) {
+      const result = await updateMedicalProfileAction(updatedProfile);
+      
+      if (result.success) {
         setSuccess(true);
         setIsModalOpen(true);
         // @ts-ignore
@@ -95,7 +95,7 @@ export default function HealthDashboard() {
         }));
         setTimeout(() => setSuccess(false), 3000);
       } else {
-        throw new Error('Failed to update passport');
+        throw new Error(result.error || 'Failed to update passport');
       }
     } catch (err: any) {
       setError(err.message);

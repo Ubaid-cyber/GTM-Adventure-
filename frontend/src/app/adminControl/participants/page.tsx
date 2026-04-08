@@ -36,7 +36,7 @@ export default async function CustomersPage() {
            <div className="text-2xl font-bold text-white">{users.filter(u => u.role === 'TREKKER').length}</div>
         </div>
         <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 shadow-xl border-blue-500/10">
-           <div className="text-[10px] font-black uppercase tracking-widest text-blue-500/50 mb-1">Mission Leaders</div>
+           <div className="text-[10px] font-black uppercase tracking-widest text-blue-500/50 mb-1">Trek Leaders & Guides</div>
            <div className="text-2xl font-bold text-white">{users.filter(u => u.role === 'LEADER').length}</div>
         </div>
         <div className="bg-white/[0.02] border border-white/5 rounded-2xl p-5 shadow-xl">

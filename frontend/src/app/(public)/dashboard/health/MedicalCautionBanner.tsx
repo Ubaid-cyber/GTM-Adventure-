@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 
+import { checkMedicalSafetyAction } from '@/lib/actions/health-actions';
+
 interface MedicalCautionBannerProps {
   trekId: string;
 }
@@ -18,15 +20,10 @@ export default function MedicalCautionBanner({ trekId }: MedicalCautionBannerPro
     if (!session || !trekId || hasDismissed) return;
 
     setLoading(true);
-    fetch('/api/user/medical/check', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ trekId })
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.warning) {
-          setWarning(data.warning);
+    checkMedicalSafetyAction(trekId)
+      .then(result => {
+        if (result.warning) {
+          setWarning(result.warning);
           setIsOpen(true);
         }
       })

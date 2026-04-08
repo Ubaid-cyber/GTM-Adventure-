@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Compass, Calendar, ArrowRight, ShieldCheck, Map } from 'lucide-react';
+import { formatDateOnly } from '@/lib/utils/date-safe';
 
 interface TrekkerDashboardProps {
   user: any;
@@ -13,6 +14,11 @@ interface TrekkerDashboardProps {
 export function TrekkerDashboard({ user, apiToken }: TrekkerDashboardProps) {
   const [activeMissions, setActiveMissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const fetchMissions = async () => {
@@ -43,12 +49,12 @@ export function TrekkerDashboard({ user, apiToken }: TrekkerDashboardProps) {
         <div className="flex items-end justify-between px-2">
           <div>
             <h1 className="text-4xl font-black text-slate-900 tracking-tighter leading-none italic uppercase">
-              Mission <span className="text-primary">Launchpad</span>
+              Trip <span className="text-primary">Portal</span>
             </h1>
-            <p className="text-sm font-medium text-slate-500 mt-2">Active and upcoming expeditions for {user.name}</p>
+            <p className="text-sm font-medium text-slate-500 mt-2">Active and upcoming treks for {user.name}</p>
           </div>
           <Link href="/treks" className="text-[10px] font-black text-primary uppercase tracking-[0.2em] border-b-2 border-primary/20 pb-0.5 hover:border-primary transition-all">
-            Explore More Missions
+            Discover More Treks
           </Link>
         </div>
 
@@ -81,7 +87,7 @@ export function TrekkerDashboard({ user, apiToken }: TrekkerDashboardProps) {
                   <div className="flex items-center justify-center md:justify-start gap-4 mt-3 text-slate-500">
                     <div className="flex items-center gap-1.5 ">
                       <Calendar className="w-3.5 h-3.5" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider">{new Date(mission.createdAt).toLocaleDateString()}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider">{mounted ? formatDateOnly(mission.createdAt) : '---'}</span>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <Map className="w-3.5 h-3.5" />
@@ -94,7 +100,7 @@ export function TrekkerDashboard({ user, apiToken }: TrekkerDashboardProps) {
                   href={`/dashboard/treks/${mission.expeditionId}`}
                   className="w-full md:w-auto bg-slate-900 group-hover:bg-primary text-white px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 active:scale-95 shadow-xl shadow-slate-900/10 group-hover:shadow-primary/20"
                 >
-                  Launch Mission Control
+                  View Trip Dashboard
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </motion.div>
@@ -105,10 +111,10 @@ export function TrekkerDashboard({ user, apiToken }: TrekkerDashboardProps) {
             <div className="w-16 h-16 bg-white border border-slate-200 rounded-2xl flex items-center justify-center mx-auto mb-6 text-slate-400">
               <Compass className="w-8 h-8" />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 tracking-tight uppercase italic">No Active Missions Found</h3>
-            <p className="text-sm text-slate-500 mt-2 mb-8">You haven't launched any expeditions yet. Discover your next adventure.</p>
+            <h3 className="text-xl font-bold text-slate-900 tracking-tight uppercase italic">No Active Trips Found</h3>
+            <p className="text-sm text-slate-500 mt-2 mb-8">You haven't booked any treks yet. Discover your next adventure.</p>
             <Link href="/treks" className="inline-flex items-center gap-2 bg-primary text-white px-10 py-4 rounded-full font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:scale-105 transition-all">
-              Search Expeditions
+              Search Treks
             </Link>
           </div>
         )}

@@ -7,20 +7,22 @@ import { LeaderDashboard } from './components/LeaderDashboard';
 import { AdminDashboard } from './components/AdminDashboard';
 import { TrekkerDashboard } from './components/TrekkerDashboard';
 
-export default function DashboardClient({ apiToken }: { apiToken: string }) {
-  const { data: session } = useSession();
+export default function DashboardClient({ apiToken, isLeader }: { apiToken: string; isLeader: boolean }) {
+  const { data: session, status } = useSession();
   const router = useRouter();
   const user = session?.user as any;
-  const role = user?.role || 'TREKKER';
+  const role = user?.role;
 
   // 🏛️ SECURE ROUTING EFFECT
   React.useEffect(() => {
+    if (status === 'loading') return;
+    
     if (role === 'ADMIN') {
       router.push('/adminControl');
     } else if (role === 'TREKKER') {
       router.push('/');
     }
-  }, [role, router]);
+  }, [role, router, status]);
 
   if (!user) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50">

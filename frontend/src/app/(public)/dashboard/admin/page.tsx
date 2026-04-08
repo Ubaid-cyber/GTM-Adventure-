@@ -9,11 +9,12 @@ import {
   ShieldCheck,
   AlertTriangle
 } from 'lucide-react';
-import AdminLayout from '@/components/layout/AdminLayout';
+import AdminLayout from '@/components/admin/AdminLayout';
 import { prisma } from '@/lib/prisma';
+import { formatINR } from '@/lib/utils/formatters';
 
 export default async function AdminDashboardPage() {
-  // 📊 Strategic Data Fetching
+  // ... (data fetching remains same)
   const [
     totalRevenue,
     activeExpeditions,
@@ -42,10 +43,10 @@ export default async function AdminDashboardPage() {
   ]);
 
   const stats = [
-    { name: 'Total Revenue', value: `$${(totalRevenue._sum.totalPrice || 0).toLocaleString()}`, icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
-    { name: 'Active Missions', value: activeExpeditions.toString(), icon: Map, color: 'text-blue-500', bg: 'bg-blue-500/10' },
+    { name: 'Total Revenue', value: formatINR(totalRevenue._sum.totalPrice || 0), icon: TrendingUp, color: 'text-emerald-500', bg: 'bg-emerald-500/10' },
+    { name: 'Active Trips', value: activeExpeditions.toString(), icon: Map, color: 'text-blue-500', bg: 'bg-blue-500/10' },
     { name: 'Pending Clearances', value: pendingMedicals.toString(), icon: Activity, color: 'text-amber-500', bg: 'bg-amber-500/10' },
-    { name: 'Personnel Registry', value: totalTrekkers.toString(), icon: Users, color: 'text-purple-500', bg: 'bg-purple-500/10' },
+    { name: 'Trekker Registry', value: totalTrekkers.toString(), icon: Users, color: 'text-purple-500', bg: 'bg-purple-500/10' },
   ];
 
   return (
@@ -54,8 +55,8 @@ export default async function AdminDashboardPage() {
         {/* HQ Header Focus */}
         <div className="flex items-end justify-between">
           <div className="space-y-1">
-            <h1 className="text-3xl font-black tracking-tight text-white">Strategic Overview</h1>
-            <p className="text-white/40 text-sm font-medium uppercase tracking-widest">Global Operations Command & Analytics</p>
+            <h1 className="text-3xl font-black tracking-tight text-white">Business Overview</h1>
+            <p className="text-white/40 text-sm font-medium uppercase tracking-widest">Global Operations HQ & Analytics</p>
           </div>
           <div className="flex items-center gap-3 bg-white/5 p-2 rounded-xl border border-white/5">
             <div className="px-4 py-2 bg-[#1e3a8a] text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-lg">Real-time Feed</div>
@@ -110,7 +111,7 @@ export default async function AdminDashboardPage() {
                     </div>
                   </div>
                   <div className="text-right flex flex-col items-end gap-2">
-                    <p className="text-white font-black text-sm">${booking.totalPrice}</p>
+                    <p className="text-white font-black text-sm">{formatINR(booking.totalPrice)}</p>
                     <div className={`
                       px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border
                       ${booking.status === 'CONFIRMED' ? 'text-emerald-500 bg-emerald-500/5 border-emerald-500/10' : 'text-amber-500 bg-amber-500/5 border-amber-500/10'}
@@ -139,7 +140,7 @@ export default async function AdminDashboardPage() {
                     <span className="text-[10px] font-black uppercase tracking-widest">Medical Clearance Required</span>
                   </div>
                   <p className="text-xs text-white/60 leading-relaxed font-medium">
-                    {pendingMedicals} personnel are awaiting high-altitude medical review before expedition deployment.
+                    {pendingMedicals} trekkers are awaiting high-altitude medical review before trip departure.
                   </p>
                   <button className="w-full py-3 bg-[#1e3a8a] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-[#1e40af] transition-all shadow-lg shadow-[#1e3a8a]/20">Open Safety Queue</button>
                 </div>

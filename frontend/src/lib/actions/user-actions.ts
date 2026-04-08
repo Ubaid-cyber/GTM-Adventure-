@@ -1,52 +1,44 @@
-import { NextRequest, NextResponse } from 'next/server';
+'use server';
+
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/lib/auth';
+import { revalidatePath } from 'next/cache';
 
-export async function GET(req: NextRequest) {
+export async function getUserMedicalProfileAction() {
   try {
     const session = await auth();
-    if (!session || !session.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    if (!session || !session.user?.email) return null;
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
       include: { medicalProfile: true }
     });
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
-
-    return NextResponse.json(user.medicalProfile || {});
-  } catch (error: any) {
-    console.error('Fetch Medical Profile Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    return user?.medicalProfile || null;
+  } catch (error) {
+    console.error('getUserMedicalProfileAction Error:', error);
+    return null;
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function updateUserMedicalProfileAction(data: { vitals: any, history: any, fitness?: any }) {
   try {
     const session = await auth();
-    if (!session || !session.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    if (!session || !session.user?.email) throw new Error('Unauthorized');
 
-    const { vitals, history, fitness } = await req.json();
+    const { vitals, history, fitness } = data;
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
       include: { medicalProfile: true }
     });
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
-    }
+    if (!user) throw new Error('User not found');
 
     const oldHistory = (user.medicalProfile?.history as any) || {};
     const newHistory = history || {};
     
-    // Check if any NEW risk factor was added (transition from false/null/undefined to true)
+    // Check for NEW risk factors
     const riskAdded = Object.keys(newHistory).some(key => 
       newHistory[key] === true && oldHistory[key] !== true
     );
@@ -73,9 +65,10 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ success: true, medicalProfile });
+    revalidatePath('/dashboard');
+    return { success: true, medicalProfile };
   } catch (error: any) {
-    console.error('Update Medical Profile Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error('updateUserMedicalProfileAction Error:', error);
+    return { success: false, error: error.message };
   }
 }

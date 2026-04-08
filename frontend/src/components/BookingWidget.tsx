@@ -6,10 +6,19 @@ import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Script from 'next/script';
 import { Suspense } from 'react';
-import MedicalCautionBanner from '@/app/dashboard/health/MedicalCautionBanner';
+import MedicalCautionBanner from '@/app/(public)/dashboard/health/MedicalCautionBanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, ArrowRight } from 'lucide-react';
+import { formatINR } from '@/lib/utils/formatters';
 import MedicalFormModal from './medical/MedicalFormModal';
+import { 
+  startBookingAction, 
+  getBookingProgress, 
+  cancelPendingBookingAction, 
+  updateBookingParticipantsAction,
+  initiateRazorpayOrderAction,
+  verifyPaymentAction
+} from '@/lib/actions/booking-actions';
 
 // Portal Helper for Global Overlays
 const Portal = ({ children }: { children: React.ReactNode }) => {
@@ -58,17 +67,14 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
       if (!retryId || !session?.user) return;
       setLoading(true);
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings/${retryId}`, {
-          headers: { 'x-user-email': (session?.user?.email as string) ?? '' }
-        });
-        const data = await res.json();
-        if (res.ok && data.booking) {
-          if (data.booking.status === 'CONFIRMED') {
+        const result = await getBookingProgress(retryId);
+        if (result.success && result.booking) {
+          if (result.booking.status === 'CONFIRMED') {
             setSuccess(true);
-          } else if (data.booking.status === 'PENDING') {
-            setPendingBookingId(data.booking.id);
-            setParticipants(data.booking.participants);
-            setInitialParticipants(data.booking.participants);
+          } else if (result.booking.status === 'PENDING') {
+            setPendingBookingId(result.booking.id);
+            setParticipants(result.booking.participants);
+            setInitialParticipants(result.booking.participants);
             setCheckoutStage('review'); // Jump to review if resuming
           }
         }
@@ -85,15 +91,14 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
     if (!pendingBookingId) return;
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings/${pendingBookingId}/cancel`, { 
-        method: 'POST',
-        headers: { 'x-user-email': (session?.user?.email as string) ?? '' }
-      });
-      if (res.ok) {
+      const result = await cancelPendingBookingAction(pendingBookingId);
+      if (result.success) {
         setPendingBookingId(null);
         setCheckoutStage('selection');
         setError(null); // Clear errors
         alert('Booking cancelled successfully.');
+      } else {
+        setError(result.error || 'Failed to cancel booking.');
       }
     } catch (err) {
       console.error('Failed to cancel booking:', err);
@@ -106,34 +111,24 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
     setError(null);
     setLoading(true);
     try {
-      const orderRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/razorpay/order`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'x-user-email': (session?.user?.email as string) ?? ''
-        },
-        body: JSON.stringify({ bookingId })
-      });
-      const orderData = await orderRes.json();
-      if (!orderRes.ok) throw new Error(orderData.error || 'Failed to initialize payment');
+      const orderResult = await initiateRazorpayOrderAction(bookingId);
+      if (!orderResult.success || !orderResult.order) {
+        throw new Error(orderResult.error || 'Failed to initialize payment');
+      }
 
-      if (orderData.order.id.startsWith('mock_')) {
+      const { order, keyId } = orderResult;
+
+      if (order.id.startsWith('mock_')) {
         console.log('SIMULATION MODE: Verification triggering...');
         try {
-          const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/razorpay/verify`, {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'x-user-email': (session?.user?.email as string) ?? ''
-            },
-            body: JSON.stringify({
-              razorpay_order_id: orderData.order.id,
-              razorpay_payment_id: `mock_pay_${Date.now()}`,
-              razorpay_signature: 'mock_sig',
-              bookingId
-            })
+          const verifyResult = await verifyPaymentAction({
+            razorpay_order_id: order.id,
+            razorpay_payment_id: `mock_pay_${Date.now()}`,
+            razorpay_signature: 'mock_sig',
+            bookingId
           });
-          if (verifyRes.ok) {
+          
+          if (verifyResult.success) {
             setSuccess(true);
             setPendingBookingId(null);
           } else {
@@ -148,29 +143,22 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
       }
 
       const options = {
-        key: (orderData.keyId || '').replace(/['"]+/g, ''),
-        amount: orderData.order.amount,
-        currency: orderData.order.currency,
+        key: (keyId || '').replace(/['"]+/g, ''),
+        amount: order.amount,
+        currency: order.currency,
         name: 'GTM Adventures',
         description: 'Expedition Booking',
-        order_id: orderData.order.id,
+        order_id: order.id,
         handler: async function (response: any) {
           setLoading(true);
           try {
-            const verifyRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/razorpay/verify`, {
-              method: 'POST',
-              headers: { 
-                'Content-Type': 'application/json',
-                'x-user-email': (session?.user?.email as string) ?? ''
-              },
-              body: JSON.stringify({
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                bookingId
-              })
+            const verifyResult = await verifyPaymentAction({
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              bookingId
             });
-            if (verifyRes.ok) {
+            if (verifyResult.success) {
               setSuccess(true);
               setPendingBookingId(null);
             } else {
@@ -222,30 +210,18 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
       if (pendingBookingId) {
         // Update if participants changed
         if (participants !== initialParticipants) {
-          await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings/${pendingBookingId}`, {
-            method: 'PATCH',
-            headers: { 
-              'Content-Type': 'application/json',
-              'x-user-email': (session?.user?.email as string) ?? ''
-            },
-            body: JSON.stringify({ participants })
-          });
+          const updateResult = await updateBookingParticipantsAction(pendingBookingId, participants);
+          if (!updateResult.success) throw new Error(updateResult.error || 'Failed to update participants');
         }
         await startPaymentFlow(pendingBookingId);
       } else {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/bookings`, {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'x-user-email': (session?.user?.email as string) ?? ''
-          },
-          body: JSON.stringify({ trekId, participants }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Booking failed');
+        const result = await startBookingAction(trekId, participants);
+        if (!result.success || !result.booking) {
+          throw new Error(result.error || 'Booking failed');
+        }
         
-        setPendingBookingId(data.booking.id);
-        await startPaymentFlow(data.booking.id);
+        setPendingBookingId(result.booking.id);
+        await startPaymentFlow(result.booking.id);
       }
     } catch (err: any) {
       setError(err.message);
@@ -360,7 +336,7 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
                 <div>
                   <div className="text-[9px] md:text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Trek Price</div>
                   <div className="text-3xl md:text-4xl font-black text-foreground tracking-tighter">
-                    ₹{price}<span className="text-xs md:text-sm text-muted font-medium tracking-normal">/seat</span>
+                    {formatINR(price)}<span className="text-xs md:text-sm text-muted font-medium tracking-normal">/seat</span>
                   </div>
                 </div>
                 <span className={`px-3 py-1 md:px-4 md:py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-widest border transition-all ${isSoldOut ? 'bg-red-50 border-red-200 text-red-600' : 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm'}`}>
@@ -393,7 +369,7 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
               {/* Total Display */}
               <div className="pt-6 border-t border-border flex justify-between items-center">
                   <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-muted">Total Price</span>
-                 <span className="text-xl md:text-2xl font-black text-primary tracking-tighter">₹{price * participants}</span>
+                 <span className="text-xl md:text-2xl font-black text-primary tracking-tighter">{formatINR(price * participants)}</span>
               </div>
 
               {error && (

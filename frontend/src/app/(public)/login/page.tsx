@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Smartphone, Mail, Globe, ArrowRight, ShieldCheck } from 'lucide-react';
+import { sendPhoneOtpAction } from '@/lib/actions/auth-actions';
 
 export default function LoginPage() {
   const [tab, setTab] = useState<'email' | 'phone'>('email');
@@ -90,13 +91,8 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/auth/phone', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, action: 'SEND_OTP' }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error);
+      const result = await sendPhoneOtpAction(phone);
+      if (!result.success) throw new Error(result.error);
       setStep('otp');
     } catch (err: any) {
       setError(err.message || 'Failed to send OTP.');

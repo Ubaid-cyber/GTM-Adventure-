@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
 import { Shield, Heart, Activity, CheckCircle, AlertTriangle } from 'lucide-react';
 
+import { getExpeditionRosterAction } from '@/lib/actions/leader-actions';
+
 interface Participant {
   id: string;
   name: string | null;
@@ -24,11 +26,9 @@ interface RosterData {
 
 export default function GroupMembers({ 
   expeditionId, 
-  apiToken,
   isLeader 
 }: { 
   expeditionId: string, 
-  apiToken: string,
   isLeader: boolean 
 }) {
   const { data: session } = useSession();
@@ -39,14 +39,8 @@ export default function GroupMembers({
     async function fetchRoster() {
       if (!session?.user?.email) return;
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/active-bookings/${expeditionId}/roster`, {
-          headers: { 
-            'Authorization': `Bearer ${apiToken}`,
-            'x-user-email': session.user.email 
-          }
-        });
-        const result = await res.json();
-        if (res.ok) setData(result);
+        const result = await getExpeditionRosterAction(expeditionId);
+        if (result) setData(result as any);
       } catch (err) {
         console.error('Roster fetch error:', err);
       } finally {
@@ -54,7 +48,7 @@ export default function GroupMembers({
       }
     }
     fetchRoster();
-  }, [expeditionId, session?.user?.email, apiToken]);
+  }, [expeditionId, session?.user?.email]);
 
   if (loading) return (
     <div className="py-20 flex flex-col items-center justify-center">

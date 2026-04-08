@@ -22,6 +22,8 @@ const Portal = ({ children }: { children: React.ReactNode }) => {
   return mounted ? createPortal(children, document.body) : null;
 };
 
+import { updateUserMedicalProfileAction } from '@/lib/actions/user-actions';
+
 export default function MedicalFormModal({ isOpen, onClose, userEmail }: MedicalFormModalProps) {
   const router = useRouter();
   const [step, setStep] = useState<'form' | 'success'>('form');
@@ -60,11 +62,13 @@ export default function MedicalFormModal({ isOpen, onClose, userEmail }: Medical
 
     const formData = new FormData(e.currentTarget);
     const data = {
-      height: formData.get('height'),
-      weight: formData.get('weight'),
-      bloodGroup: formData.get('bloodGroup'),
-      bp: formData.get('bp'),
-      medicalHistory: {
+      vitals: {
+        height: formData.get('height'),
+        weight: formData.get('weight'),
+        bloodGroup: formData.get('bloodGroup'),
+        bp: formData.get('bp'),
+      },
+      history: {
         heart: formData.get('heart') === 'on',
         asthma: formData.get('asthma') === 'on',
         hypertension: formData.get('hypertension') === 'on',
@@ -75,13 +79,9 @@ export default function MedicalFormModal({ isOpen, onClose, userEmail }: Medical
     };
 
     try {
-      const response = await fetch('/api/user/medical', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: userEmail, ...data }),
-      });
+      const result = await updateUserMedicalProfileAction(data);
 
-      if (!response.ok) throw new Error('Transmission Failure');
+      if (!result.success) throw new Error(result.error || 'Transmission Failure');
       
       setStep('success');
     } catch (err: any) {

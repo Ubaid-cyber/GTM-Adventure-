@@ -21,6 +21,7 @@ export async function verifyCredentials(email: string, password: string, ip: str
       await redis.incr(lockKey);
       await redis.expire(lockKey, 1800);
     }
+    console.log(`[AuthDebug] User not found or no password: ${email}`);
     throw new Error('INVALID_CREDENTIALS');
   }
 
@@ -30,6 +31,7 @@ export async function verifyCredentials(email: string, password: string, ip: str
       await redis.incr(lockKey);
       await redis.expire(lockKey, 1800);
     }
+    console.log(`[AuthDebug] Password mismatch for: ${email}`);
     throw new Error('INVALID_CREDENTIALS');
   }
 
@@ -37,15 +39,21 @@ export async function verifyCredentials(email: string, password: string, ip: str
     await redis.del(lockKey);
   }
 
-  await prisma.auditLog.create({
-    data: {
-      userId: user.id,
-      action: 'SIGN_IN_SUCCESS',
-      ip,
-      userAgent,
-      metadata: { provider: 'credentials' },
-    },
-  });
+  try {
+    await prisma.auditLog.create({
+      data: {
+        userId: user.id,
+        action: 'SIGN_IN_SUCCESS',
+        ip,
+        userAgent,
+        metadata: { provider: 'credentials' },
+      },
+    });
+  } catch (logError) {
+    console.error(`[AuthDebug] Audit log failed for ${email}:`, logError);
+    // Continue login even if logging fails? Or throw? 
+    // Usually better to let user in but log the error.
+  }
 
   return {
     id: user.id,

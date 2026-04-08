@@ -15,18 +15,17 @@ async function main() {
 
   try {
     // 1. Core Admin Account
-    const adminEmail = process.env.INITIAL_ADMIN_EMAIL || 'admin@gtm-adventures.com';
-    const adminPass = process.env.INITIAL_ADMIN_PASSWORD || 'admin1';
+    const adminEmail = 'admin@gtm-adventures.com';
+    const adminPass = 'admin';
     const adminHashed = await bcrypt.hash(adminPass, 10);
-    // Use a provided secret or generate a random one for dev
-    const adminSecret = process.env.INITIAL_ADMIN_2FA_SECRET || 'GAXGS33TOBXGIJBK'; 
+    const adminSecret = 'GAXGS33TOBXGIJBK'; 
 
     await prisma.user.upsert({
       where: { email: adminEmail },
       update: {
         password: adminHashed,
         role: 'ADMIN',
-        twoFactorEnabled: true,
+        twoFactorEnabled: false, // 🛠️ DISABLED FOR DEV STABILITY
         twoFactorSecret: adminSecret,
       },
       create: {
@@ -34,7 +33,7 @@ async function main() {
         name: 'HQ Commander',
         password: adminHashed,
         role: 'ADMIN',
-        twoFactorEnabled: true,
+        twoFactorEnabled: false,
         twoFactorSecret: adminSecret,
       },
     });
@@ -44,8 +43,8 @@ async function main() {
     console.log('  🔐 2FA: ENABLED\n');
 
     // 2. Default Leader Account
-    const leaderEmail = process.env.INITIAL_LEADER_EMAIL || 'leader@gtm-adventures.com';
-    const leaderPass = process.env.INITIAL_LEADER_PASSWORD || 'leader123';
+    const leaderEmail = 'bhatubaid341@gmail.com';
+    const leaderPass = 'admin';
     const leaderHashed = await bcrypt.hash(leaderPass, 10);
 
     await prisma.user.upsert({
@@ -66,8 +65,32 @@ async function main() {
 
     console.log('  ✅ Expedition Leader Synchronized!');
     console.log(`  📧 Email: ${leaderEmail}`);
-    console.log(`  🔑 Password: ${leaderPass}`);
     console.log('  🎭 Role: LEADER\n');
+
+    // 3. Regular User Account
+    const userEmail = 'user@gtm-adventures.com';
+    const userPass = 'admin';
+    const userHashed = await bcrypt.hash(userPass, 10);
+
+    await prisma.user.upsert({
+      where: { email: userEmail },
+      update: {
+        password: userHashed,
+        role: 'TREKKER',
+        twoFactorEnabled: false,
+      },
+      create: {
+        email: userEmail,
+        name: 'Standard Trekker',
+        password: userHashed,
+        role: 'TREKKER',
+        twoFactorEnabled: false,
+      },
+    });
+
+    console.log('  ✅ Standard Trekker Synchronized!');
+    console.log(`  📧 Email: ${userEmail}`);
+    console.log('  🎭 Role: TREKKER\n');
 
   } catch (err: any) {
     console.error('  ❌ Seeding Mission Failed:', err.message);

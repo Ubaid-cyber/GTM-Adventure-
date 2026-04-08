@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { registerUserAction } from '@/lib/actions/auth-actions';
 
 export default function SignupClient() {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
@@ -24,13 +25,14 @@ export default function SignupClient() {
       return;
     }
     try {
-      const res = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: formData.name, email: formData.email, password: formData.password }),
+      const result = await registerUserAction({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Registration failed');
+
+      if (!result.success) throw new Error(result.error || 'Registration failed');
+      
       router.push('/login?registered=true');
     } catch (err: any) {
       setError(err.message);

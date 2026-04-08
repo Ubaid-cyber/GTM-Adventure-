@@ -16,12 +16,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  const routes = ['', '/about', '/treks'].map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new URLSearchParams().get('date') ? new URL(new URLSearchParams().get('date')!) : new URL(new Date().toISOString()),
-    changeFrequency: 'daily' as const,
-    priority: route === '' ? 1.0 : 0.9,
-  }));
 
   // Fix: use current date for static routes lastModified
   const staticRoutes = ['', '/about', '/treks'].map((route) => ({

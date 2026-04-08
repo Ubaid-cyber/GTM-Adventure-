@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, Shield, User, Heart, Search, ChevronLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getLeaderMedicalRecordsAction } from '@/lib/actions/leader-actions';
 
 interface MedicalProfile {
   id: string;
@@ -32,14 +33,8 @@ export const LeaderMedicalView: React.FC<LeaderMedicalViewProps> = ({ user, apiT
   useEffect(() => {
     const fetchMedicalRecords = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leader/medical-records`, {
-          headers: { 
-            'Authorization': `Bearer ${apiToken}`,
-            'x-user-email': user.email 
-          }
-        });
-        const data = await res.json();
-        if (Array.isArray(data)) setProfiles(data);
+        const data = await getLeaderMedicalRecordsAction();
+        setProfiles(data);
       } catch (err) {
         console.error('Fetch failed:', err);
       } finally {

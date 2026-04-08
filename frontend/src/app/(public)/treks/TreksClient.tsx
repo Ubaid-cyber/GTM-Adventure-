@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useDebounce } from '@/hooks/use-debounce';
+import { formatINR } from '@/lib/utils/formatters';
 
 const DIFFICULTY_COLORS: Record<string, string> = {
   EASY:     'bg-emerald-100 text-emerald-700',
@@ -10,6 +11,8 @@ const DIFFICULTY_COLORS: Record<string, string> = {
   HARD:     'bg-orange-100 text-orange-700',
   EXTREME:  'bg-red-100 text-red-700',
 };
+
+import { getTreksAction } from '@/lib/actions/trek-actions';
 
 export default function TreksClient() {
   const [treks, setTreks] = useState<any[]>([]);
@@ -38,25 +41,22 @@ export default function TreksClient() {
   const fetchTreks = useCallback(async (pageToFetch = 1, isLoadMore = false) => {
     if (isLoadMore) setLoadingMore(true); else setLoading(true);
     try {
-      const params = new URLSearchParams();
-      if (debouncedQuery)      params.append('q', debouncedQuery);
-      if (debouncedDifficulty) params.append('difficulty', debouncedDifficulty);
-      if (debouncedMinPrice)   params.append('minPrice', debouncedMinPrice);
-      if (debouncedMaxPrice)   params.append('maxPrice', debouncedMaxPrice);
-      if (debouncedMinDays)    params.append('minDays', debouncedMinDays);
-      if (debouncedSort)       params.append('sort', debouncedSort);
-      params.append('page', pageToFetch.toString());
-      params.append('limit', '6');
-
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/treks?${params.toString()}`);
-      if (!res.ok) throw new Error('Failed to fetch treks');
-      const data = await res.json();
+      const data = await getTreksAction({
+        q: debouncedQuery,
+        difficulty: debouncedDifficulty,
+        minPrice: debouncedMinPrice,
+        maxPrice: debouncedMaxPrice,
+        minDays: debouncedMinDays,
+        sort: debouncedSort,
+        page: pageToFetch,
+        limit: 6
+      });
 
       if (isLoadMore) setTreks(prev => [...prev, ...data.treks]);
       else setTreks(data.treks || []);
 
       setPagination({ page: data.pagination.page, totalPages: data.pagination.totalPages });
-      setSearchMode(data.searchMode || 'browse');
+      setSearchMode(data.searchMode as any || 'browse');
     } catch (err) {
       console.error(err);
     } finally {
@@ -71,13 +71,13 @@ export default function TreksClient() {
   };
 
   return (
-    <div className="min-h-screen bg-background pt-16">
+    <div className="min-h-screen bg-background pt-0">
 
       {/* ── Hero Image ── */}
       <div className="relative w-full h-[55vh] md:h-[65vh] overflow-hidden">
         <img
           src="https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&q=85&w=2070"
-          alt="Himalayan Mountains"
+          alt="Elite Himalayan Trekking Expeditions - GTM Adventures"
           className="w-full h-full object-cover"
           onError={(e) => {
             (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2070';
@@ -85,9 +85,9 @@ export default function TreksClient() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/30" />
         <div className="absolute bottom-8 left-6 md:bottom-12 md:left-10 max-w-2xl px-4 md:px-0">
-          <h1 className="text-white text-4xl md:text-7xl font-black tracking-tighter uppercase italic leading-none drop-shadow-2xl">
+          <h1 className="text-white text-4xl md:text-7xl font-black tracking-tighter uppercase leading-none drop-shadow-2xl">
             Featured <br />
-            <span className="text-primary italic">Treks</span>
+            <span className="text-primary">Treks</span>
           </h1>
           <p className="text-white/60 mt-4 text-base md:text-xl font-medium tracking-wide">
              Discover the standard of mountain trekking and adventure.
@@ -234,7 +234,7 @@ export default function TreksClient() {
                         </p>
 
                         <div className="flex items-center justify-between mt-auto">
-                          <span className="text-lg font-black text-slate-900 tracking-tight">₹{trek.price}<span className="text-[10px] text-slate-400 align-top ml-0.5">+</span></span>
+                          <span className="text-lg font-black text-slate-900 tracking-tight">{formatINR(trek.price)}<span className="text-[10px] text-slate-400 align-top ml-0.5">+</span></span>
                           <Link
                             href={`/treks/${trek.id}`}
                             className="bg-primary hover:bg-primary-hover text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-primary/10 active:scale-95"
@@ -305,7 +305,7 @@ export default function TreksClient() {
                         {s.icon}
                       </div>
                       <div>
-                        <h1 className="font-bold text-foreground text-[12px] mb-1 leading-tight">{s.title}</h1>
+                        <h3 className="font-bold text-foreground text-[12px] mb-1 leading-tight">{s.title}</h3>
                         <p className="text-[10px] text-muted leading-relaxed line-clamp-3 font-medium">{s.desc}</p>
                       </div>
                     </div>

@@ -3,6 +3,24 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSession } from 'next-auth/react';
+import { formatDateTime } from '@/lib/utils/date-safe';
+
+interface Author {
+  name: string;
+  profileImage: string | null;
+  role: string;
+}
+
+interface Post {
+  id: string;
+  content: string;
+  type: 'MESSAGE' | 'UPDATE' | 'MILESTONE' | 'IMAGE' | 'ALERT';
+  mediaUrl: string | null;
+  createdAt: string;
+  user: Author;
+}
+
+import { getExpeditionFeedAction, createExpeditionPostAction } from '@/lib/actions/leader-actions';
 
 interface Author {
   name: string;
@@ -20,11 +38,9 @@ interface Post {
 }
 
 export default function GroupChat({ 
-  expeditionId, 
-  apiToken 
+  expeditionId
 }: { 
-  expeditionId: string, 
-  apiToken: string 
+  expeditionId: string 
 }) {
   const { data: session } = useSession();
   const [posts, setPosts] = useState<Post[]>([]);
@@ -32,21 +48,20 @@ export default function GroupChat({
   const [postType, setPostType] = useState<Post['type']>('MESSAGE');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     fetchPosts();
-  }, [expeditionId, apiToken]);
+  }, [expeditionId]);
 
   async function fetchPosts() {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/active-bookings/${expeditionId}/feed`, {
-        headers: {
-          'Authorization': `Bearer ${apiToken}`,
-          'x-user-email': session?.user?.email || ''
-        }
-      });
-      const data = await res.json();
-      if (res.ok) setPosts(data);
+      const data = await getExpeditionFeedAction(expeditionId);
+      if (data) setPosts(data as any);
     } catch (err) {
       console.error('Feed retrieval failure:', err);
     } finally {
@@ -60,22 +75,10 @@ export default function GroupChat({
 
     setSubmitting(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/active-bookings/${expeditionId}/feed`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiToken}`,
-          'x-user-email': session?.user?.email || ''
-        },
-        body: JSON.stringify({
-          content: newPost,
-          type: postType
-        })
-      });
+      const result = await createExpeditionPostAction(expeditionId, newPost, postType);
 
-      if (res.ok) {
-        const created = await res.json();
-        setPosts([created, ...posts]);
+      if (result.success && result.post) {
+        setPosts([result.post as any, ...posts]);
         setNewPost('');
       }
     } catch (err) {
@@ -151,7 +154,7 @@ export default function GroupChat({
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-sm font-black tracking-tight mr-2">{post.user.name}</span>
-                      <span className="text-[10px] font-mono text-white/30">{new Date(post.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span className="text-[10px] font-mono text-white/30">{mounted ? formatDateTime(post.createdAt) : '---'}</span>
                       <div className="flex items-center gap-2 mt-1">
                         <div className="w-1 h-1 bg-primary rounded-full"></div>
                         <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Member</span>

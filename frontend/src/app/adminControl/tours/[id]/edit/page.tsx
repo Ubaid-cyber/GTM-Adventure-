@@ -20,7 +20,7 @@ export default function EditTourPage({ params }: { params: Promise<{ id: string 
       try {
         const data = await getTourById(id);
         if (!data) {
-          setError('Mission Profile Not Found');
+          setError('Trek Profile Not Found');
           return;
         }
         setTourData(data);
@@ -41,7 +41,7 @@ export default function EditTourPage({ params }: { params: Promise<{ id: string 
       router.push('/adminControl/tours');
       router.refresh();
     } catch (err: any) {
-      setError(err.message || 'Mission Profile Update Failure');
+      setError(err.message || 'Trek Profile Update Failure');
     } finally {
       setSaving(false);
     }
@@ -51,7 +51,7 @@ export default function EditTourPage({ params }: { params: Promise<{ id: string 
     return (
       <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
         <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
-        <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">Hydrating Mission Intel...</p>
+        <p className="text-white/40 text-[10px] font-black uppercase tracking-widest">Loading Trek Info...</p>
       </div>
     );
   }

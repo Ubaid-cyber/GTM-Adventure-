@@ -92,7 +92,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                       <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-4">Command Center</h3>
                       <div className="space-y-2 mb-8">
                         <Link 
-                          href="/dashboard"
+                          href={(session?.user as any)?.role === 'ADMIN' ? "/adminControl" : "/dashboard"}
                           onClick={toggleMenu}
                           className="flex items-center justify-between p-4 bg-primary/5 rounded-2xl border border-primary/20 hover:border-primary/40 hover:bg-white hover:shadow-xl hover:shadow-primary/5 transition-all group active:scale-[0.98]"
                         >
@@ -101,7 +101,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                                 <Shield size={20} />
                              </div>
                              <div className="flex flex-col">
-                                <span className="font-black text-primary text-xs uppercase tracking-widest leading-none mb-1">Executive Dashboard</span>
+                                <span className="font-black text-primary text-xs uppercase tracking-widest leading-none mb-1">{(session?.user as any)?.role === 'ADMIN' ? 'Control HQ' : 'Executive Dashboard'}</span>
                                 <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Operational Oversight</span>
                              </div>
                           </div>

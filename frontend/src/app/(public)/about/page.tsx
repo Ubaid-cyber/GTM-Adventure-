@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-background pt-16">
+    <div className="min-h-screen bg-background pt-0">
 
       {/* Hero */}
       <div className="relative h-64 md:h-80 overflow-hidden">

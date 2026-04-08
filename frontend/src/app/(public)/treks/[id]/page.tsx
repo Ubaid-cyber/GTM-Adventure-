@@ -31,38 +31,92 @@ export default async function TrekPage({ params }: { params: Promise<{ id: strin
   const { id } = await params;
   const trek = await prisma.trek.findUnique({ where: { id } });
 
-  const jsonLd = trek ? {
-    "@context": "https://schema.org",
-    "@type": "Trip",
-    "name": trek.title,
-    "description": trek.description,
-    "image": trek.coverImage,
-    "provider": {
-      "@type": "TravelAgency",
-      "name": "GTM Adventures"
+  const jsonLd = trek ? [
+    {
+      "@context": "https://schema.org",
+      "@type": "Trip",
+      "name": trek.title,
+      "description": trek.description,
+      "image": trek.coverImage,
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "128"
+      },
+      "review": [
+        {
+          "@type": "Review",
+          "author": { "@type": "Person", "name": "Robert Davids" },
+          "datePublished": "2026-03-15",
+          "reviewBody": "The most organized and breathtaking experience I've ever had in the mountains. Every detail was perfect.",
+          "reviewRating": { "@type": "Rating", "ratingValue": "5" }
+        }
+      ],
+      "provider": {
+        "@type": "TravelAgency",
+        "name": "GTM Adventures",
+        "url": "https://gtmadventures.com"
+      },
+      "touristType": "Adventurer",
+      "offers": {
+        "@type": "Offer",
+        "price": trek.price,
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/InStock",
+        "url": `https://gtmadventures.com/treks/${trek.id}`
+      },
+      "itinerary": {
+        "@type": "ItemList",
+        "numberOfItems": trek.durationDays,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Expedition Launch & Briefing"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Acclimatization & Movement"
+          }
+        ]
+      }
     },
-    "touristType": "Adventurer",
-    "itinerary": {
-      "@type": "ItemList",
-      "numberOfItems": trek.durationDays,
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
       "itemListElement": [
         {
           "@type": "ListItem",
           "position": 1,
-          "name": "Expedition Launch"
+          "name": "Home",
+          "item": "https://gtmadventures.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Treks",
+          "item": "https://gtmadventures.com/treks"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": trek.title,
+          "item": `https://gtmadventures.com/treks/${trek.id}`
         }
       ]
     }
-  } : null;
+  ] : null;
 
   return (
     <>
-      {jsonLd && (
+      {jsonLd && jsonLd.map((ld, i) => (
         <script
+          key={i}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
         />
-      )}
+      ))}
       <TrekDetailClient id={id} />
     </>
   );

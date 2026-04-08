@@ -8,6 +8,8 @@ import {
   Wind, AlertTriangle, CheckCircle2, ChevronRight,
   Clock, Search, Filter
 } from 'lucide-react';
+import { getActiveMissionsAction } from '@/lib/actions/admin-actions';
+import { formatDateTime } from '@/lib/utils/date-safe';
 
 interface Mission {
   id: string;
@@ -31,19 +33,18 @@ export default function MissionOversightView({ apiToken }: { apiToken: string })
   const [missions, setMissions] = useState<Mission[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     async function fetchMissions() {
       if (!session?.user?.email) return;
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/ops/active-missions`, {
-          headers: { 
-            'Authorization': `Bearer ${apiToken}`,
-            'x-user-email': session.user.email 
-          }
-        });
-        const data = await res.json();
-        if (res.ok) setMissions(data);
+        const data = await getActiveMissionsAction();
+        setMissions(data as any);
       } catch (err) {
         console.error('Oversight fetch error:', err);
       } finally {
@@ -61,7 +62,7 @@ export default function MissionOversightView({ apiToken }: { apiToken: string })
   if (loading) return (
     <div className="py-20 flex flex-col items-center justify-center">
        <div className="w-12 h-12 border-2 border-cyan-500/20 border-t-cyan-500 rounded-full animate-spin mb-6" />
-       <p className="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] animate-pulse">Establishing Mission Link...</p>
+       <p className="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em] animate-pulse">Connecting to Live Feed...</p>
     </div>
   );
 
@@ -70,15 +71,15 @@ export default function MissionOversightView({ apiToken }: { apiToken: string })
       {/* HEADER CONTROLS */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
          <div>
-            <h2 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900">Mission <span className="text-cyan-600">Oversight</span></h2>
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Global Expedition Command // {missions.length} Active Vectors</p>
+            <h2 className="text-3xl font-black uppercase tracking-tighter italic text-slate-900">Trip <span className="text-cyan-600">Monitor</span></h2>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Live Trip Tracking // {missions.length} Active Treks</p>
          </div>
          <div className="flex items-center gap-4 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                <input 
                  type="text" 
-                 placeholder="Search Missions..."
+                 placeholder="Search Treks..."
                  value={searchQuery}
                  onChange={(e) => setSearchQuery(e.target.value)}
                  className="w-full bg-white border border-slate-200 rounded-2xl pl-12 pr-4 py-3 text-xs font-bold focus:border-cyan-500/50 outline-none transition-all shadow-sm"
@@ -121,7 +122,7 @@ export default function MissionOversightView({ apiToken }: { apiToken: string })
                            </div>
                            <div>
                               <h3 className="text-xl font-black uppercase tracking-tighter italic leading-tight">{mission.trek.title}</h3>
-                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Sector: {mission.currentLocationName || 'Stationary'}</p>
+                              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Location: {mission.currentLocationName || 'Stationary'}</p>
                            </div>
                         </div>
                         <div className={`px-3 py-1 rounded-full ${statusColor} text-white text-[9px] font-black uppercase tracking-widest animate-pulse`}>
@@ -144,15 +145,15 @@ export default function MissionOversightView({ apiToken }: { apiToken: string })
                         </div>
                      </div>
 
-                     {/* LATEST SITREP SNIPPET */}
+                     {/* LATEST Status Update SNIPPET */}
                      {latestSitrep ? (
                         <div className="bg-slate-50 rounded-3xl p-5 border border-slate-100 mb-4">
                            <div className="flex items-center justify-between mb-3">
                               <div className="flex items-center gap-2">
                                  <Wind className="w-3.5 h-3.5 text-cyan-600" />
-                                 <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Latest SITREP</span>
+                                 <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Latest Status Update</span>
                               </div>
-                              <span className="text-[9px] font-mono text-slate-400">{new Date(latestSitrep.createdAt).toLocaleTimeString()}</span>
+                              <span className="text-[9px] font-mono text-slate-400">{mounted ? formatDateTime(latestSitrep.createdAt) : '---'}</span>
                            </div>
                            <p className="text-[11px] text-slate-600 font-medium leading-relaxed italic">
                               "{latestSitrep.weather || 'No weather logged.'} | {latestSitrep.healthSummary || 'Health nominal.'}"
@@ -160,7 +161,7 @@ export default function MissionOversightView({ apiToken }: { apiToken: string })
                         </div>
                      ) : (
                         <div className="py-6 text-center border-2 border-dashed border-slate-100 rounded-3xl mb-4">
-                           <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No SITREP filed in this sector</p>
+                           <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No Status Update filed in this sector</p>
                         </div>
                      )}
 
@@ -188,7 +189,7 @@ export default function MissionOversightView({ apiToken }: { apiToken: string })
       {filteredMissions.length === 0 && (
          <div className="py-40 flex flex-col items-center justify-center text-slate-300 grayscale opacity-40">
             <Globe className="w-20 h-20 mb-6" />
-            <p className="text-sm font-black uppercase tracking-[0.3em]">No Active Mission Vectors Found</p>
+            <p className="text-sm font-black uppercase tracking-[0.3em]">No Active Treks Found</p>
          </div>
       )}
     </div>

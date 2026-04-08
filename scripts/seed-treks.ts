@@ -146,18 +146,9 @@ async function main() {
   await prisma.booking.deleteMany({});
   await prisma.expedition.deleteMany({});
   await prisma.trek.deleteMany({});
-  await prisma.user.deleteMany({});
-  console.log('  🗑  Cleared existing data (bookings, expeditions, treks, users)');
+  // await prisma.user.deleteMany({}); // 🛡️ DO NOT DELETE USERS: Preserves Admin/Leader accounts
+  console.log('  🗑  Cleared existing data (bookings, expeditions, treks)');
 
-  // Create Default User
-  const devUser = await prisma.user.create({
-    data: {
-      name: 'ubaid',
-      email: 'ubaid@example.com',
-      role: UserRole.TREKKER,
-    }
-  });
-  console.log(`  ✅ Created Dev User: ${devUser.name} (${devUser.email})`);
 
   const createdTreks = [];
   for (const trek of treks) {
