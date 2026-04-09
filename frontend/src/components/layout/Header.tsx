@@ -32,12 +32,11 @@ export default async function Header() {
                   <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
                   {(session?.user as any)?.role === 'ADMIN' ? 'Control HQ' : 'Dashboard'}
                 </Link>
-                <Link href="/dashboard/participants" className="text-sm text-muted hover:text-cyan-400 font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap uppercase tracking-widest">
-                  <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
-                  My Participants
-                </Link>
+                <Link href="/dashboard/safety" className="text-sm text-muted hover:text-emerald-400 font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap uppercase tracking-widest">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
                   Safety Records
                 </Link>
+
 
               </>
             ) : (
