@@ -15,6 +15,7 @@ import {
 import { prisma } from '@/lib/prisma';
 import { getAdminFinancialStats } from '@/lib/actions/admin-actions';
 import { StatCard } from './components/StatCard';
+import { formatINR } from '@/lib/utils/formatters';
 
 export default async function AdminDashboardPage() {
   // 📊 Professional Business Data Fetching
@@ -65,7 +66,7 @@ export default async function AdminDashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard 
           name="Total Revenue" 
-          value={`$${(totalRevenue._sum.totalPrice || 0).toLocaleString()}`} 
+          value={formatINR(totalRevenue._sum.totalPrice || 0)} 
           icon={CreditCard} 
           color="text-blue-500" 
           bg="bg-blue-500/10" 
@@ -131,7 +132,7 @@ export default async function AdminDashboardPage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-white font-bold text-sm">${booking.totalPrice.toLocaleString()}</p>
+                  <p className="text-white font-bold text-sm">{formatINR(booking.totalPrice)}</p>
                   <span className={`text-[9px] font-black uppercase tracking-widest ${booking.status === 'CONFIRMED' ? 'text-green-500' : 'text-amber-500'}`}>
                     {booking.status}
                   </span>
