@@ -185,7 +185,14 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                     </div>
                   </div>
                   <button 
-                    onClick={() => signOut({ redirect: true, callbackUrl: '/' })}
+                    onClick={async () => {
+                      try {
+                        await signOut({ redirect: false });
+                        window.location.assign('/');
+                      } catch (e) {
+                        window.location.assign('/');
+                      }
+                    }}
                     className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-background border border-rose-500/20 text-rose-500 font-black text-xs uppercase tracking-widest hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all active:scale-[0.98]"
                   >
                     <LogOut size={16} />
