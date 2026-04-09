@@ -23,40 +23,34 @@ export default async function Header() {
             <span className="font-bold text-primary text-base tracking-tight">GTM Adventures</span>
           </Link>
 
-          {/* Role-Adaptive Navigation */}
+          {/* Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            {(session?.user as any)?.role === 'LEADER' || (session?.user as any)?.role === 'ADMIN' ? (
-              // 🧗 OPERATIONAL HQ: Leader & Admin View
+            <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Treks</Link>
+            <Link href="/about" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">About</Link>
+            
+            {isLoggedIn && (
               <>
-                <Link href={(session?.user as any)?.role === 'ADMIN' ? "/adminControl" : "/dashboard"} className="text-sm text-primary hover:text-primary-hover font-extrabold transition-colors flex items-center gap-1.5 whitespace-nowrap uppercase tracking-widest">
-                  <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
-                  {(session?.user as any)?.role === 'ADMIN' ? 'Control HQ' : 'Dashboard'}
+                <Link href="/dashboard/bookings" className="text-sm text-muted hover:text-foreground font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 bg-accent rounded-full"></span>
+                  My Bookings
                 </Link>
-                <Link href="/dashboard/safety" className="text-sm text-muted hover:text-emerald-400 font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap uppercase tracking-widest">
-                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
-                  Safety Records
-                </Link>
+                
+                {((session?.user as any)?.role === 'LEADER' || (session?.user as any)?.role === 'ADMIN') && (
+                  <div className="h-4 w-px bg-slate-200 mx-2" />
+                )}
 
+                {(session?.user as any)?.role === 'ADMIN' && (
+                  <Link href="/adminControl" className="text-[10px] bg-primary text-white px-3 py-1.5 rounded-lg font-black uppercase tracking-widest hover:bg-primary-hover transition-all shadow-md shadow-primary/20 flex items-center gap-2">
+                    <span className="w-1 h-1 bg-white rounded-full animate-pulse"></span>
+                    Command HQ
+                  </Link>
+                )}
 
-              </>
-            ) : (
-              // 🏔️ TREKKER / GUEST: Consumer View
-              <>
-                <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Treks</Link>
-                <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Destinations</Link>
-                <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Featured Treks</Link>
-                <Link href="/about" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">About</Link>
-                {isLoggedIn && (
-                  <>
-                    <Link href="/dashboard/bookings" className="text-sm text-muted hover:text-foreground font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap">
-                      <span className="w-1.5 h-1.5 bg-accent rounded-full"></span>
-                      My Bookings
-                    </Link>
-                    <Link href="/dashboard/health" className="text-sm text-muted hover:text-foreground font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap">
-                      <span className="w-1.5 h-1.5 bg-rose-500 rounded-full"></span>
-                      Medical Info
-                    </Link>
-                  </>
+                {(session?.user as any)?.role === 'LEADER' && (
+                   <Link href="/dashboard" className="text-[10px] bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-md shadow-emerald-600/20 flex items-center gap-2">
+                    <span className="w-1 h-1 bg-white rounded-full"></span>
+                    Leader Portal
+                  </Link>
                 )}
               </>
             )}
@@ -69,7 +63,7 @@ export default async function Header() {
           <div className="flex items-center gap-2 sm:gap-4 ml-auto">
             {isLoggedIn ? (
               <div className="hidden sm:flex items-center gap-1.5 sm:gap-2">
-                <Link href={(session?.user as any)?.role === 'ADMIN' ? "/adminControl" : "/dashboard/profile"} className="flex items-center gap-2 group transition-all">
+                <Link href="/dashboard/profile" className="flex items-center gap-2 group transition-all">
                   <span className="hidden sm:block text-base font-bold text-foreground tracking-tight lowercase">
                     {session.user?.name?.split(' ')[0] || 'user'}
                   </span>

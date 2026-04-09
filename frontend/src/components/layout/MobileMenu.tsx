@@ -88,91 +88,75 @@ export default function MobileMenu({ session }: MobileMenuProps) {
               {/* Navigation */}
               <div className="flex-1 overflow-y-auto p-6 space-y-8">
                 <div className="space-y-2">
-                  {((session?.user as any)?.role === 'LEADER' || (session?.user as any)?.role === 'ADMIN') ? (
-                    // 🏛️ GROUP LEADER: Operational Mobile View
-                    <>
-                      <h3 className="text-[10px] font-black text-muted uppercase tracking-[0.25em] mb-4">Command Center</h3>
-                      <div className="space-y-4 mb-8">
-                        <Link 
-                          href={(session?.user as any)?.role === 'ADMIN' ? "/adminControl" : "/dashboard"}
-                          onClick={toggleMenu}
-                          className="flex items-center justify-between p-4 bg-primary/5 rounded-2xl border border-primary/20 hover:border-primary/40 hover:bg-surface transition-all group active:scale-[0.98]"
-                        >
-                          <div className="flex items-center gap-4">
-                             <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-                                <Shield size={20} />
-                             </div>
-                             <div className="flex flex-col">
-                                <span className="font-black text-primary text-xs uppercase tracking-widest leading-none mb-1">{(session?.user as any)?.role === 'ADMIN' ? 'Control HQ' : 'Executive Dashboard'}</span>
-                                <span className="text-[9px] font-bold text-muted uppercase tracking-widest">Operational Oversight</span>
-                             </div>
-                          </div>
-                          <ChevronRight size={16} className="text-primary transition-all group-hover:translate-x-1" />
-                        </Link>
+                {/* 🏔️ Core Navigation Menu (Trekker View) */}
+                <div className="space-y-4">
+                  <h3 className="text-[10px] font-black text-muted uppercase tracking-[0.25em] mb-4">Navigation Menu</h3>
+                  {navLinks.map((link) => {
+                    if (link.protected && !isLoggedIn) return null;
+                    const Icon = link.icon;
+                    return (
+                      <Link 
+                        key={link.href}
+                        href={link.href}
+                        onClick={toggleMenu}
+                        className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-border hover:border-primary/20 hover:bg-background/40 transition-all group active:scale-[0.98]"
+                      >
+                        <div className="flex items-center gap-4">
+                           <div className="w-10 h-10 rounded-xl bg-background border border-border flex items-center justify-center text-muted group-hover:text-primary group-hover:border-primary/20 transition-all">
+                              <Icon size={20} />
+                           </div>
+                           <span className="font-bold text-foreground text-sm group-hover:text-primary transition-colors">{link.label}</span>
+                        </div>
+                        <ChevronRight size={16} className="text-muted group-hover:text-primary transition-all group-hover:translate-x-1" />
+                      </Link>
+                    );
+                  })}
+                </div>
 
-                        <Link 
-                          href="/dashboard/participants"
-                          onClick={toggleMenu}
-                          className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-border hover:border-cyan-500/20 hover:shadow-xl hover:shadow-cyan-500/5 transition-all group active:scale-[0.98]"
-                        >
-                          <div className="flex items-center gap-4">
-                             <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-all">
-                                <Users size={20} />
-                             </div>
-                             <div className="flex flex-col">
-                                <span className="font-black text-foreground text-xs uppercase tracking-widest leading-none mb-1">My Participants</span>
-                                <span className="text-[9px] font-bold text-muted uppercase tracking-widest">Team Management</span>
-                             </div>
-                          </div>
-                          <ChevronRight size={16} className="text-muted group-hover:text-cyan-500 transition-all group-hover:translate-x-1" />
-                        </Link>
-
-                        <Link 
-                          href="/dashboard/safety"
-                          onClick={toggleMenu}
-                          className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-border hover:border-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/5 transition-all group active:scale-[0.98]"
-                        >
-                          <div className="flex items-center gap-4">
-                             <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
-                                <Heart size={20} />
-                             </div>
-                             <div className="flex flex-col">
-                                <span className="font-black text-foreground text-xs uppercase tracking-widest leading-none mb-1">Safety Records</span>
-                                <span className="text-[9px] font-bold text-muted uppercase tracking-widest">Medical Clearance</span>
-                             </div>
-                          </div>
-                          <ChevronRight size={16} className="text-muted group-hover:text-emerald-500 transition-all group-hover:translate-x-1" />
-                        </Link>
+                {/* 🛡️ Strategic Operational Access (Staff Only) */}
+                {((session?.user as any)?.role === 'LEADER' || (session?.user as any)?.role === 'ADMIN') && (
+                  <div className="pt-4 space-y-4 border-t border-slate-100">
+                    <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.25em] mb-4">Staff Command</h3>
+                    
+                    <Link 
+                      href={(session?.user as any)?.role === 'ADMIN' ? "/adminControl" : "/dashboard"}
+                      onClick={toggleMenu}
+                      className="flex items-center justify-between p-4 bg-primary/[0.03] rounded-2xl border border-primary/20 hover:border-primary hover:bg-white transition-all group shadow-sm"
+                    >
+                      <div className="flex items-center gap-4">
+                         <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
+                            <Shield size={20} />
+                         </div>
+                         <div className="flex flex-col">
+                            <span className="font-black text-primary text-xs uppercase tracking-widest leading-none mb-1">
+                              {(session?.user as any)?.role === 'ADMIN' ? 'Admin HQ' : 'Leader Dashboard'}
+                            </span>
+                            <span className="text-[8px] font-bold text-muted uppercase tracking-tighter">Secure Operations</span>
+                         </div>
                       </div>
-                    </>
+                      <ChevronRight size={16} className="text-primary transition-all group-hover:translate-x-1" />
+                    </Link>
 
-                  ) : (
-                    // 🧗 TREKKER / GUEST: Consumer Mobile View
-                    <>
-                      <h3 className="text-[10px] font-black text-muted uppercase tracking-[0.25em] mb-4">Navigation Menu</h3>
-                      {navLinks.map((link) => {
-                        if (link.protected && !isLoggedIn) return null;
-                        const Icon = link.icon;
-                        return (
-                          <Link 
-                            key={link.href}
-                            href={link.href}
-                            onClick={toggleMenu}
-                            className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-border hover:border-primary/20 hover:bg-background/40 transition-all group active:scale-[0.98]"
-                          >
-                            <div className="flex items-center gap-4">
-                               <div className="w-10 h-10 rounded-xl bg-background border border-border flex items-center justify-center text-muted group-hover:text-primary group-hover:border-primary/20 transition-all">
-                                  <Icon size={20} />
-                               </div>
-                               <span className="font-bold text-foreground text-sm group-hover:text-primary transition-colors">{link.label}</span>
-                            </div>
-                            <ChevronRight size={16} className="text-muted group-hover:text-primary transition-all group-hover:translate-x-1" />
-                          </Link>
-                        );
-                      })}
-                    </>
-
-                  )}
+                    {(session?.user as any)?.role === 'ADMIN' && (
+                      <Link 
+                        href="/dashboard/participants"
+                        onClick={toggleMenu}
+                        className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-border hover:border-cyan-500/20 hover:shadow-xl hover:shadow-cyan-500/5 transition-all group"
+                      >
+                        <div className="flex items-center gap-4">
+                           <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-all">
+                              <Users size={20} />
+                           </div>
+                           <div className="flex flex-col text-left">
+                              <span className="font-black text-foreground text-xs uppercase tracking-widest leading-none mb-1">Global Users</span>
+                              <span className="text-[8px] font-bold text-muted uppercase tracking-tighter">Directory</span>
+                           </div>
+                        </div>
+                        <ChevronRight size={16} className="text-muted group-hover:text-cyan-500 transition-all group-hover:translate-x-1" />
+                      </Link>
+                    )}
+                  </div>
+                )}
                 </div>
 
                 {!isLoggedIn && (
