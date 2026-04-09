@@ -64,33 +64,31 @@ export default function MobileMenu({ session }: MobileMenuProps) {
               animate="open"
               exit="closed"
               variants={menuVariants}
-              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white z-[70] shadow-[0_0_50px_rgba(0,0,0,0.3)] flex flex-col"
+              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white shadow-[0_0_60px_rgba(0,0,0,0.15)] z-[70] flex flex-col h-full overflow-hidden"
             >
 
-              {/* Header */}
-              <div className="p-6 flex items-center justify-between border-b border-slate-100 bg-white">
+              {/* Header: Compact & Solid */}
+              <div className="p-5 flex items-center justify-between border-b border-slate-50 bg-white shrink-0">
                 <div className="flex items-center gap-2">
-                   <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
+                   <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/20">
                       <svg className="w-5 h-5 text-white" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M16 4L2 28H30L16 4Z" fill="currentColor"/>
                       </svg>
                    </div>
-                   <span className="font-black text-primary text-sm tracking-tighter uppercase italic leading-none pt-1">GTM Elite</span>
+                   <span className="font-black text-blue-900 text-sm tracking-tighter uppercase italic pt-0.5">GTM Elite</span>
                 </div>
                 <button 
                   onClick={toggleMenu}
-                  className="p-2.5 bg-slate-50 text-slate-400 hover:text-rose-500 rounded-full transition-all active:scale-95"
+                  className="p-2 text-slate-400 hover:text-slate-900 transition-colors"
                 >
-                  <X size={20} strokeWidth={3} />
+                  <X size={24} strokeWidth={2} />
                 </button>
               </div>
 
-              {/* Navigation */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-8">
-                <div className="space-y-2">
-                {/* 🏔️ Core Navigation Menu (Trekker View) */}
-                <div className="space-y-4">
-                  <h3 className="text-[10px] font-black text-muted uppercase tracking-[0.25em] mb-4">Navigation Menu</h3>
+              {/* Navigation: Responsive & Compact */}
+              <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6 bg-white no-scrollbar">
+                <div className="space-y-1">
+                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-4 ml-1">Navigation</h3>
                   {navLinks.map((link) => {
                     if (link.protected && !isLoggedIn) return null;
                     const Icon = link.icon;
