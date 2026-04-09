@@ -29,9 +29,11 @@ export default function AdminSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-[#0a0a0a] border-r border-white/5 flex flex-col z-[100]">
+    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-background border-r border-border flex flex-col z-[100]">
+
       {/* HQ Logo Area */}
-      <div className="p-6 border-b border-white/5">
+      <div className="p-6 border-b border-border">
+
         <Link href="/" className="flex items-center gap-3">
           <div className="w-8 h-8 bg-[#1e3a8a] flex items-center justify-center rounded-lg shadow-lg shadow-[#1e3a8a]/20">
             <svg viewBox="0 0 32 32" fill="none" className="w-5 h-5 text-white">
@@ -53,17 +55,19 @@ export default function AdminSidebar() {
             <Link key={item.name} href={item.href}>
               <div className={`
                 relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
-                ${isActive ? 'bg-white/5 text-white' : 'text-white/40 hover:text-white/70'}
+                ${isActive ? 'bg-surface text-foreground' : 'text-muted hover:text-foreground'}
               `}>
+
                 {isActive && (
                   <motion.div 
                     layoutId="active-nav"
                     className="absolute left-0 w-1 h-6 bg-[#1e3a8a] rounded-r-full"
                   />
                 )}
-                <item.icon className={`w-5 h-5 group-hover:scale-110 transition-transform ${isActive ? 'text-[#1e3a8a]' : ''}`} />
+                <item.icon className={`w-5 h-5 group-hover:scale-110 transition-transform ${isActive ? 'text-primary' : ''}`} />
                 <span className="text-sm font-semibold tracking-tight">{item.name}</span>
-                {isActive && <ChevronRight className="ml-auto w-4 h-4 text-white/20" />}
+                {isActive && <ChevronRight className="ml-auto w-4 h-4 text-muted/50" />}
+
               </div>
             </Link>
           );
@@ -71,8 +75,9 @@ export default function AdminSidebar() {
       </nav>
 
       {/* Footer Actions */}
-      <div className="p-4 border-t border-white/5 space-y-2">
-        <Link href="/dashboard/profile" className="flex items-center gap-3 px-4 py-3 text-white/40 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+      <div className="p-4 border-t border-border space-y-2">
+        <Link href="/dashboard/profile" className="flex items-center gap-3 px-4 py-3 text-muted hover:text-foreground hover:bg-surface rounded-xl transition-all">
+
           <Settings className="w-5 h-5" />
           <span className="text-sm font-semibold">Settings</span>
         </Link>

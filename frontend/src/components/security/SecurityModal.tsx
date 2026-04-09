@@ -133,15 +133,16 @@ export default function SecurityModal({ isOpen, onClose, onVerified, actionName,
           initial={{ opacity: 0, scale: 0.98, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.98, y: 20 }}
-          className="relative w-full max-w-[400px] bg-white rounded-[32px] shadow-[0_32px_128px_rgba(0,0,0,0.18)] overflow-hidden border border-slate-100 flex flex-col pointer-events-auto h-auto my-auto"
+          className="relative w-full max-w-[400px] bg-background rounded-[32px] shadow-[0_32px_128px_rgba(0,0,0,0.6)] overflow-hidden border border-border flex flex-col pointer-events-auto h-auto my-auto"
         >
           {/* Top Close - Subtle & Clean */}
           <button 
             onClick={onClose} 
-            className="absolute top-6 right-6 z-50 p-2 text-slate-300 hover:text-slate-900 hover:bg-slate-50 rounded-full transition-all"
+            className="absolute top-6 right-6 z-50 p-2 text-muted hover:text-foreground hover:bg-surface rounded-full transition-all"
           >
             <X size={18} />
           </button>
+
 
           <div className="p-8 pt-10 text-center">
             <AnimatePresence mode="wait">
@@ -153,13 +154,14 @@ export default function SecurityModal({ isOpen, onClose, onVerified, actionName,
                   exit={{ opacity: 0, y: -10 }}
                   className="space-y-6 py-4"
                 >
-                   <div className="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto ring-4 ring-emerald-50/50">
+                   <div className="w-20 h-20 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto ring-4 ring-emerald-500/5">
                       <CheckCircle2 className="w-10 h-10" />
                    </div>
                    <div className="space-y-1">
-                      <h3 className="text-xl font-bold text-slate-900 tracking-tight">Identity Verified</h3>
-                      <p className="text-slate-500 text-xs">Returning to your dashboard...</p>
+                      <h3 className="text-xl font-bold text-foreground tracking-tight">Identity Verified</h3>
+                      <p className="text-muted text-xs">Returning to your dashboard...</p>
                    </div>
+
                 </motion.div>
               ) : step === 'IDLE' ? (
                 <motion.div 
@@ -169,32 +171,34 @@ export default function SecurityModal({ isOpen, onClose, onVerified, actionName,
                   exit={{ opacity: 0, y: -10 }}
                   className="space-y-6"
                 >
-                   <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-[22px] flex items-center justify-center mx-auto shadow-sm ring-4 ring-blue-50/50">
+                   <div className="w-16 h-16 bg-primary/10 text-primary rounded-[22px] flex items-center justify-center mx-auto shadow-sm ring-4 ring-primary/5">
                       <ShieldCheck size={28} />
                    </div>
                    
                    <div className="space-y-2">
-                      <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Confirm Identity</h2>
-                      <p className="text-slate-500 text-sm leading-relaxed max-w-[280px] mx-auto font-medium">
+                      <h2 className="text-2xl font-bold text-foreground tracking-tight">Confirm Identity</h2>
+                      <p className="text-muted text-sm leading-relaxed max-w-[280px] mx-auto font-medium">
                         Enter your phone number to receive a 6-digit verification code.
                       </p>
                    </div>
+
                    
                    <div className="space-y-4 pt-2">
                      <div className="space-y-1.5 text-left">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-1">
-                           Phone Number
-                        </label>
-                        <div className="relative">
-                          <input 
-                            type="tel"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 text-sm font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all outline-none"
-                            placeholder="+91..."
-                          />
-                          <Smartphone className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 w-4 h-4 pointer-events-none" />
-                        </div>
+                         <label className="text-[10px] font-bold text-muted uppercase tracking-widest ml-1">
+                            Phone Number
+                         </label>
+                         <div className="relative">
+                           <input 
+                             type="tel"
+                             value={phone}
+                             onChange={(e) => setPhone(e.target.value)}
+                             className="w-full bg-surface border border-border rounded-xl px-5 py-3.5 text-sm font-bold text-foreground focus:ring-4 focus:ring-primary/5 focus:border-primary transition-all outline-none"
+                             placeholder="+91..."
+                           />
+                           <Smartphone className="absolute right-5 top-1/2 -translate-y-1/2 text-muted w-4 h-4 pointer-events-none" />
+                         </div>
+
                      </div>
 
                      {error && (
@@ -203,14 +207,15 @@ export default function SecurityModal({ isOpen, onClose, onVerified, actionName,
                        </div>
                      )}
 
-                     <button 
-                       onClick={handleRequestOtp} 
-                       disabled={loading || !phone}
-                       className="w-full bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-bold text-xs tracking-tight transition-all shadow-xl shadow-blue-500/10 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50 h-14"
-                     >
-                       {loading ? 'Sending code...' : 'Send Verification Code'}
-                       {!loading && <ArrowRight size={16} />}
-                     </button>
+                      <button 
+                        onClick={handleRequestOtp} 
+                        disabled={loading || !phone}
+                        className="w-full bg-primary hover:bg-primary-hover text-white px-8 py-4 rounded-xl font-bold text-xs tracking-tight transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-50 h-14"
+                      >
+                        {loading ? 'Sending code...' : 'Send Verification Code'}
+                        {!loading && <ArrowRight size={16} />}
+                      </button>
+
                    </div>
                 </motion.div>
               ) : (
@@ -221,12 +226,13 @@ export default function SecurityModal({ isOpen, onClose, onVerified, actionName,
                   exit={{ opacity: 0, x: -20 }}
                   className="space-y-6"
                 >
-                  <div className="space-y-2">
-                    <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Enter Code</h2>
-                    <p className="text-slate-500 text-sm">
+                   <div className="space-y-2">
+                    <h2 className="text-2xl font-bold text-foreground tracking-tight">Enter Code</h2>
+                    <p className="text-muted text-sm">
                        We've sent a 6-digit code to **{phone.slice(-4)}**
                     </p>
                   </div>
+
 
                   <div className="space-y-5">
                     <div className="py-1">
@@ -236,23 +242,23 @@ export default function SecurityModal({ isOpen, onClose, onVerified, actionName,
                         hasError={isInvalid} 
                       />
                     </div>
-                    
-                    <div className="flex items-center justify-between px-1">
-                       <p className="text-slate-400 text-[11px] font-medium tabular-nums">
+                                        <div className="flex items-center justify-between px-1">
+                       <p className="text-muted text-[11px] font-medium tabular-nums">
                          {isInvalid ? (
                            <span className="text-rose-500 font-bold">{error}</span>
                          ) : (
-                           <>Expires in: <span className="text-slate-900 font-bold">{formatTime(timeLeft)}</span></>
+                           <>Expires in: <span className="text-foreground font-bold">{formatTime(timeLeft)}</span></>
                          )}
                        </p>
                       
                        <button 
                         onClick={handleRequestOtp}
-                        className="text-[11px] font-bold text-blue-600 hover:text-blue-700 transition-colors"
+                        className="text-[11px] font-bold text-primary hover:text-primary-hover transition-colors"
                        >
                          Resend Code
                        </button>
                     </div>
+
 
                     <button 
                       onClick={isInvalid ? () => { setError(null); setOtp(''); } : handleVerify}
@@ -273,12 +279,13 @@ export default function SecurityModal({ isOpen, onClose, onVerified, actionName,
             </AnimatePresence>
           </div>
 
-          <div className="bg-slate-50/50 p-4 flex items-center justify-center gap-2 border-t border-slate-50 mt-auto">
-             <div className="flex items-center gap-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest opacity-60">
+          <div className="bg-surface/50 p-4 flex items-center justify-center gap-2 border-t border-border mt-auto">
+             <div className="flex items-center gap-2 text-[9px] font-bold text-muted uppercase tracking-widest opacity-60">
                 <ShieldCheck size={10} className="text-emerald-500" />
                 Secure Identity Verification
              </div>
           </div>
+
         </motion.div>
       </div>
     </AnimatePresence>

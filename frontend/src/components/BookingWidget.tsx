@@ -264,8 +264,9 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
                 <motion.div 
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="relative w-full max-w-[720px] bg-white/95 backdrop-blur-3xl rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.3)] overflow-hidden border border-white/60"
+                  className="relative w-full max-w-[720px] bg-background/95 backdrop-blur-3xl rounded-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.6)] overflow-hidden border border-border"
                 >
+
                   <div className="flex flex-row items-stretch min-h-[340px]">
                     {/* Left Side - Success Brand Focus */}
                     <div className="w-1/3 bg-primary/5 border-r border-primary/10 flex flex-col items-center justify-center p-8 gap-6">
@@ -289,13 +290,14 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
                     {/* Right Side - Content & Action */}
                     <div className="flex-1 p-10 flex flex-col justify-center space-y-8">
                       <div className="space-y-3">
-                        <h3 className="text-3xl font-black text-slate-900 italic tracking-tighter uppercase leading-none">
+                        <h3 className="text-3xl font-black text-foreground italic tracking-tighter uppercase leading-none">
                           Great! <span className="text-primary italic">Confirmed.</span>
                         </h3>
-                        <p className="text-slate-600 font-bold text-[13px] leading-relaxed max-w-[360px]">
+                        <p className="text-muted font-bold text-[13px] leading-relaxed max-w-[360px]">
                           Payment processed successfully. Before we launch your dashboard, please complete your health report.
                         </p>
                       </div>
+
 
                       <div className="flex flex-col gap-4">
                         <button 

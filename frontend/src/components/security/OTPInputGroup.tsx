@@ -67,9 +67,10 @@ export default function OTPInputGroup({ value, onChange, length = 6, hasError }:
           onKeyDown={(e) => handleKeyDown(e, i)}
           className={`w-full h-12 text-center text-xl font-bold rounded-xl border transition-all outline-none 
             ${hasError 
-              ? 'border-rose-300 text-rose-500 bg-rose-50/20 shadow-[0_0_10px_rgba(244,63,94,0.05)]' 
-              : 'border-slate-200 text-slate-900 bg-white focus:border-primary focus:shadow-[0_0_15px_rgba(30,58,138,0.05)]'
+              ? 'border-rose-300 text-rose-500 bg-rose-500/10 shadow-[0_0_10px_rgba(244,63,94,0.1)]' 
+              : 'border-border text-foreground bg-surface focus:border-primary focus:shadow-[0_0_15px_rgba(30,58,138,0.1)]'
             }`}
+
         />
       ))}
     </div>

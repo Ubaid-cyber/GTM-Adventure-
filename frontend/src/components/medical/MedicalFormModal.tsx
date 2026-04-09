@@ -111,29 +111,31 @@ export default function MedicalFormModal({ isOpen, onClose, userEmail }: Medical
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-[720px] bg-white/95 backdrop-blur-3xl rounded-[40px] shadow-[0_32px_80px_rgba(0,0,0,0.4)] overflow-hidden border border-white/60"
+              className="relative w-full max-w-[720px] bg-background/95 backdrop-blur-3xl rounded-[40px] shadow-[0_32px_80px_rgba(0,0,0,0.6)] overflow-hidden border border-border"
             >
+
               {step === 'form' ? (
                 <form onSubmit={handleSubmit} className="flex flex-col h-full max-h-[85vh]">
                   {/* Header */}
-                  <div className="px-10 py-5 border-b border-slate-100/50 flex items-center justify-between bg-white/50">
+                  <div className="px-10 py-5 border-b border-border flex items-center justify-between bg-surface/50">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 bg-primary/5 text-primary rounded-xl flex items-center justify-center border border-primary/10">
                         <Activity size={20} strokeWidth={2.5} />
                       </div>
                       <div>
-                        <h2 className="text-lg font-black text-slate-900 italic tracking-tight uppercase leading-none mb-1">
+                        <h2 className="text-lg font-black text-foreground italic tracking-tight uppercase leading-none mb-1">
                           Health & Vitals
                         </h2>
-                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em] pl-0.5">
+                        <p className="text-[8px] font-black text-muted uppercase tracking-[0.2em] pl-0.5">
                           Verification // Phase 02
                         </p>
                       </div>
                     </div>
-                    <button type="button" onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-slate-100/50 hover:bg-slate-200 rounded-full transition-all active:scale-90">
-                      <X size={16} className="text-slate-500" />
+                    <button type="button" onClick={onClose} className="w-8 h-8 flex items-center justify-center bg-surface hover:bg-surface/80 rounded-full transition-all active:scale-90">
+                      <X size={16} className="text-muted" />
                     </button>
                   </div>
+
 
                   {/* Form Body - Scrollable */}
                   <div className="flex-1 overflow-y-auto px-10 py-6 space-y-6 custom-scrollbar">
@@ -158,13 +160,14 @@ export default function MedicalFormModal({ isOpen, onClose, userEmail }: Medical
                       <div className="space-y-2">
                         <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Blood Group</label>
                         <div className="relative">
-                          <select name="bloodGroup" className="w-full bg-slate-50 border border-slate-200 rounded-xl px-5 py-3.5 text-sm font-bold text-slate-900 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all outline-none appearance-none" required>
+                          <select name="bloodGroup" className="w-full bg-surface border border-border rounded-xl px-5 py-3.5 text-sm font-bold text-foreground focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all outline-none appearance-none" required>
                             <option value="">Select...</option>
                             {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(g => <option key={g} value={g}>{g}</option>)}
                           </select>
-                          <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                          <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-muted">
                             <ArrowRight size={14} className="rotate-90" />
                           </div>
+
                         </div>
                       </div>
                     </div>
@@ -185,21 +188,22 @@ export default function MedicalFormModal({ isOpen, onClose, userEmail }: Medical
                           { id: 'diabetes', label: 'Diabetes' },
                           { id: 'allergies', label: 'Allergies' },
                         ].map(item => (
-                          <label key={item.id} className="flex items-center gap-4 p-3.5 bg-slate-50/50 border border-slate-100 rounded-xl cursor-pointer hover:bg-white hover:border-primary/20 hover:shadow-sm transition-all group">
+                          <label key={item.id} className="flex items-center gap-4 p-3.5 bg-surface/50 border border-border rounded-xl cursor-pointer hover:bg-surface hover:border-primary/20 hover:shadow-sm transition-all group">
                             <div className="relative flex items-center justify-center">
-                              <input type="checkbox" name={item.id} className="peer w-4.5 h-4.5 rounded-md border-2 border-slate-200 text-primary focus:ring-0 appearance-none transition-all checked:bg-primary checked:border-primary" />
+                              <input type="checkbox" name={item.id} className="peer w-4.5 h-4.5 rounded-md border-2 border-border text-primary focus:ring-0 appearance-none transition-all checked:bg-primary checked:border-primary" />
                               <ShieldCheck size={11} className="absolute text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
                             </div>
-                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-wide group-hover:text-primary transition-colors">{item.label}</span>
+                            <span className="text-[10px] font-black text-muted uppercase tracking-wide group-hover:text-primary transition-colors">{item.label}</span>
                           </label>
                         ))}
-                        <label className="flex items-center gap-4 p-3.5 bg-slate-50/50 border border-slate-100 rounded-xl cursor-pointer hover:bg-white hover:border-primary/20 hover:shadow-sm transition-all group">
+                        <label className="flex items-center gap-4 p-3.5 bg-surface/50 border border-border rounded-xl cursor-pointer hover:bg-surface hover:border-primary/20 hover:shadow-sm transition-all group">
                           <div className="relative flex items-center justify-center">
-                            <input type="checkbox" name="other" checked={showOther} onChange={(e) => setShowOther(e.target.checked)} className="peer w-4.5 h-4.5 rounded-md border-2 border-slate-200 text-primary focus:ring-0 appearance-none transition-all checked:bg-primary checked:border-primary" />
+                            <input type="checkbox" name="other" checked={showOther} onChange={(e) => setShowOther(e.target.checked)} className="peer w-4.5 h-4.5 rounded-md border-2 border-border text-primary focus:ring-0 appearance-none transition-all checked:bg-primary checked:border-primary" />
                             <ShieldCheck size={11} className="absolute text-white opacity-0 peer-checked:opacity-100 transition-opacity" />
                           </div>
-                          <span className="text-[10px] font-black text-slate-500 uppercase tracking-wide group-hover:text-primary transition-colors">Other Files</span>
+                          <span className="text-[10px] font-black text-muted uppercase tracking-wide group-hover:text-primary transition-colors">Other Files</span>
                         </label>
+
                       </div>
                     </div>
 
@@ -218,8 +222,8 @@ export default function MedicalFormModal({ isOpen, onClose, userEmail }: Medical
                   </div>
 
                   {/* Action Footer */}
-                  <div className="px-10 py-5 border-t border-slate-100/50 bg-slate-50/50 flex flex-row items-center justify-between gap-6">
-                    <p className="text-[7px] font-black text-slate-400 uppercase tracking-[0.4em] max-w-[120px]">Verified Safety Transmission Profile</p>
+                   <div className="px-10 py-5 border-t border-border bg-surface/50 flex flex-row items-center justify-between gap-6">
+                    <p className="text-[7px] font-black text-muted uppercase tracking-[0.4em] max-w-[120px]">Verified Safety Transmission Profile</p>
                     <button type="submit" disabled={saving} className="flex-1 max-w-[300px] bg-primary text-white py-4.5 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all hover:bg-primary-hover hover:shadow-xl shadow-lg flex items-center justify-center gap-3 disabled:opacity-50 active:scale-[0.98]">
                       {saving ? (
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
@@ -231,6 +235,7 @@ export default function MedicalFormModal({ isOpen, onClose, userEmail }: Medical
                       )}
                     </button>
                   </div>
+
                 </form>
               ) : (
                 /* Success State - Integrated Brand Identity */
@@ -248,7 +253,8 @@ export default function MedicalFormModal({ isOpen, onClose, userEmail }: Medical
                       </motion.div>
                       <div className="absolute -inset-4 bg-primary/20 blur-3xl rounded-full -z-10 animate-pulse"></div>
                     </div>
-                    <div className="flex items-center justify-center gap-2 py-1.5 px-4 bg-white text-primary rounded-full text-[8px] font-black uppercase tracking-widest border border-primary/20 shadow-sm">
+                    <div className="flex items-center justify-center gap-2 py-1.5 px-4 bg-background text-primary rounded-full text-[8px] font-black uppercase tracking-widest border border-primary/20 shadow-sm">
+
                       <div className="w-1 h-1 bg-primary rounded-full animate-pulse"></div>
                        verified
                     </div>
@@ -256,14 +262,15 @@ export default function MedicalFormModal({ isOpen, onClose, userEmail }: Medical
 
                   {/* Right Side - Content & Action */}
                   <div className="flex-1 p-10 flex flex-col justify-center space-y-8">
-                    <div className="space-y-3">
-                      <h2 className="text-3xl font-black text-slate-900 italic tracking-tighter uppercase leading-none">
+                     <div className="space-y-3">
+                      <h2 className="text-3xl font-black text-foreground italic tracking-tighter uppercase leading-none">
                         Data <span className="text-primary italic">Received</span>
                       </h2>
-                      <p className="text-slate-600 font-bold text-[13px] leading-relaxed max-w-[360px]">
+                      <p className="text-muted font-bold text-[13px] leading-relaxed max-w-[360px]">
                         Your health verification is complete. Our medical officers will review your profile and update your clearance shortly.
                       </p>
                     </div>
+
 
                     <div className="flex flex-col gap-4">
                       <button 

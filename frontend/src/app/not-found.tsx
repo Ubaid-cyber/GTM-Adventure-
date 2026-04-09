@@ -29,7 +29,7 @@ export default function NotFound() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8">
             <Link 
               href="/" 
-              className="flex items-center gap-3 px-8 py-4 bg-white text-black rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-slate-200 transition-all group"
+              className="flex items-center gap-3 px-8 py-4 bg-foreground text-background rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-neutral-200 transition-all group"
             >
               <Home size={16} /> Return to Base Camp
             </Link>

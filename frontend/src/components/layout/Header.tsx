@@ -10,7 +10,7 @@ export default async function Header() {
   const isLoggedIn = !!session?.user;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border shadow-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border shadow-2xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center h-16 gap-8">
 
@@ -32,14 +32,13 @@ export default async function Header() {
                   <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse"></span>
                   {(session?.user as any)?.role === 'ADMIN' ? 'Control HQ' : 'Dashboard'}
                 </Link>
-                <Link href="/dashboard/participants" className="text-sm text-slate-600 hover:text-cyan-600 font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap uppercase tracking-widest">
+                <Link href="/dashboard/participants" className="text-sm text-muted hover:text-cyan-400 font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap uppercase tracking-widest">
                   <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full"></span>
                   My Participants
                 </Link>
-                <Link href="/dashboard/safety" className="text-sm text-slate-600 hover:text-emerald-600 font-bold transition-colors flex items-center gap-1.5 whitespace-nowrap uppercase tracking-widest">
-                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
                   Safety Records
                 </Link>
+
               </>
             ) : (
               // 🏔️ TREKKER / GUEST: Consumer View
@@ -72,10 +71,10 @@ export default async function Header() {
             {isLoggedIn ? (
               <div className="hidden sm:flex items-center gap-1.5 sm:gap-2">
                 <Link href={(session?.user as any)?.role === 'ADMIN' ? "/adminControl" : "/dashboard/profile"} className="flex items-center gap-2 group transition-all">
-                  <span className="hidden sm:block text-base font-bold text-slate-800 tracking-tight lowercase">
+                  <span className="hidden sm:block text-base font-bold text-foreground tracking-tight lowercase">
                     {session.user?.name?.split(' ')[0] || 'user'}
                   </span>
-                  <div className="w-10 h-10 bg-[#e8eef6] border border-[#d1dceb] rounded-full flex items-center justify-center text-[#1c398e] text-lg font-black shadow-sm group-hover:shadow-md transition-all overflow-hidden">
+                  <div className="w-10 h-10 bg-surface border border-border rounded-full flex items-center justify-center text-primary text-lg font-black shadow-inner group-hover:border-primary/50 transition-all overflow-hidden">
                     {session.user?.image
                       ? <img src={session.user.image} alt="User" className="w-full h-full object-cover" />
                       : (session.user?.name ? session.user.name.charAt(0).toUpperCase() : 'U')}

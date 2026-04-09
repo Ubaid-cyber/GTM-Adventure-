@@ -39,11 +39,12 @@ export default function MobileMenu({ session }: MobileMenuProps) {
       {/* Toggle Button */}
       <button 
         onClick={toggleMenu}
-        className="p-2 text-slate-600 hover:text-primary transition-colors hover:bg-slate-50 rounded-xl"
+        className="p-2 text-muted hover:text-primary transition-colors hover:bg-surface rounded-xl"
         aria-label="Toggle Menu"
       >
         <Menu size={24} strokeWidth={2.5} />
       </button>
+
 
       {/* Drawer Overlay */}
       <AnimatePresence>
@@ -63,10 +64,11 @@ export default function MobileMenu({ session }: MobileMenuProps) {
               animate="open"
               exit="closed"
               variants={menuVariants}
-              className="fixed top-0 right-0 bottom-0 w-[80%] max-w-sm bg-white z-[70] shadow-2xl flex flex-col"
+              className="fixed top-0 right-0 bottom-0 w-[80%] max-w-sm bg-background border-l border-border z-[70] shadow-2xl flex flex-col"
             >
+
               {/* Header */}
-              <div className="p-6 flex items-center justify-between border-b border-slate-100">
+              <div className="p-6 flex items-center justify-between border-b border-border">
                 <div className="flex items-center gap-2">
                    <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                       <svg className="w-5 h-5 text-white" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -77,7 +79,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                 </div>
                 <button 
                   onClick={toggleMenu}
-                  className="p-2 text-slate-400 hover:text-rose-500 transition-colors"
+                  className="p-2 text-muted hover:text-rose-500 transition-colors"
                 >
                   <X size={24} strokeWidth={2.5} />
                 </button>
@@ -89,12 +91,12 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                   {((session?.user as any)?.role === 'LEADER' || (session?.user as any)?.role === 'ADMIN') ? (
                     // 🏛️ GROUP LEADER: Operational Mobile View
                     <>
-                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-4">Command Center</h3>
-                      <div className="space-y-2 mb-8">
+                      <h3 className="text-[10px] font-black text-muted uppercase tracking-[0.25em] mb-4">Command Center</h3>
+                      <div className="space-y-4 mb-8">
                         <Link 
                           href={(session?.user as any)?.role === 'ADMIN' ? "/adminControl" : "/dashboard"}
                           onClick={toggleMenu}
-                          className="flex items-center justify-between p-4 bg-primary/5 rounded-2xl border border-primary/20 hover:border-primary/40 hover:bg-white hover:shadow-xl hover:shadow-primary/5 transition-all group active:scale-[0.98]"
+                          className="flex items-center justify-between p-4 bg-primary/5 rounded-2xl border border-primary/20 hover:border-primary/40 hover:bg-surface transition-all group active:scale-[0.98]"
                         >
                           <div className="flex items-center gap-4">
                              <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
@@ -102,7 +104,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                              </div>
                              <div className="flex flex-col">
                                 <span className="font-black text-primary text-xs uppercase tracking-widest leading-none mb-1">{(session?.user as any)?.role === 'ADMIN' ? 'Control HQ' : 'Executive Dashboard'}</span>
-                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Operational Oversight</span>
+                                <span className="text-[9px] font-bold text-muted uppercase tracking-widest">Operational Oversight</span>
                              </div>
                           </div>
                           <ChevronRight size={16} className="text-primary transition-all group-hover:translate-x-1" />
@@ -111,42 +113,43 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                         <Link 
                           href="/dashboard/participants"
                           onClick={toggleMenu}
-                          className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-cyan-500/20 hover:bg-white hover:shadow-xl hover:shadow-cyan-500/5 transition-all group active:scale-[0.98]"
+                          className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-border hover:border-cyan-500/20 hover:shadow-xl hover:shadow-cyan-500/5 transition-all group active:scale-[0.98]"
                         >
                           <div className="flex items-center gap-4">
-                             <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-all">
+                             <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-all">
                                 <Users size={20} />
                              </div>
                              <div className="flex flex-col">
-                                <span className="font-black text-slate-900 text-xs uppercase tracking-widest leading-none mb-1">My Participants</span>
-                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Team Management</span>
+                                <span className="font-black text-foreground text-xs uppercase tracking-widest leading-none mb-1">My Participants</span>
+                                <span className="text-[9px] font-bold text-muted uppercase tracking-widest">Team Management</span>
                              </div>
                           </div>
-                          <ChevronRight size={16} className="text-slate-300 group-hover:text-cyan-500 transition-all group-hover:translate-x-1" />
+                          <ChevronRight size={16} className="text-muted group-hover:text-cyan-500 transition-all group-hover:translate-x-1" />
                         </Link>
 
                         <Link 
                           href="/dashboard/safety"
                           onClick={toggleMenu}
-                          className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-emerald-500/20 hover:bg-white hover:shadow-xl hover:shadow-emerald-500/5 transition-all group active:scale-[0.98]"
+                          className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-border hover:border-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/5 transition-all group active:scale-[0.98]"
                         >
                           <div className="flex items-center gap-4">
-                             <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                             <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-white transition-all">
                                 <Heart size={20} />
                              </div>
                              <div className="flex flex-col">
-                                <span className="font-black text-slate-900 text-xs uppercase tracking-widest leading-none mb-1">Safety Records</span>
-                                <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Medical Clearance</span>
+                                <span className="font-black text-foreground text-xs uppercase tracking-widest leading-none mb-1">Safety Records</span>
+                                <span className="text-[9px] font-bold text-muted uppercase tracking-widest">Medical Clearance</span>
                              </div>
                           </div>
-                          <ChevronRight size={16} className="text-slate-300 group-hover:text-emerald-500 transition-all group-hover:translate-x-1" />
+                          <ChevronRight size={16} className="text-muted group-hover:text-emerald-500 transition-all group-hover:translate-x-1" />
                         </Link>
                       </div>
                     </>
+
                   ) : (
                     // 🧗 TREKKER / GUEST: Consumer Mobile View
                     <>
-                      <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-4">Navigation Menu</h3>
+                      <h3 className="text-[10px] font-black text-muted uppercase tracking-[0.25em] mb-4">Navigation Menu</h3>
                       {navLinks.map((link) => {
                         if (link.protected && !isLoggedIn) return null;
                         const Icon = link.icon;
@@ -155,19 +158,20 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                             key={link.href}
                             href={link.href}
                             onClick={toggleMenu}
-                            className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-primary/20 hover:bg-white hover:shadow-xl hover:shadow-primary/5 transition-all group active:scale-[0.98]"
+                            className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-border hover:border-primary/20 hover:bg-background/40 transition-all group active:scale-[0.98]"
                           >
                             <div className="flex items-center gap-4">
-                               <div className="w-10 h-10 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-slate-400 group-hover:text-primary group-hover:border-primary/20 group-hover:shadow-sm transition-all">
+                               <div className="w-10 h-10 rounded-xl bg-background border border-border flex items-center justify-center text-muted group-hover:text-primary group-hover:border-primary/20 transition-all">
                                   <Icon size={20} />
                                </div>
-                               <span className="font-bold text-slate-700 text-sm group-hover:text-slate-900 transition-colors">{link.label}</span>
+                               <span className="font-bold text-foreground text-sm group-hover:text-primary transition-colors">{link.label}</span>
                             </div>
-                            <ChevronRight size={16} className="text-slate-300 group-hover:text-primary transition-all group-hover:translate-x-1" />
+                            <ChevronRight size={16} className="text-muted group-hover:text-primary transition-all group-hover:translate-x-1" />
                           </Link>
                         );
                       })}
                     </>
+
                   )}
                 </div>
 
@@ -186,30 +190,31 @@ export default function MobileMenu({ session }: MobileMenuProps) {
 
               {/* Footer / User Profile */}
               {isLoggedIn && (
-                <div className="p-6 bg-slate-50 border-t border-slate-200">
+                <div className="p-6 bg-surface border-t border-border">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3">
-                       <div className="w-12 h-12 bg-white rounded-2xl border border-slate-200 flex items-center justify-center p-1 shadow-sm">
+                       <div className="w-12 h-12 bg-background rounded-2xl border border-border flex items-center justify-center p-1 shadow-sm overflow-hidden">
                           {session.user?.image 
                             ? <img src={session.user.image} className="w-full h-full rounded-xl object-cover" alt="User" />
                             : <span className="text-primary font-black uppercase text-xl">{session.user?.name?.charAt(0)}</span>
                           }
                        </div>
                        <div>
-                          <div className="text-sm font-black text-slate-900 leading-none mb-1">{session.user?.name}</div>
-                          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Member</div>
+                          <div className="text-sm font-black text-foreground leading-none mb-1">{session.user?.name}</div>
+                          <div className="text-[10px] font-bold text-muted uppercase tracking-widest">Active Member</div>
                        </div>
                     </div>
                   </div>
                   <button 
                     onClick={() => signOut({ callbackUrl: '/' })}
-                    className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-white border border-rose-100 text-rose-500 font-black text-xs uppercase tracking-widest hover:bg-rose-500 hover:text-white hover:border-rose-500 hover:shadow-lg hover:shadow-rose-500/20 transition-all active:scale-[0.98]"
+                    className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-background border border-rose-500/20 text-rose-500 font-black text-xs uppercase tracking-widest hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all active:scale-[0.98]"
                   >
                     <LogOut size={16} />
                     Sign Out
                   </button>
                 </div>
               )}
+
             </motion.div>
           </>
         )}

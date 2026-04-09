@@ -29,8 +29,9 @@ export default function SearchBar() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search treks..."
-          className="block w-full bg-slate-50 border border-slate-200 rounded-full py-2 pl-11 pr-4 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-sm hover:border-slate-300"
+          className="block w-full bg-surface border border-border rounded-full py-2 pl-11 pr-4 text-sm text-foreground placeholder:text-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all shadow-inner hover:border-border/50"
         />
+
       </div>
     </form>
   );

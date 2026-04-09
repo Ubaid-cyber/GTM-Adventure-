@@ -17,7 +17,7 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 border-t border-white/5 pt-20 pb-10 overflow-hidden relative">
+    <footer className="bg-background border-t border-border pt-20 pb-10 overflow-hidden relative">
       {/* Background Glow */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -translate-y-1/2"></div>
       
@@ -28,8 +28,11 @@ export default function Footer() {
           <div className="lg:col-span-5 space-y-8">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                <div className="w-5 h-5 bg-white rotate-45"></div>
+                <svg className="w-6 h-6 text-white" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M16 4L2 28H30L16 4Z" fill="currentColor"/>
+                </svg>
               </div>
+
               <span className="text-2xl font-black text-white tracking-tighter uppercase italic">GTM Adventures</span>
             </div>
             <p className="text-white/50 text-lg font-medium leading-relaxed max-w-md italic">
@@ -47,7 +50,7 @@ export default function Footer() {
           <div className="lg:col-span-1"></div>
 
           <div className="lg:col-span-6">
-             <div className="bg-white/5 border border-white/10 rounded-[32px] p-8 md:p-10 backdrop-blur-sm">
+             <div className="bg-surface border border-border rounded-[32px] p-8 md:p-10 backdrop-blur-sm">
                 <h3 className="text-xl font-bold text-white mb-2">Join the Ascent</h3>
                 <p className="text-white/40 text-sm mb-8 font-medium italic">Receive safety updates and exclusive trek announcements.</p>
                 <form className="flex flex-col sm:flex-row gap-3">
@@ -131,7 +134,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section: Trust & Copyright */}
-        <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div className="pt-10 border-t border-border flex flex-col md:flex-row justify-between items-center gap-8">
            <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">
              © 2026 GTM ADVENTURES LTD. // REDEFINING THE ALTITUDE.
            </p>
