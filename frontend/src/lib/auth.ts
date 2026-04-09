@@ -4,6 +4,7 @@ import Credentials from "next-auth/providers/credentials"
 import { verifyCredentials } from "./auth-service"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  secret: process.env.AUTH_SECRET,
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID,
