@@ -36,7 +36,6 @@ export default function MobileMenu({ session }: MobileMenuProps) {
 
   return (
     <div className="md:hidden">
-      {/* Toggle Button */}
       <button 
         onClick={toggleMenu}
         className="p-2 text-muted hover:text-primary transition-colors hover:bg-surface rounded-xl"
@@ -45,8 +44,6 @@ export default function MobileMenu({ session }: MobileMenuProps) {
         <Menu size={24} strokeWidth={2.5} />
       </button>
 
-
-      {/* Drawer Overlay */}
       <AnimatePresence>
         {isOpen && (
           <>
@@ -66,8 +63,6 @@ export default function MobileMenu({ session }: MobileMenuProps) {
               variants={menuVariants}
               className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white shadow-[0_0_60px_rgba(0,0,0,0.15)] z-[70] flex flex-col h-full overflow-hidden"
             >
-
-              {/* Header: Compact & Solid */}
               <div className="p-5 flex items-center justify-between border-b border-slate-50 bg-white shrink-0">
                 <div className="flex items-center gap-2">
                    <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/20">
@@ -85,7 +80,6 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                 </button>
               </div>
 
-              {/* Navigation: Responsive & Compact */}
               <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6 bg-white no-scrollbar">
                 <div className="space-y-1">
                   <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-4 ml-1">Navigation</h3>
@@ -111,7 +105,6 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                   })}
                 </div>
 
-                {/* 🛡️ Strategic Operational Access (Staff Only) */}
                 {((session?.user as any)?.role === 'LEADER' || (session?.user as any)?.role === 'ADMIN') && (
                   <div className="pt-6 space-y-4 border-t border-slate-100 mb-6">
                     <div className="flex items-center gap-3 px-1 mb-4">
@@ -145,7 +138,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                       <Link 
                         href="/dashboard/participants"
                         onClick={toggleMenu}
-                        className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-border hover:border-cyan-500/20 hover:shadow-xl hover:shadow-cyan-500/5 transition-all group"
+                        className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-border hover:border-cyan-500/20 hover:shadow-xl hover:shadow-cyan-500/5 transition-all group mt-2"
                       >
                         <div className="flex items-center gap-4">
                            <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-all">
@@ -161,7 +154,6 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                     )}
                   </div>
                 )}
-                </div>
 
                 {!isLoggedIn && (
                   <div className="pt-4">
@@ -176,7 +168,6 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                 )}
               </div>
 
-              {/* Footer / User Profile */}
               {isLoggedIn && (
                 <div className="p-6 bg-surface border-t border-border">
                   <div className="flex items-center justify-between mb-6">
@@ -202,7 +193,6 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                   </button>
                 </div>
               )}
-
             </motion.div>
           </>
         )}

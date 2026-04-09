@@ -290,13 +290,49 @@ export async function initiateRazorpayOrderAction(bookingId: string) {
     if (b.status !== 'PENDING') throw new Error('INVALID_STATUS');
 
     const keyId = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET;
+    
+    console.log(`[PAYMENT_INIT] Booking: ${b.id}, Amount: ${b.totalPrice}, KeyID: ${keyId ? 'PRESENT' : 'MISSING'}, Secret: ${keySecret ? 'PRESENT' : 'MISSING'}`);
+
     let order;
 
     if (!keyId || keyId === 'rzp_test_placeholder') {
-      order = { id: `mock_order_${Date.now()}`, amount: Math.round(b.totalPrice * 100), currency: 'INR' };
+      console.log('[PAYMENT_INIT] Falling back to Simulation Mode');
+      order = { 
+        id: `mock_order_${Date.now()}`, 
+        amount: Math.round(Number(b.totalPrice) * 100), 
+        currency: 'INR' 
+      };
     } else {
-      const instance = new Razorpay({ key_id: keyId, key_secret: process.env.RAZORPAY_KEY_SECRET as string });
-      order = await instance.orders.create({ amount: Math.round(b.totalPrice * 100), currency: 'INR', receipt: `receipt_${b.id}` });
+      if (!keySecret) {
+        console.error('[PAYMENT_INIT] ERROR: RAZORPAY_KEY_SECRET is missing in production!');
+        throw new Error('CONFIG_ERROR: Razorpay Secret Key is missing. Please check Vercel environment variables.');
+      }
+
+      try {
+        const instance = new Razorpay({ 
+          key_id: keyId.replace(/['"]+/g, ''), 
+          key_secret: keySecret.replace(/['"]+/g, '') 
+        });
+
+        const amountInPaise = Math.round(Number(b.totalPrice) * 100);
+        console.log(`[PAYMENT_INIT] Creating Razorpay Order: ${amountInPaise} paise`);
+
+        order = await instance.orders.create({ 
+          amount: amountInPaise, 
+          currency: 'INR', 
+          receipt: `receipt_${b.id}`,
+          notes: {
+            bookingId: b.id,
+            userEmail: userEmail
+          }
+        });
+        
+        console.log('[PAYMENT_INIT] Razorpay Order Created:', order.id);
+      } catch (razorError: any) {
+        console.error('[PAYMENT_INIT] RAZORPAY_PROVIDER_ERROR:', razorError);
+        throw new Error(`PROVIDER_ERROR: ${razorError.description || razorError.message || 'Razorpay initialization failed'}`);
+      }
     }
 
     await (prisma as any).$executeRaw`UPDATE "Booking" SET "razorpayOrderId" = ${order.id} WHERE id = ${b.id}`;
