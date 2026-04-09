@@ -71,7 +71,7 @@ export default function TreksClient() {
   };
 
   return (
-    <div className="min-h-screen bg-background pt-0">
+    <div className="min-h-screen bg-surface pt-0">
 
       {/* ── Hero Image ── */}
       <div className="relative w-full h-[55vh] md:h-[65vh] overflow-hidden">

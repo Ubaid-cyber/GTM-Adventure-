@@ -75,19 +75,19 @@ export default function InquiryForm({ trekId, trekTitle }: InquiryFormProps) {
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}
         onClick={() => setIsOpen(true)}
-        className="w-full bg-slate-950 border border-slate-800 rounded-3xl p-6 flex items-center justify-between group shadow-xl hover:bg-slate-900 transition-all max-w-md mx-auto"
+        className="w-full bg-white border border-slate-100 rounded-3xl p-6 flex items-center justify-between group shadow-lg hover:shadow-xl transition-all max-w-md mx-auto"
       >
         <div className="flex items-center gap-5 text-left">
-           <div className="w-12 h-12 bg-blue-600/10 rounded-2xl flex items-center justify-center border border-blue-600/20 group-hover:bg-blue-600/20 transition-all">
-              <MessageSquare className="w-6 h-6 text-blue-500" />
+           <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100 group-hover:bg-blue-100 transition-all">
+              <MessageSquare className="w-6 h-6 text-blue-600" />
            </div>
            <div className="space-y-1">
-              <h3 className="text-sm font-black uppercase tracking-widest text-white leading-none">Need more info?</h3>
-              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Ask our adventure experts a question</p>
+              <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 leading-none">Need more info?</h3>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Ask our adventure experts a question</p>
            </div>
         </div>
-        <div className="w-10 h-10 rounded-full border border-white/5 flex items-center justify-center group-hover:border-blue-500/30 transition-all">
-           <Send className="w-4 h-4 text-white/20 group-hover:text-blue-500" />
+        <div className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center group-hover:border-blue-500/30 transition-all">
+           <Send className="w-4 h-4 text-slate-300 group-hover:text-blue-600" />
         </div>
       </motion.button>
     );
@@ -99,18 +99,18 @@ export default function InquiryForm({ trekId, trekTitle }: InquiryFormProps) {
       <motion.div 
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-slate-950 border border-slate-800 rounded-3xl p-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] text-center flex flex-col items-center justify-center space-y-6 max-w-md mx-auto"
+        className="bg-white border border-slate-100 rounded-3xl p-8 shadow-2xl text-center flex flex-col items-center justify-center space-y-6 max-w-md mx-auto"
       >
-        <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mb-2 border border-emerald-500/20 shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)]">
+        <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-2 border border-emerald-100 shadow-sm">
           <CheckCircle2 className="w-10 h-10 text-emerald-500" />
         </div>
         <div className="space-y-4">
-          <h3 className="text-3xl font-black tracking-tighter uppercase text-white leading-none">Message Sent!</h3>
+          <h3 className="text-3xl font-black tracking-tighter uppercase text-slate-950 leading-none">Message Sent!</h3>
           <div className="space-y-1">
-            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-[0.2em] leading-relaxed">
+            <p className="text-slate-500 text-[11px] font-bold uppercase tracking-[0.2em] leading-relaxed">
                Thanks for reaching out.
             </p>
-            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-[0.2em] leading-relaxed">
+            <p className="text-slate-500 text-[11px] font-bold uppercase tracking-[0.2em] leading-relaxed">
                An adventure expert will contact you soon.
             </p>
           </div>
@@ -143,7 +143,7 @@ export default function InquiryForm({ trekId, trekTitle }: InquiryFormProps) {
       <motion.div 
         initial={{ opacity: 0, height: 80, y: 10 }}
         animate={{ opacity: 1, height: 'auto', y: 0 }}
-        className="bg-slate-950 border border-slate-800 rounded-3xl p-6 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] relative overflow-hidden group"
+        className="bg-white border border-slate-100 rounded-3xl p-6 shadow-xl relative overflow-hidden group"
       >
         <div className="absolute top-0 right-0 p-4 pointer-events-none opacity-[0.05] group-hover:opacity-[0.1] transition-opacity">
            <Send className="w-16 h-16 text-blue-600" />
@@ -151,7 +151,7 @@ export default function InquiryForm({ trekId, trekTitle }: InquiryFormProps) {
 
         <div className="relative space-y-6 text-left">
           <div className="space-y-1">
-            <h3 className="text-xl font-black tracking-tighter uppercase text-white leading-none">
+            <h3 className="text-xl font-black tracking-tighter uppercase text-slate-900 leading-none">
                Have Questions?
             </h3>
             <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.2em]">
@@ -171,7 +171,7 @@ export default function InquiryForm({ trekId, trekTitle }: InquiryFormProps) {
                     placeholder="e.g. Alex Shepard"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-xs font-bold text-white placeholder:text-slate-700 outline-none focus:border-blue-600 focus:bg-slate-800/50 transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-xs font-bold text-slate-900 placeholder:text-slate-300 outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner"
                   />
                 </div>
               </div>
@@ -179,14 +179,14 @@ export default function InquiryForm({ trekId, trekTitle }: InquiryFormProps) {
               <div className="space-y-1.5">
                 <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Email Address</label>
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600 group-focus-within:text-blue-500 transition-colors" />
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                   <input
                     required
                     type="email"
                     placeholder="alex@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-xs font-bold text-white placeholder:text-slate-700 outline-none focus:border-blue-600 focus:bg-slate-800/50 transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-xs font-bold text-slate-900 placeholder:text-slate-300 outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner"
                   />
                 </div>
               </div>
@@ -194,13 +194,13 @@ export default function InquiryForm({ trekId, trekTitle }: InquiryFormProps) {
               <div className="space-y-1.5">
                 <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Phone (Optional)</label>
                 <div className="relative group">
-                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600 group-focus-within:text-blue-500 transition-colors" />
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                   <input
                     type="tel"
                     placeholder="+1 (555) 000-0000"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-3 text-xs font-bold text-white placeholder:text-slate-700 outline-none focus:border-blue-600 focus:bg-slate-800/50 transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-3 text-xs font-bold text-slate-900 placeholder:text-slate-300 outline-none focus:border-blue-600 focus:bg-white transition-all shadow-inner"
                   />
                 </div>
               </div>
@@ -209,14 +209,14 @@ export default function InquiryForm({ trekId, trekTitle }: InquiryFormProps) {
             <div className="space-y-1.5">
               <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">How can we help?</label>
               <div className="relative group">
-                <MessageSquare className="absolute left-4 top-5 w-3.5 h-3.5 text-slate-600 group-focus-within:text-blue-500 transition-colors" />
+                <MessageSquare className="absolute left-4 top-5 w-3.5 h-3.5 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
                 <textarea
                   required
                   rows={3}
                   placeholder="Tell us about your plans..."
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 pt-4 pb-4 text-xs font-bold text-white placeholder:text-slate-700 outline-none focus:border-blue-600 focus:bg-slate-800/50 transition-all min-h-[100px] resize-none"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 pt-4 pb-4 text-xs font-bold text-slate-900 placeholder:text-slate-300 outline-none focus:border-blue-600 focus:bg-white transition-all min-h-[100px] resize-none shadow-inner"
                 />
               </div>
             </div>

@@ -79,7 +79,7 @@ export default function TrekDetailClient({ id }: TrekDetailClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background pt-0 pb-20 selection:bg-primary selection:text-white">
+    <div className="min-h-screen bg-surface pt-0 pb-20 selection:bg-primary selection:text-white">
       {/* ── Visual Breadcrumbs (SEO Navigational Signal) ── */}
       <nav className="absolute top-6 left-6 md:top-8 md:left-10 z-[20] hidden md:flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em]">
         <Link href="/" className="text-white/40 hover:text-white transition-colors">Home</Link>

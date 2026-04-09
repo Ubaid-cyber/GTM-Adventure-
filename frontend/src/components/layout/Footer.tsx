@@ -17,7 +17,7 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="bg-background border-t border-border pt-20 pb-10 overflow-hidden relative">
+    <footer className="bg-slate-950 border-t border-white/5 pt-20 pb-10 overflow-hidden relative">
       {/* Background Glow */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/5 blur-[120px] rounded-full -translate-y-1/2"></div>
       
