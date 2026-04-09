@@ -7,7 +7,7 @@ import Razorpay from 'razorpay';
 const router = Router();
 router.use(authenticateToken);
 
-const keyId = (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '').replace(/['"]+/g, '');
+const keyId = (process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '').replace(/['"]+/g, '');
 const keySecret = (process.env.RAZORPAY_KEY_SECRET || '').replace(/['"]+/g, '');
 
 const razorpay = new Razorpay({

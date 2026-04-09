@@ -10,7 +10,7 @@ const router = Router();
 router.use(authenticateToken); // Apply to all routes in this router
 
 
-const keyId = (process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '').replace(/['"]+/g, '');
+const keyId = (process.env.RAZORPAY_KEY_ID || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || '').replace(/['"]+/g, '');
 const keySecret = (process.env.RAZORPAY_KEY_SECRET || '').replace(/['"]+/g, '');
 
 const razorpay = new Razorpay({
