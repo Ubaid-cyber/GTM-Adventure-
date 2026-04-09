@@ -3,19 +3,24 @@ import { prisma } from '@/lib/prisma';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://gtmadventures.com';
+  let trekEntries: MetadataRoute.Sitemap = [];
 
-  // Fetch all treks for dynamic sitemap
-  const treks = await prisma.trek.findMany({
-    select: { id: true, updatedAt: true },
-  });
+  try {
+    // Fetch all treks for dynamic sitemap
+    const treks = await prisma.trek.findMany({
+      select: { id: true, updatedAt: true },
+    });
 
-  const trekEntries = treks.map((trek) => ({
-    url: `${baseUrl}/treks/${trek.id}`,
-    lastModified: trek.updatedAt,
-    changeFrequency: 'weekly' as const,
-    priority: 0.8,
-  }));
-
+    trekEntries = treks.map((trek) => ({
+      url: `${baseUrl}/treks/${trek.id}`,
+      lastModified: trek.updatedAt,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    }));
+  } catch (error) {
+    console.error('Sitemap build warning: Could not fetch dynamic treks from DB. Using fallback.', error);
+    // Continue with empty trekEntries so build doesn't fail
+  }
 
   // Fix: use current date for static routes lastModified
   const staticRoutes = ['', '/about', '/treks'].map((route) => ({
@@ -27,3 +32,4 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [...staticRoutes, ...trekEntries];
 }
+
