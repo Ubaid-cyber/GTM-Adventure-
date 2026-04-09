@@ -86,7 +86,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
 
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#0a0a0a]`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background`}>
         {isBlocked ? (
           <div className="bg-[#050505] text-white flex items-center justify-center min-h-screen p-8 text-center font-sans tracking-tight fixed inset-0 z-[9999]">
             <div className="max-w-md space-y-6 animate-in fade-in zoom-in duration-1000">
