@@ -50,22 +50,29 @@ export default function Footer() {
           <div className="lg:col-span-1"></div>
 
           <div className="lg:col-span-6">
-             <div className="bg-surface border border-border rounded-[32px] p-8 md:p-10 backdrop-blur-sm">
-                <h3 className="text-xl font-bold text-white mb-2">Join the Ascent</h3>
-                <p className="text-white/40 text-sm mb-8 font-medium italic">Receive safety updates and exclusive trek announcements.</p>
-                <form className="flex flex-col sm:flex-row gap-3">
-                  <div className="flex-1 relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={18} />
-                    <input 
-                      type="email" 
-                      placeholder="Your elite email address" 
-                      className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-primary transition-all"
-                    />
-                  </div>
-                  <button className="px-8 py-4 bg-primary text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-blue-600 transition-all flex items-center justify-center gap-2 group whitespace-nowrap">
-                    Subscribe <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                  </button>
-                </form>
+             <div className="bg-white border border-slate-100 rounded-[32px] p-8 md:p-10 shadow-2xl relative overflow-hidden group">
+                {/* Decorative Pattern */}
+                <div className="absolute top-0 right-0 p-6 pointer-events-none opacity-[0.03] group-hover:opacity-[0.05] transition-opacity">
+                   <Mail className="w-24 h-24 text-primary" />
+                </div>
+
+                <div className="relative z-10">
+                  <h3 className="text-xl font-black text-slate-950 uppercase tracking-tighter mb-2 italic">Join the Ascent</h3>
+                  <p className="text-slate-500 text-xs mb-8 font-bold uppercase tracking-widest">Receive safety updates and exclusive trek announcements.</p>
+                  <form className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex-1 relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                      <input 
+                        type="email" 
+                        placeholder="Your elite email address" 
+                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-sm text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-primary focus:bg-white transition-all shadow-inner font-bold"
+                      />
+                    </div>
+                    <button className="px-8 py-4 bg-primary text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-blue-600 transition-all flex items-center justify-center gap-2 group whitespace-nowrap shadow-lg shadow-primary/20">
+                      Subscribe <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </form>
+                </div>
              </div>
           </div>
         </div>
