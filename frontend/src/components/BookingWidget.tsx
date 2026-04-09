@@ -328,9 +328,9 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
               exit={{ opacity: 0, x: 20 }}
               className="space-y-8"
             >
-              <div className="flex items-center gap-3 bg-red-500/5 p-4 rounded-2xl border border-red-500/10 mb-4">
-                 <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-                 <span className="text-[10px] font-black uppercase tracking-[0.1em] text-red-500/80">Secure Booking Active</span>
+              <div className="flex items-center gap-3 bg-red-500/[0.03] py-2.5 px-4 rounded-2xl border border-red-500/10 mb-4">
+                 <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
+                 <span className="text-[9px] font-black uppercase tracking-[0.1em] text-red-500/70">Secure Booking Active</span>
               </div>
 
               {/* Price Display */}
@@ -341,7 +341,7 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
                     {formatINR(price)}<span className="text-xs md:text-sm text-muted font-medium tracking-normal">/seat</span>
                   </div>
                 </div>
-                <span className={`px-3 py-1 md:px-4 md:py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-widest border transition-all ${isSoldOut ? 'bg-red-50 border-red-200 text-red-600' : 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm'}`}>
+                <span className={`px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border transition-all shrink-0 ${isSoldOut ? 'bg-red-50 border-red-200 text-red-600' : 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm'}`}>
                   {isSoldOut ? 'Sold Out' : `${availableSpots} Open`}
                 </span>
               </div>
@@ -349,28 +349,28 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
               {/* Participants Selection */}
               <div className="space-y-3">
                 <label className="block text-[10px] font-black text-muted uppercase tracking-[0.2em] pl-1">Select Participants</label>
-                <div className="flex items-center gap-3 bg-background/50 border border-border rounded-2xl p-2 shadow-inner">
+                <div className="flex items-center gap-2 bg-background/50 border border-border rounded-2xl p-1.5 shadow-inner">
                   <button
                     onClick={() => setParticipants(p => Math.max(1, p - 1))}
                     disabled={participants <= 1 || isSoldOut}
-                    className="w-12 h-12 rounded-xl bg-surface flex items-center justify-center text-foreground hover:bg-border disabled:opacity-30 transition-all active:scale-90"
+                    className="w-10 h-10 rounded-xl bg-surface flex items-center justify-center text-foreground hover:bg-border disabled:opacity-30 transition-all active:scale-90"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M20 12H4"/></svg>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M20 12H4"/></svg>
                   </button>
-                  <span className="flex-1 text-center text-xl font-black text-foreground tabular-nums">{participants}</span>
+                  <span className="flex-1 text-center text-lg font-black text-foreground tabular-nums">{participants}</span>
                   <button
                     onClick={() => setParticipants(p => Math.min(availableSpots, p + 1))}
                     disabled={participants >= availableSpots || isSoldOut}
-                    className="w-12 h-12 rounded-xl bg-surface flex items-center justify-center text-foreground hover:bg-border disabled:opacity-30 transition-all active:scale-90"
+                    className="w-10 h-10 rounded-xl bg-surface flex items-center justify-center text-foreground hover:bg-border disabled:opacity-30 transition-all active:scale-90"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"/></svg>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"/></svg>
                   </button>
                 </div>
               </div>
 
               {/* Total Display */}
-              <div className="pt-6 border-t border-border flex justify-between items-center">
-                  <span className="text-[10px] md:text-xs font-black uppercase tracking-widest text-muted">Total Price</span>
+              <div className="pt-4 border-t border-border flex justify-between items-center">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-muted">Total Price</span>
                  <span className="text-xl md:text-2xl font-black text-primary tracking-tighter">{formatINR(price * participants)}</span>
               </div>
 

@@ -75,11 +75,11 @@ export default function InquiryForm({ trekId, trekTitle }: InquiryFormProps) {
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.99 }}
         onClick={() => setIsOpen(true)}
-        className="w-full bg-white border border-slate-100 rounded-3xl p-6 flex items-center justify-between group shadow-lg hover:shadow-xl transition-all max-w-md mx-auto"
+        className="w-full bg-white border border-slate-100 rounded-3xl p-4 flex items-center justify-between group shadow-lg hover:shadow-xl transition-all max-w-md mx-auto"
       >
         <div className="flex items-center gap-5 text-left">
-           <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100 group-hover:bg-blue-100 transition-all">
-              <MessageSquare className="w-6 h-6 text-blue-600" />
+           <div className="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center border border-blue-100 group-hover:bg-blue-100 transition-all">
+              <MessageSquare className="w-5 h-5 text-blue-600" />
            </div>
            <div className="space-y-1">
               <h3 className="text-sm font-black uppercase tracking-widest text-slate-900 leading-none">Need more info?</h3>
@@ -99,7 +99,7 @@ export default function InquiryForm({ trekId, trekTitle }: InquiryFormProps) {
       <motion.div 
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white border border-slate-100 rounded-3xl p-8 shadow-2xl text-center flex flex-col items-center justify-center space-y-6 max-w-md mx-auto"
+        className="bg-white border border-slate-100 rounded-3xl p-6 shadow-2xl text-center flex flex-col items-center justify-center space-y-4 max-w-md mx-auto"
       >
         <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-2 border border-emerald-100 shadow-sm">
           <CheckCircle2 className="w-10 h-10 text-emerald-500" />
@@ -143,7 +143,7 @@ export default function InquiryForm({ trekId, trekTitle }: InquiryFormProps) {
       <motion.div 
         initial={{ opacity: 0, height: 80, y: 10 }}
         animate={{ opacity: 1, height: 'auto', y: 0 }}
-        className="bg-white border border-slate-100 rounded-3xl p-6 shadow-xl relative overflow-hidden group"
+        className="bg-white border border-slate-100 rounded-3xl p-5 shadow-xl relative overflow-hidden group"
       >
         <div className="absolute top-0 right-0 p-4 pointer-events-none opacity-[0.05] group-hover:opacity-[0.1] transition-opacity">
            <Send className="w-16 h-16 text-blue-600" />
@@ -159,7 +159,7 @@ export default function InquiryForm({ trekId, trekTitle }: InquiryFormProps) {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3">
             <div className="flex flex-col gap-4">
               <div className="space-y-1.5">
                 <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Full Name</label>
