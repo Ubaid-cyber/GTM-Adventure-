@@ -205,7 +205,8 @@ export default function TrekDetailClient({ id }: TrekDetailClientProps) {
                         </p>
                       </div>
 
-                      {/* Highlights G                       <div className="space-y-6 text-left">
+                      {/* Highlights */}
+                      <div className="space-y-6 text-left">
                          <h3 className="text-sm font-black uppercase tracking-widest text-primary flex items-center gap-2">
                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
                            Trek Highlights
@@ -220,7 +221,7 @@ export default function TrekDetailClient({ id }: TrekDetailClientProps) {
                             </div>
                           ))}
                         </div>
-                      </div>  </div>
+                      </div>
                     </motion.div>
                   )}
 
