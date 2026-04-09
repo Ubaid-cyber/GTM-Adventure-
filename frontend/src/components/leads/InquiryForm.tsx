@@ -143,7 +143,7 @@ export default function InquiryForm({ trekId, trekTitle }: InquiryFormProps) {
       <motion.div 
         initial={{ opacity: 0, height: 80, y: 10 }}
         animate={{ opacity: 1, height: 'auto', y: 0 }}
-        className="bg-white border border-slate-100 rounded-3xl p-5 shadow-xl relative overflow-hidden group"
+        className="bg-white border border-slate-100 rounded-[28px] p-5 md:p-6 shadow-xl relative overflow-hidden group"
       >
         <div className="absolute top-0 right-0 p-4 pointer-events-none opacity-[0.05] group-hover:opacity-[0.1] transition-opacity">
            <Send className="w-16 h-16 text-blue-600" />
@@ -151,11 +151,11 @@ export default function InquiryForm({ trekId, trekTitle }: InquiryFormProps) {
 
         <div className="relative space-y-6 text-left">
           <div className="space-y-1">
-            <h3 className="text-xl font-black tracking-tighter uppercase text-slate-900 leading-none">
+            <h3 className="text-lg font-black tracking-tighter uppercase text-slate-900 leading-none">
                Have Questions?
             </h3>
-            <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.2em]">
-               Send us a message and we'll help you
+            <p className="text-slate-400 text-[8px] font-black uppercase tracking-[0.2em]">
+               Ask our adventure experts
             </p>
           </div>
 

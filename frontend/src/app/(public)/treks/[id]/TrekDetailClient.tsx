@@ -129,40 +129,40 @@ export default function TrekDetailClient({ id }: TrekDetailClientProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="flex flex-wrap items-center gap-2 mb-4 md:mb-6">
-              <span className={`px-3 py-1 md:px-4 md:py-1.5 text-[9px] md:text-[10px] font-black uppercase rounded-lg tracking-widest shadow-sm border ${DIFFICULTY_COLORS[trek.difficulty] || 'bg-gray-100 text-gray-700'}`}>
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              <span className={`px-3 py-1 text-[9px] font-black uppercase rounded-lg tracking-widest shadow-sm border ${DIFFICULTY_COLORS[trek.difficulty] || 'bg-gray-100 text-gray-700'}`}>
                 {trek.difficulty} Grade
               </span>
-              <div className="flex items-center gap-1 bg-white/10 backdrop-blur-xl text-white border border-white/20 px-3 py-1 md:px-4 md:py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-widest shadow-xl">
+              <div className="flex items-center gap-1 bg-white/10 backdrop-blur-xl text-white border border-white/20 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest shadow-xl">
                  <Star size={10} className="text-yellow-400 fill-yellow-400" />
                  <span>4.9 (128 Reviews)</span>
               </div>
-              <span className="bg-white/10 backdrop-blur-xl text-white border border-white/20 px-3 py-1 md:px-4 md:py-1.5 rounded-lg text-[9px] md:text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-xl">
-                <svg className="w-3 h-3 md:w-4 md:h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+              <span className="bg-white/10 backdrop-blur-xl text-white border border-white/20 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-xl">
+                <svg className="w-3 h-3 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 {trek.location}
               </span>
             </div>
-            <h1 className="text-white text-4xl md:text-8xl font-black tracking-tighter uppercase leading-none drop-shadow-2xl mb-6">{trek.title}</h1>
-            <p className="text-white/70 text-base md:text-xl font-medium max-w-2xl leading-relaxed tracking-wide italic">
-               "{trek.description.substring(0, 120)}..."
+            <h1 className="text-white text-4xl md:text-7xl font-black tracking-tighter uppercase leading-[0.9] drop-shadow-2xl mb-4">{trek.title}</h1>
+            <p className="text-white/70 text-sm md:text-lg font-medium max-w-xl leading-relaxed tracking-wide italic">
+               "{trek.description.substring(0, 140)}..."
             </p>
           </motion.div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 md:px-12 -mt-16 relative z-10">
         <div className="flex flex-col lg:flex-row gap-8 text-left">
           
           {/* Main Content Hub */}
           <div className="flex-1 space-y-12">
             
             {/* Exploration Tabs */}
-            <div className="bg-surface/80 backdrop-blur-2xl border border-border rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
+            <div className="bg-surface/80 backdrop-blur-2xl border border-border rounded-[32px] p-6 md:p-10 shadow-2xl relative overflow-hidden group">
                <div className="absolute top-0 right-0 p-6 pointer-events-none opacity-5 group-hover:opacity-10 transition-opacity">
                   <svg className="w-32 h-32 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l9 21H3L12 2z"/></svg>
                </div>
 
-               <div className="flex border-b border-border/50 mb-6 md:mb-10 gap-4 md:gap-8 overflow-x-auto no-scrollbar scroll-smooth">
+               <div className="flex border-b border-border/50 mb-6 md:mb-8 gap-4 md:gap-8 overflow-x-auto no-scrollbar scroll-smooth">
                   {[
                     { id: 'overview', label: 'Trek Overview' },
                     { id: 'itinerary', label: 'Detailed Itinerary' },
@@ -196,32 +196,31 @@ export default function TrekDetailClient({ id }: TrekDetailClientProps) {
                     >
                       {/* Description */}
                        <div className="space-y-6">
-                        <h3 className="text-base md:text-lg font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                        <h3 className="text-sm font-black uppercase tracking-widest text-primary flex items-center gap-2">
                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
                            The Expedition
                         </h3>
-                        <p className="text-muted leading-relaxed whitespace-pre-line text-base md:text-lg font-medium bg-surface/50 p-6 md:p-8 rounded-2xl border border-border/50 shadow-inner">
+                        <p className="text-muted leading-relaxed whitespace-pre-line text-sm md:text-base font-medium bg-surface/40 p-5 md:p-6 rounded-[20px] border border-border/40 shadow-inner">
                           {trek.description}
                         </p>
                       </div>
 
-                      {/* Highlights Grid */}
-                      <div className="space-y-6 text-left">
-                         <h3 className="text-lg font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                      {/* Highlights G                       <div className="space-y-6 text-left">
+                         <h3 className="text-sm font-black uppercase tracking-widest text-primary flex items-center gap-2">
                            <div className="w-1.5 h-1.5 bg-primary rounded-full"></div>
                            Trek Highlights
                         </h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {trek.highlights.map((highlight: string, idx: number) => (
-                            <div key={idx} className="flex items-start gap-4 bg-background/50 p-6 rounded-2xl border border-border hover:border-primary/20 hover:bg-surface transition-all shadow-sm group">
-                              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/5 transition-transform group-hover:scale-110">
-                                <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>
+                            <div key={idx} className="flex items-center gap-3 bg-background/50 p-4 rounded-xl border border-border hover:border-primary/20 hover:bg-surface transition-all shadow-sm group">
+                              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 border border-primary/5 transition-transform group-hover:scale-110">
+                                <svg className="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7"/></svg>
                               </div>
-                              <span className="text-foreground font-black uppercase tracking-wide pt-2 text-xs leading-5">{highlight}</span>
+                              <span className="text-foreground font-bold uppercase tracking-wide text-[10px] leading-tight">{highlight}</span>
                             </div>
                           ))}
                         </div>
-                      </div>
+                      </div>  </div>
                     </motion.div>
                   )}
 
@@ -362,9 +361,9 @@ export default function TrekDetailClient({ id }: TrekDetailClientProps) {
           </div>
 
           {/* Optimized Right Column: Single goal focus (Booking) */}
-          <div className="lg:w-[420px] shrink-0">
+          <div className="lg:w-[380px] shrink-0">
              <div className="sticky top-24 z-10 space-y-6">
-                <BookingWidget trekId={trek.id} price={trek.price} availableSpots={trek.availableSpots} />
+                <BookingWidget trekId={trek.id} price={trek.price} availableSpots={trek.availableSpots} inclusions={trek.inclusions} />
                 <InquiryForm trekId={trek.id} trekTitle={trek.title} />
              </div>
           </div>

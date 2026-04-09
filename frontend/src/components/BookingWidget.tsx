@@ -250,7 +250,7 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
   return (
     <>
       <Script src="https://checkout.razorpay.com/v1/checkout.js" />
-      <div className="bg-surface/80 backdrop-blur-2xl rounded-3xl border border-border shadow-2xl p-6 md:p-8 group relative">
+      <div className="bg-surface/80 backdrop-blur-2xl rounded-[32px] border border-border shadow-2xl p-5 md:p-6 group relative overflow-hidden">
         <AnimatePresence mode="wait">
           {success ? (
             <Portal key="success-portal">
@@ -334,14 +334,14 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
               </div>
 
               {/* Price Display */}
-              <div className="flex items-end justify-between">
-                <div>
-                  <div className="text-[9px] md:text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Trek Price</div>
-                  <div className="text-3xl md:text-4xl font-black text-foreground tracking-tighter">
-                    {formatINR(price)}<span className="text-xs md:text-sm text-muted font-medium tracking-normal">/seat</span>
+              <div className="flex items-end justify-between gap-4">
+                <div className="shrink-0">
+                  <div className="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-1">Trek Price</div>
+                  <div className="text-3xl font-black text-foreground tracking-tighter leading-none">
+                    {formatINR(price)}<span className="text-[10px] text-muted font-bold tracking-normal ml-1">/seat</span>
                   </div>
                 </div>
-                <span className={`px-2.5 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border transition-all shrink-0 ${isSoldOut ? 'bg-red-50 border-red-200 text-red-600' : 'bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm'}`}>
+                <span className={`px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest border transition-all ${isSoldOut ? 'bg-red-50 border-red-200 text-red-600' : 'bg-emerald-50 border-emerald-200 text-emerald-700'}`}>
                   {isSoldOut ? 'Sold Out' : `${availableSpots} Open`}
                 </span>
               </div>
@@ -369,9 +369,9 @@ function BookingWidgetContent({ trekId, price, availableSpots, inclusions = [] }
               </div>
 
               {/* Total Display */}
-              <div className="pt-4 border-t border-border flex justify-between items-center">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-muted">Total Price</span>
-                 <span className="text-xl md:text-2xl font-black text-primary tracking-tighter">{formatINR(price * participants)}</span>
+              <div className="pt-4 border-t border-border/50 flex justify-between items-center bg-white/30 -mx-5 px-5 py-3 mt-4">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-muted">Total Price</span>
+                 <span className="text-2xl font-black text-primary tracking-tighter">{formatINR(price * participants)}</span>
               </div>
 
               {error && (
