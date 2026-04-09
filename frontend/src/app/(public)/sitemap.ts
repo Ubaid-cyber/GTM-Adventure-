@@ -7,18 +7,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     // Fetch all treks for dynamic sitemap
+    // Note: findMany may fail during Vercel build if DB is not reachable
     const treks = await prisma.trek.findMany({
       select: { id: true, updatedAt: true },
+    }).catch(err => {
+      console.error('Sitemap DB check failed:', err);
+      return [];
     });
 
-    trekEntries = treks.map((trek) => ({
-      url: `${baseUrl}/treks/${trek.id}`,
-      lastModified: trek.updatedAt,
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    }));
+    if (treks && treks.length > 0) {
+      trekEntries = treks.map((trek) => ({
+        url: `${baseUrl}/treks/${trek.id}`,
+        lastModified: trek.updatedAt,
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      }));
+    }
   } catch (error) {
-    console.error('Sitemap build warning: Could not fetch dynamic treks from DB. Using fallback.', error);
+    console.warn('Sitemap build warning: Using static fallback.', error);
     // Continue with empty trekEntries so build doesn't fail
   }
 

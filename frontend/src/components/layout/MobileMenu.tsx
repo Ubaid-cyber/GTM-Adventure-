@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronRight, Compass, Shield, Heart, User, LogOut, Users } from 'lucide-react';
+import { Menu, X, ChevronRight, Compass, Shield, Heart, User, LogOut, Users, Activity } from 'lucide-react';
 import { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 
@@ -115,26 +115,32 @@ export default function MobileMenu({ session }: MobileMenuProps) {
 
                 {/* 🛡️ Strategic Operational Access (Staff Only) */}
                 {((session?.user as any)?.role === 'LEADER' || (session?.user as any)?.role === 'ADMIN') && (
-                  <div className="pt-4 space-y-4 border-t border-slate-100">
-                    <h3 className="text-[10px] font-black text-primary uppercase tracking-[0.25em] mb-4">Staff Command</h3>
+                  <div className="pt-6 space-y-4 border-t border-slate-100 mb-6">
+                    <div className="flex items-center gap-3 px-1 mb-4">
+                       <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">Leadership & Command</span>
+                       <div className="h-px bg-slate-100 flex-1"></div>
+                    </div>
                     
                     <Link 
                       href={(session?.user as any)?.role === 'ADMIN' ? "/adminControl" : "/dashboard"}
                       onClick={toggleMenu}
-                      className="flex items-center justify-between p-4 bg-primary/[0.03] rounded-2xl border border-primary/20 hover:border-primary hover:bg-white transition-all group shadow-sm"
+                      className="flex items-center justify-between p-4 bg-blue-600 rounded-2xl text-white shadow-lg shadow-blue-600/20 group overflow-hidden relative"
                     >
-                      <div className="flex items-center gap-4">
-                         <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
-                            <Shield size={20} />
+                      <div className="relative z-10 flex items-center gap-4">
+                         <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                            {(session?.user as any)?.role === 'ADMIN' ? <Activity size={20} /> : <Shield size={20} />}
                          </div>
-                         <div className="flex flex-col">
-                            <span className="font-black text-primary text-xs uppercase tracking-widest leading-none mb-1">
-                              {(session?.user as any)?.role === 'ADMIN' ? 'Admin HQ' : 'Leader Dashboard'}
-                            </span>
-                            <span className="text-[8px] font-bold text-muted uppercase tracking-tighter">Secure Operations</span>
+                         <div className="flex flex-col text-left">
+                            <p className="text-[10px] font-bold uppercase tracking-widest leading-none mb-1 opacity-70">
+                               {(session?.user as any)?.role === 'ADMIN' ? 'Admin Access' : 'Operational'}
+                            </p>
+                            <p className="text-sm font-black uppercase tracking-tighter">
+                               {(session?.user as any)?.role === 'ADMIN' ? 'Command HQ' : 'Leader Portal'}
+                            </p>
                          </div>
                       </div>
-                      <ChevronRight size={16} className="text-primary transition-all group-hover:translate-x-1" />
+                      <ChevronRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full translate-x-10 -translate-y-10 blur-2xl"></div>
                     </Link>
 
                     {(session?.user as any)?.role === 'ADMIN' && (

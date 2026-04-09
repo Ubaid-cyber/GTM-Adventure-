@@ -150,11 +150,11 @@ export default function TrekDetailClient({ id }: TrekDetailClientProps) {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-12 -mt-16 relative z-10">
-        <div className="flex flex-col lg:flex-row gap-8 text-left">
+      <div className="max-w-7xl mx-auto px-4 md:px-12 py-12 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 text-left">
           
-          {/* Main Content Hub */}
-          <div className="flex-1 space-y-12">
+          {/* Main Content Hub (8/12 Columns) */}
+          <div className="lg:col-span-8 space-y-12 min-w-0">
             
             {/* Exploration Tabs */}
             <div className="bg-surface/80 backdrop-blur-2xl border border-border rounded-[32px] p-6 md:p-10 shadow-2xl relative overflow-hidden group">
@@ -361,8 +361,8 @@ export default function TrekDetailClient({ id }: TrekDetailClientProps) {
             </div>
           </div>
 
-          {/* Optimized Right Column: Single goal focus (Booking) */}
-          <div className="lg:w-[380px] shrink-0">
+          {/* Optimized Right Column: Single goal focus (Booking) (4/12 Columns) */}
+          <div className="lg:col-span-4 min-w-0">
              <div className="sticky top-24 z-10 space-y-6">
                 <BookingWidget trekId={trek.id} price={trek.price} availableSpots={trek.availableSpots} inclusions={trek.inclusions} />
                 <InquiryForm trekId={trek.id} trekTitle={trek.title} />

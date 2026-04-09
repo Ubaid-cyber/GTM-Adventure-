@@ -36,19 +36,19 @@ export default async function Header() {
                 </Link>
                 
                 {((session?.user as any)?.role === 'LEADER' || (session?.user as any)?.role === 'ADMIN') && (
-                  <div className="h-4 w-px bg-slate-200 mx-2" />
+                  <div className="h-4 w-px bg-slate-200 mx-2 shrink-0" />
                 )}
 
                 {(session?.user as any)?.role === 'ADMIN' && (
-                  <Link href="/adminControl" className="text-[10px] bg-primary text-white px-3 py-1.5 rounded-lg font-black uppercase tracking-widest hover:bg-primary-hover transition-all shadow-md shadow-primary/20 flex items-center gap-2">
-                    <span className="w-1 h-1 bg-white rounded-full animate-pulse"></span>
+                  <Link href="/adminControl" className="text-[10px] bg-blue-600 text-white px-4 py-2 rounded-xl font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 flex items-center gap-2 group/admin">
+                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
                     Command HQ
                   </Link>
                 )}
 
                 {(session?.user as any)?.role === 'LEADER' && (
-                   <Link href="/dashboard" className="text-[10px] bg-emerald-600 text-white px-3 py-1.5 rounded-lg font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-md shadow-emerald-600/20 flex items-center gap-2">
-                    <span className="w-1 h-1 bg-white rounded-full"></span>
+                   <Link href="/dashboard" className="text-[10px] bg-emerald-600 text-white px-4 py-2 rounded-xl font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
                     Leader Portal
                   </Link>
                 )}
