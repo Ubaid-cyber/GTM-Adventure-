@@ -57,7 +57,7 @@ export default function Footer() {
                 </div>
 
                 <div className="relative z-10">
-                  <h3 className="text-xl font-black text-slate-950 uppercase tracking-tighter mb-2 italic">Join the Ascent</h3>
+                  <h3 className="text-xl font-black text-foreground mb-2 italic uppercase tracking-tighter">Join the Ascent</h3>
                   <p className="text-slate-500 text-xs mb-8 font-bold uppercase tracking-widest">Receive safety updates and exclusive trek announcements.</p>
                   <form className="flex flex-col sm:flex-row gap-3">
                     <div className="flex-1 relative">
