@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import crypto from 'crypto';
 import { prisma } from '../lib/prisma.js';
 import { authenticateToken } from '../middleware/auth.js';
@@ -16,7 +16,7 @@ const razorpay = new Razorpay({
 });
 
 // POST /api/razorpay/order (Legacy)
-router.post('/order', async (req, res) => {
+router.post('/order', async (req: Request, res: Response) => {
   try {
     const { bookingId } = req.body;
     const booking = await prisma.booking.findUnique({
@@ -40,7 +40,7 @@ router.post('/order', async (req, res) => {
 });
 
 // POST /api/razorpay/verify
-router.post('/verify', async (req, res) => {
+router.post('/verify', async (req: Request, res: Response) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, bookingId } = req.body;
     const secret = process.env.RAZORPAY_KEY_SECRET || '';

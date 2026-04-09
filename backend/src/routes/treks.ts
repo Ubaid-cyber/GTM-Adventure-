@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { pool } from '../lib/db.js';
 import { prisma } from '../lib/prisma.js';
 import { generateEmbedding, cosineSimilarity } from '../lib/gemini.js';
@@ -6,7 +6,7 @@ import { generateEmbedding, cosineSimilarity } from '../lib/gemini.js';
 const router = Router();
 
 // GET /api/treks
-router.get('/', async (req, res) => {
+router.get('/', async (req: Request, res: Response) => {
   const client = await pool.connect();
   try {
     const q = req.query.q as string;
@@ -31,30 +31,30 @@ router.get('/', async (req, res) => {
         let treks = treksRes.rows;
 
         // Apply filters
-        if (difficulty) treks = treks.filter(t => t.difficulty === difficulty);
-        if (minPrice) treks = treks.filter(t => t.price >= parseFloat(minPrice));
-        if (maxPrice) treks = treks.filter(t => t.price <= parseFloat(maxPrice));
-        if (minDays) treks = treks.filter(t => t.durationDays >= parseInt(minDays));
-        if (maxDays) treks = treks.filter(t => t.durationDays <= parseInt(maxDays));
+        if (difficulty) treks = treks.filter((t: any) => t.difficulty === difficulty);
+        if (minPrice) treks = treks.filter((t: any) => t.price >= parseFloat(minPrice));
+        if (maxPrice) treks = treks.filter((t: any) => t.price <= parseFloat(maxPrice));
+        if (minDays) treks = treks.filter((t: any) => t.durationDays >= parseInt(minDays));
+        if (maxDays) treks = treks.filter((t: any) => t.durationDays <= parseInt(maxDays));
 
         // Score similarity
         const scored = treks
-          .map(trek => {
+          .map((trek: any) => {
             const similarity = trek.embedding && trek.embedding.length > 0 ? cosineSimilarity(queryEmbedding, trek.embedding) : 0;
             return { trek, similarity };
           })
-          .filter(item => item.similarity > 0.6);
+          .filter((item: any) => item.similarity > 0.6);
 
         // Sort
-        if (sort === 'price_asc') scored.sort((a, b) => a.trek.price - b.trek.price);
-        else if (sort === 'price_desc') scored.sort((a, b) => b.trek.price - a.trek.price);
-        else scored.sort((a, b) => b.similarity - a.similarity);
+        if (sort === 'price_asc') scored.sort((a: any, b: any) => a.trek.price - b.trek.price);
+        else if (sort === 'price_desc') scored.sort((a: any, b: any) => b.trek.price - a.trek.price);
+        else scored.sort((a: any, b: any) => b.similarity - a.similarity);
 
         const total = scored.length;
         const paged = scored.slice(offset, offset + limit);
 
         return res.json({
-          treks: paged.map(({ trek, similarity }) => {
+          treks: paged.map(({ trek, similarity }: any) => {
             const { embedding, ...rest } = trek;
             return { ...rest, _relevance: Math.round(similarity * 100) };
           }),
@@ -115,7 +115,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/treks/:id
-router.get('/:id', async (req, res) => {
+router.get('/:id', async (req: Request, res: Response) => {
   try {
     const trek = await prisma.trek.findUnique({
       where: { id: req.params.id }

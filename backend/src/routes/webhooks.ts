@@ -1,11 +1,11 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma.js';
 import crypto from 'crypto';
 
 const router = Router();
 
 // POST /api/webhooks/razorpay
-router.post('/razorpay', async (req, res) => {
+router.post('/razorpay', async (req: Request, res: Response) => {
   try {
     const secret = process.env.RAZORPAY_WEBHOOK_SECRET || '';
     const body = JSON.stringify(req.body);

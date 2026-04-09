@@ -16,7 +16,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
 
   if (token) {
     try {
-      const secret = process.env.NEXTAUTH_SECRET || 'development_secret_only';
+      const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || 'development_secret_only';
       const decoded = jwt.verify(token, secret) as any;
       email = decoded.email;
       console.log(`[AUTHENTICATED] JWT Verification Success: ${email}`);
@@ -24,6 +24,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
       console.warn('⚠️ Security: Invalid JWT token signature detected.');
       return res.status(401).json({ error: 'Auth failed: Invalid security token.' });
     }
+
   } else if (devEmail && process.env.NODE_ENV !== 'production') {
     // 🧪 DEV MODE ONLY fallback
     email = devEmail;
