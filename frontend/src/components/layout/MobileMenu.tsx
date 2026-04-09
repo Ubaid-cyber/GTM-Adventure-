@@ -28,10 +28,10 @@ export default function MobileMenu({ session }: MobileMenuProps) {
   };
 
   const navLinks = [
-    { href: '/treks', label: 'Featured Treks', icon: Compass },
-    { href: '/dashboard/bookings', label: 'My Bookings', icon: Shield, protected: true },
-    { href: '/dashboard/health', label: 'Medical Portal', icon: Heart, protected: true },
-    { href: '/dashboard/profile', label: 'Profile Settings', icon: User, protected: true },
+    { href: '/treks', label: 'Explore Treks', icon: Compass },
+    { href: '/dashboard/bookings', label: 'My Trips', icon: Shield, protected: true },
+    { href: '/dashboard/health', label: 'Health Form', icon: Heart, protected: true },
+    { href: '/dashboard/profile', label: 'Account', icon: User, protected: true },
   ];
 
   return (
@@ -56,7 +56,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
               exit="closed"
               variants={overlayVariants}
               onClick={toggleMenu}
-              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[60]"
+              className="fixed inset-0 bg-slate-950/60 backdrop-blur-[2px] z-[60]"
             />
             
             <motion.div 
@@ -64,24 +64,24 @@ export default function MobileMenu({ session }: MobileMenuProps) {
               animate="open"
               exit="closed"
               variants={menuVariants}
-              className="fixed top-0 right-0 bottom-0 w-[80%] max-w-sm bg-background border-l border-border z-[70] shadow-2xl flex flex-col"
+              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white z-[70] shadow-[0_0_50px_rgba(0,0,0,0.3)] flex flex-col"
             >
 
               {/* Header */}
-              <div className="p-6 flex items-center justify-between border-b border-border">
+              <div className="p-6 flex items-center justify-between border-b border-slate-100 bg-white">
                 <div className="flex items-center gap-2">
-                   <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+                   <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg shadow-primary/20">
                       <svg className="w-5 h-5 text-white" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M16 4L2 28H30L16 4Z" fill="currentColor"/>
                       </svg>
                    </div>
-                   <span className="font-black text-primary text-sm tracking-tighter uppercase italic">GTM Elite</span>
+                   <span className="font-black text-primary text-sm tracking-tighter uppercase italic leading-none pt-1">GTM Elite</span>
                 </div>
                 <button 
                   onClick={toggleMenu}
-                  className="p-2 text-muted hover:text-rose-500 transition-colors"
+                  className="p-2.5 bg-slate-50 text-slate-400 hover:text-rose-500 rounded-full transition-all active:scale-95"
                 >
-                  <X size={24} strokeWidth={2.5} />
+                  <X size={20} strokeWidth={3} />
                 </button>
               </div>
 
