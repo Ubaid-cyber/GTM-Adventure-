@@ -162,7 +162,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                       onClick={toggleMenu}
                       className="w-full bg-primary hover:bg-primary-hover text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-center block shadow-lg shadow-primary/20"
                     >
-                      Sign In
+                      Login / Signup
                     </Link>
                   </div>
                 )}

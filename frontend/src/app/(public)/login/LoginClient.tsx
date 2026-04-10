@@ -39,18 +39,21 @@ export default function LoginClient() {
 
         if (is2FA) {
           setShow2FA(true);
+          setLoading(false); // Reset so they can enter OTP
         } else if (result.error === 'ACCOUNT_LOCKED') {
           setError('Account locked for security. Please try again in 10 minutes.');
+          setLoading(false);
         } else {
           console.error('[AuthDebug] Browser-side Error:', result.error);
           setError('Invalid email or password.');
+          setLoading(false);
         }
       } else {
+        // 🚀 SUCCESS: Keep loading = true to prevent button flicker during redirect
         window.location.href = callbackUrl;
       }
     } catch {
       setError('An unexpected error occurred. Please try again.');
-    } finally {
       setLoading(false);
     }
   };
@@ -75,12 +78,13 @@ export default function LoginClient() {
         } else {
           setError('Authentication failed. Please try again.');
         }
+        setLoading(false);
       } else {
+        // 🚀 SUCCESS
         window.location.href = callbackUrl;
       }
     } catch {
       setError('An unexpected error occurred.');
-    } finally {
       setLoading(false);
     }
   };
@@ -118,10 +122,10 @@ export default function LoginClient() {
         throw new Error('Invalid verification code. Please check and try again.');
       }
 
+      // 🚀 SUCCESS
       window.location.href = '/dashboard';
     } catch (err: any) {
       setError(err.message || 'Invalid verification code.');
-    } finally {
       setLoading(false);
     }
   };
@@ -145,7 +149,7 @@ export default function LoginClient() {
             <span className="font-black text-xs text-slate-900 tracking-widest uppercase">GTM ADVENTURES</span>
           </motion.div>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-            {show2FA ? 'Security Verification' : 'Sign In to Adventure'}
+            {show2FA ? 'Security Verification' : 'Login to Adventure'}
           </h1>
           <p className="text-slate-500 text-sm mt-2 font-medium tracking-tight whitespace-nowrap">
             {show2FA ? 'Enter your 6-digit authenticator code' : 'Manage your bookings and upcoming treks'}
@@ -161,7 +165,7 @@ export default function LoginClient() {
                 onClick={() => setTab('email')}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'email' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
               >
-                <Mail className="w-3.5 h-3.5" /> Sign In
+                <Mail className="w-3.5 h-3.5" /> Email
               </button>
               <button 
                 onClick={() => setTab('phone')}
@@ -213,7 +217,7 @@ export default function LoginClient() {
                   onClick={() => setShow2FA(false)}
                   className="w-full text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-primary transition-colors text-center"
                 >
-                  Back to Sign In
+                  Back to Login
                 </button>
               </motion.form>
             ) : tab === 'email' ? (
@@ -260,7 +264,7 @@ export default function LoginClient() {
                   disabled={loading}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-slate-900/10 active:scale-[0.98] disabled:opacity-50"
                 >
-                  {loading ? 'Signing in...' : 'Sign In'}
+                  {loading ? 'Signing in...' : 'Login'}
                 </button>
               </motion.form>
             ) : (

@@ -77,7 +77,7 @@ export default async function Header() {
               </div>
             ) : (
               <Link href="/login" className="hidden sm:inline-flex bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-primary/20 hover:scale-105 active:scale-95">
-                Sign In
+                Login / Signup
               </Link>
             )}
             
