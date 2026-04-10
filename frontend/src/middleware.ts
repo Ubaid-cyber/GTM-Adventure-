@@ -30,6 +30,14 @@ export default auth((req) => {
   const protectedRoutes = ['/dashboard', '/profile', '/bookings'];
   const isProtectedRoute = protectedRoutes.some((r) => nextUrl.pathname.startsWith(r));
 
+  const authRoutes = ['/login', '/signup'];
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+
+  // 🛡️ REVERSE GUARD: If logged in, don't show login/signup pages
+  if (isAuthRoute && isLoggedIn) {
+    return NextResponse.redirect(new URL('/dashboard', nextUrl));
+  }
+
   if (isProtectedRoute && !isLoggedIn) {
     const ip = req.headers.get('x-forwarded-for') || 'unknown';
     console.warn(`[SECURITY] Unauthorized access attempt to ${nextUrl.pathname} from ${ip}`);
