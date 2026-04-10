@@ -6,11 +6,12 @@ import { LogOut } from 'lucide-react';
 export default function LogoutButton() {
   const handleSignOut = async () => {
     try {
-      // Force a safer, more deliberate sign out that prevents server panic
+      // Disable automatic library redirect to bypass poisoned NEXTAUTH_URL
       await signOut({ 
-        redirect: true, 
-        callbackUrl: '/' 
+        redirect: false
       });
+      // Force manual navigation to site root relative to current origin
+      window.location.href = '/';
     } catch (error) {
       console.error('Logout error:', error);
       // Fallback: Force jump to home if dev server hangs
