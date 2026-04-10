@@ -59,13 +59,6 @@ export default async function Header() {
             {/* Always visible staff links but styled differently for isolation */}
             {isLoggedIn && (
               <>
-                {userRole === 'ADMIN' && (
-                  <Link href="/adminControl" className="text-[10px] bg-slate-900 text-white px-5 py-2.5 rounded-xl font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-black/10 flex items-center gap-2">
-                    <Shield className="w-3.5 h-3.5 text-primary" />
-                    Admin Panel
-                  </Link>
-                )}
-
                 {userRole === 'LEADER' && (
                    <Link href="/dashboard" className="text-[10px] bg-blue-600 text-white px-5 py-2.5 rounded-xl font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/10 flex items-center gap-2">
                     <span className="w-1.5 h-1.5 bg-white rounded-full"></span>

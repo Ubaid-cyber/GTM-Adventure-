@@ -85,23 +85,8 @@ export default function MobileMenu({ session }: MobileMenuProps) {
               <div className="flex-1 overflow-y-auto no-scrollbar">
                 <div className="p-6 space-y-8">
                   
-                  {/* ADMIN ISOLATION LOGIC */}
-                  {isAdmin ? (
-                    <div className="space-y-4">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Management Hub</p>
-                      <Link 
-                        href="/adminControl"
-                        onClick={toggleMenu}
-                        className="flex items-center justify-between p-5 bg-slate-900 rounded-2xl text-white shadow-xl shadow-black/10 transition-transform active:scale-[0.98]"
-                      >
-                         <div className="flex items-center gap-4">
-                            <Shield size={20} className="text-primary" />
-                            <span className="font-bold text-sm tracking-tight uppercase">Enter Admin Panel</span>
-                         </div>
-                         <ChevronRight size={16} className="opacity-40" />
-                      </Link>
-                    </div>
-                  ) : (
+                  {/* NAVIGATION LINKS */}
+                  {!isAdmin && (
                     <>
                       {/* Standard User Links */}
                       <div className="space-y-3">

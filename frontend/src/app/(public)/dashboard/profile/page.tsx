@@ -222,19 +222,15 @@ export default function UserProfile() {
                  Note: Admin dashboard links and metrics have been removed from this public profile page 
                  as requested. Admins should use the /adminControl panel for these features.
                */}
-               <div className="bg-white border border-slate-200 rounded-[40px] p-12 text-center shadow-sm">
-                  <div className="w-20 h-20 bg-primary/5 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                    <Shield className="w-10 h-10 text-primary/40" />
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-900 mb-2">Secure Archive Access</h3>
-                  <p className="text-slate-500 text-sm max-w-sm mx-auto leading-relaxed">
-                    Your professional dossier is isolated. To manage expeditions or view fiscal metrics, please return to the Command Center.
-                  </p>
-                  <Link href="/adminControl" className="mt-8 inline-flex items-center gap-2 px-8 py-3 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-black transition-all">
-                    Go to Admin Panel
-                    <ChevronRight size={14} />
-                  </Link>
-               </div>
+                <div className="bg-white border border-slate-200 rounded-[40px] p-12 text-center shadow-sm">
+                   <div className="w-20 h-20 bg-primary/5 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                     <Shield className="w-10 h-10 text-primary/40" />
+                   </div>
+                   <h3 className="text-xl font-bold text-slate-900 mb-2">Secure Archive Access</h3>
+                   <p className="text-slate-500 text-sm max-w-sm mx-auto leading-relaxed">
+                     Your professional dossier is isolated. Administrative operations are managed through the external Command Center.
+                   </p>
+                </div>
             </motion.div>
           )}
 
