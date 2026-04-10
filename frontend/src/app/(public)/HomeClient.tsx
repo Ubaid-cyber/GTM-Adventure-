@@ -33,19 +33,13 @@ export default function HomeClient() {
     <main className="bg-white min-h-screen">
       {/* 1. HERO SECTION */}
       <section className="relative h-[95vh] flex items-center justify-center overflow-hidden">
-        {/* Cinematic Background with Triple Scrim Visibility Layer */}
+        {/* Cinematic Background - Overlays removed as requested for full image visibility */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <img 
             src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2000" 
             alt="Elite Global Adventure & Expedition Management - GTM Adventures" 
             className="w-full h-full object-cover scale-105"
           />
-          {/* Layer 1: Global Dimming for Brand Premiumness */}
-          <div className="absolute inset-0 bg-black/30"></div>
-          {/* Layer 2: Top-Down Scrim for Navigation Clarity */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/10 to-transparent"></div>
-          {/* Layer 3: Bottom-Up Navigation Scrim for Content Pop */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 text-center pt-24 md:pt-32">
