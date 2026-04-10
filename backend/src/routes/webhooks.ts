@@ -8,15 +8,23 @@ const router = Router();
 router.post('/razorpay', async (req: Request, res: Response) => {
   try {
     const secret = process.env.RAZORPAY_WEBHOOK_SECRET || '';
-    const body = JSON.stringify(req.body);
+    const rawBody = (req as any).rawBody;
     const signature = req.headers['x-razorpay-signature'] as string;
+
+    if (!rawBody) {
+      console.error('[WEBHOOK_SECURITY] Error: Raw body buffer was not captured. Payment verification failed.');
+      return res.status(500).json({ error: 'Internal server configuration error' });
+    }
 
     const expectedSignature = crypto
       .createHmac('sha256', secret)
-      .update(body)
+      .update(rawBody)
       .digest('hex');
 
-    if (expectedSignature !== signature) return res.status(400).json({ error: 'Invalid signature' });
+    if (expectedSignature !== signature) {
+      console.warn('[WEBHOOK_SECURITY] Invalid signature detected. Request rejected.');
+      return res.status(400).json({ error: 'Invalid signature' });
+    }
 
     const event = req.body;
     if (event.event === 'payment.captured') {

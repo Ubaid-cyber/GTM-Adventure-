@@ -24,7 +24,14 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(express.json());
+app.use(express.json({
+  verify: (req: any, res, buf) => {
+    // Only capture raw body for webhook paths to save memory elsewhere
+    if (req.originalUrl?.startsWith('/api/webhooks')) {
+      req.rawBody = buf;
+    }
+  }
+}));
 
 // Health Check
 app.get('/api/health', (req: Request, res: Response) => {
