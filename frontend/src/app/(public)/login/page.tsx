@@ -1,8 +1,9 @@
+import { Metadata } from "next";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import LoginClient from "./LoginClient";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Login | GTM Adventures",
   description: "Securely access your GTM Adventures account to manage your upcoming treks and expeditions.",
 };
