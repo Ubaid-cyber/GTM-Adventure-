@@ -51,24 +51,24 @@ export default function MobileMenu({ session }: MobileMenuProps) {
               animate="open"
               exit="closed"
               variants={menuVariants}
-              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white z-[70] flex flex-col shadow-2xl"
+              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white/80 backdrop-blur-xl z-[70] flex flex-col shadow-2xl border-l border-white/20"
             >
-              <div className="p-6 flex items-center justify-between border-b border-slate-50">
+              <div className="p-5 flex items-center justify-between border-b border-black/5">
                 <div className="flex items-center gap-2">
                    <MountainLogo className="w-6 h-6 text-slate-900" />
-                   <span className="font-bold text-slate-900 text-sm tracking-tight">GTM Admissions</span>
+                   <span className="font-bold text-slate-900 text-sm tracking-tight italic uppercase">GTM ADVENTURES</span>
                 </div>
                 <button onClick={toggleMenu} className="p-2 text-slate-400 hover:text-slate-900 transition-colors">
                   <X size={24} />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-white no-scrollbar">
+              <div className="flex-1 overflow-y-auto p-4 space-y-6 no-scrollbar">
                 
-                {/* Public Navigation */}
-                <div className="space-y-1">
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-2">Discovery</p>
-                  <div className="grid grid-cols-1 gap-1">
+                {/* Main Grid Navigation - Instant Visibility */}
+                <div>
+                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] px-1 mb-3">Expedition Menu</p>
+                  <div className="grid grid-cols-2 gap-2">
                     {publicNavLinks.map((link) => {
                       const Icon = link.icon;
                       return (
@@ -76,26 +76,23 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                           key={link.href}
                           href={link.href}
                           onClick={toggleMenu}
-                          className="flex items-center justify-between p-3.5 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all group"
+                          className="flex flex-col items-center justify-center gap-3 p-5 rounded-3xl bg-white border border-black/5 hover:border-black/10 transition-all active:scale-[0.98] group shadow-sm shadow-black/[0.02]"
                         >
-                          <div className="flex items-center gap-3">
-                             <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 transition-colors">
-                                <Icon size={18} />
-                             </div>
-                             <span className="font-semibold text-slate-900 text-sm">{link.label}</span>
-                          </div>
-                          <ChevronRight size={14} className="text-slate-300 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
+                           <div className="w-10 h-10 rounded-2xl bg-slate-900/5 flex items-center justify-center text-slate-600 group-hover:text-slate-900 transition-colors">
+                              <Icon size={20} />
+                           </div>
+                           <span className="font-bold text-slate-950 text-[11px] uppercase tracking-wider text-center">{link.label}</span>
                         </Link>
                       );
                     })}
                   </div>
                 </div>
 
-                {/* User Navigation (Compact) */}
+                {/* Dashboard & Profile - Compact List */}
                 {isLoggedIn && (
-                  <div className="space-y-1">
-                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-2">My Dashboard</p>
-                    <div className="grid grid-cols-1 gap-1">
+                  <div className="space-y-2">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] px-1 mb-3">Command Center</p>
+                    <div className="grid grid-cols-1 gap-1.5">
                       {protectedNavLinks.map((link) => {
                         const Icon = link.icon;
                         return (
@@ -103,15 +100,13 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                             key={link.href}
                             href={link.href}
                             onClick={toggleMenu}
-                            className="flex items-center justify-between p-3.5 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all group"
+                            className="flex items-center justify-between p-3 px-4 rounded-2xl bg-white/50 border border-black/5 hover:bg-white transition-all group"
                           >
-                            <div className="flex items-center gap-3">
-                               <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 transition-colors">
-                                  <Icon size={18} />
-                               </div>
-                               <span className="font-semibold text-slate-900 text-sm">{link.label}</span>
+                            <div className="flex items-center gap-4">
+                               <Icon size={18} className="text-slate-400 group-hover:text-slate-900" />
+                               <span className="font-bold text-slate-900 text-[12px]">{link.label}</span>
                             </div>
-                            <ChevronRight size={14} className="text-slate-300 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
+                            <ChevronRight size={14} className="text-slate-300 group-hover:text-slate-900" />
                           </Link>
                         );
                       })}
@@ -119,10 +114,10 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                   </div>
                 )}
 
-                {/* Staff Control Links (Higher Visibility) */}
+                {/* Operations (Only visible if applicable) */}
                 {isLoggedIn && staffNavLinks.some(l => l.roles?.includes(userRole)) && (
-                   <div className="space-y-3 pt-4 border-t border-slate-100">
-                     <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-2">Operations</p>
+                   <div className="space-y-2 pt-4 border-t border-black/5">
+                     <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] px-1 mb-3">Operations</p>
                      <div className="grid grid-cols-1 gap-2">
                        {staffNavLinks.map((link) => {
                          if (!link.roles?.includes(userRole)) return null;
@@ -132,13 +127,13 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                             key={link.href}
                             href={link.href}
                             onClick={toggleMenu}
-                            className="flex items-center justify-between p-3.5 bg-slate-900 rounded-2xl text-white transition-all active:scale-[0.98] shadow-lg shadow-black/5"
+                            className="flex items-center justify-between p-4 bg-slate-950 rounded-[28px] text-white transition-all active:scale-[0.98] shadow-xl shadow-black/10"
                           >
-                            <div className="flex items-center gap-3">
-                              <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
+                            <div className="flex items-center gap-4">
+                              <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
                                   <Icon size={18} />
                               </div>
-                              <span className="font-bold text-[10px] uppercase tracking-wider">{link.label}</span>
+                              <span className="font-black text-[10px] uppercase tracking-[0.15em]">{link.label}</span>
                             </div>
                             <ChevronRight size={16} className="opacity-40" />
                           </Link>
@@ -153,27 +148,27 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                     <Link 
                       href="/login" 
                       onClick={toggleMenu}
-                      className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold text-[11px] uppercase tracking-widest text-center block shadow-lg shadow-black/5"
+                      className="w-full bg-slate-950 text-white py-5 rounded-[28px] font-black text-[11px] uppercase tracking-[0.25em] text-center block shadow-xl shadow-black/10"
                     >
-                      Login / Sign Up
+                      Login / Join
                     </Link>
                   </div>
                 )}
               </div>
 
               {isLoggedIn && (
-                <div className="p-6 border-t border-slate-50 bg-slate-50/50">
+                <div className="p-6 border-t border-black/5 bg-black/5 backdrop-blur-md">
                   <div className="flex items-center justify-between mb-6">
                     <div className="flex items-center gap-3 px-2">
-                       <div className="w-11 h-11 bg-white rounded-2xl border border-slate-200 flex items-center justify-center overflow-hidden shadow-sm">
+                       <div className="w-12 h-12 bg-white rounded-2xl border border-black/5 flex items-center justify-center overflow-hidden shadow-sm">
                           {session.user?.image 
                             ? <img src={session.user.image} className="w-full h-full object-cover" alt="User" />
-                            : <span className="font-black text-slate-900 uppercase text-lg">{session.user?.name?.charAt(0)}</span>
+                            : <span className="font-black text-slate-950 uppercase text-xl">{session.user?.name?.charAt(0)}</span>
                           }
                        </div>
                        <div>
-                          <p className="text-sm font-bold text-slate-900 leading-none mb-1">{session.user?.name}</p>
-                          <p className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em]">Member Portal</p>
+                          <p className="text-[13px] font-black text-slate-950 uppercase tracking-tight mb-0.5">{session.user?.name}</p>
+                          <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">Member Base</p>
                        </div>
                     </div>
                   </div>
@@ -182,10 +177,10 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                       await signOut({ redirect: false });
                       window.location.assign('/');
                     }}
-                    className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-white border border-rose-100 text-rose-500 font-bold text-xs uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all shadow-sm"
+                    className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-white border border-rose-100 text-rose-500 font-black text-[10px] uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all shadow-sm"
                   >
                     <LogOut size={16} />
-                    Sign Out
+                    Disconnect Session
                   </button>
                 </div>
               )}
