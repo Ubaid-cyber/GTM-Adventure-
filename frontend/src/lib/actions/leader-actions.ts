@@ -82,7 +82,7 @@ export async function getLeaderBookingsAction() {
     const bookings = await (prisma as any).$queryRaw`
       SELECT 
         b.*,
-        t.title as "trekTitle", t.price as "trekPrice", t."coverImage" as "trekCoverImage",
+        t.title as "trekTitle", t.price as "trekPrice", t."coverImage" as "trekCoverImage", t.slug as "trekSlug",
         u.name as "userName", u.email as "userEmail", u.profile_image as "userProfileImage",
         e.id as "expeditionId", e.status as "expeditionStatus"
       FROM "Booking" b
@@ -97,7 +97,7 @@ export async function getLeaderBookingsAction() {
     return Array.isArray(bookings) ? (bookings as any[]).map((b: any) => ({
       ...b,
       user: { id: b.userId, name: b.userName, email: b.userEmail, profileImage: b.userProfileImage },
-      trek: { title: b.trekTitle, price: b.trekPrice, coverImage: b.trekCoverImage },
+      trek: { title: b.trekTitle, price: b.trekPrice, coverImage: b.trekCoverImage, slug: b.trekSlug },
       expedition: b.expeditionId ? { id: b.expeditionId, status: b.expeditionStatus } : null
     })) : [];
   } catch (err: any) {

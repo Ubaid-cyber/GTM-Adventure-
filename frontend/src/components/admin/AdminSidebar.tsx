@@ -49,7 +49,7 @@ export default function AdminSidebar() {
           </div>
           <div className="flex flex-col leading-tight">
             <span className="text-white font-bold text-sm tracking-tight">GTM Administration</span>
-            <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Management HQ</span>
+            <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Admin Panel</span>
           </div>
         </Link>
       </div>

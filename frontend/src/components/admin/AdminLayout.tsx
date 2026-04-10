@@ -6,6 +6,7 @@ import { Toaster } from 'sonner';
 import { Triangle } from 'lucide-react';
 import AdminSidebar from './AdminSidebar';
 import AdminLoginGate from './AdminLoginGate';
+import AdminMobileMenu from './AdminMobileMenu';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -53,6 +54,8 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           </div>
           
           <div className="flex items-center gap-6">
+            {/* Mobile Nav Trigger (only visible on small screens) */}
+            <AdminMobileMenu />
             <div className="flex flex-col text-right hidden sm:flex">
               <span className="text-white font-bold text-sm tracking-tight">{session.user?.name}</span>
               <span className="text-blue-500 font-bold text-[9px] uppercase tracking-widest leading-none mt-0.5">

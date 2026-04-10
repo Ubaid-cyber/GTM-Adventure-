@@ -2,9 +2,14 @@ import TrekDetailClient from './TrekDetailClient';
 import { Metadata } from 'next';
 import { prisma } from '@/lib/prisma';
 
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params;
-  const trek = await prisma.trek.findUnique({ where: { id } });
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  
+  // Single query — match by slug OR id
+  const trek = await prisma.trek.findFirst({
+    where: { OR: [{ slug }, { id: slug }] }
+  });
+
   const title = trek ? `${trek.title} | GTM Adventures` : 'Trek Details | GTM Adventures';
   const description = trek?.description?.substring(0, 160) || 'Discover amazing Himalayan treks with GTM Adventures.';
   const image = trek?.coverImage || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=1200';
@@ -27,9 +32,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   };
 }
 
-export default async function TrekPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const trek = await prisma.trek.findUnique({ where: { id } });
+export default async function TrekPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  
+  // Single query — match by slug OR id
+  const trek = await prisma.trek.findFirst({
+    where: { OR: [{ slug }, { id: slug }] }
+  });
 
   const jsonLd = trek ? [
     {
@@ -63,7 +72,7 @@ export default async function TrekPage({ params }: { params: Promise<{ id: strin
         "price": trek.price,
         "priceCurrency": "USD",
         "availability": "https://schema.org/InStock",
-        "url": `https://gtmadventures.com/treks/${trek.id}`
+        "url": `https://gtmadventures.com/treks/${trek.slug || trek.id}`
       },
       "itinerary": {
         "@type": "ItemList",
@@ -102,7 +111,7 @@ export default async function TrekPage({ params }: { params: Promise<{ id: strin
           "@type": "ListItem",
           "position": 3,
           "name": trek.title,
-          "item": `https://gtmadventures.com/treks/${trek.id}`
+          "item": `https://gtmadventures.com/treks/${trek.slug || trek.id}`
         }
       ]
     }
@@ -117,7 +126,7 @@ export default async function TrekPage({ params }: { params: Promise<{ id: strin
           dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }}
         />
       ))}
-      <TrekDetailClient id={id} />
+      <TrekDetailClient id={trek?.id || slug} />
     </>
   );
 }

@@ -161,6 +161,7 @@ model Booking {
 model Trek {
   id               String       @id @default(cuid())
   title            String
+  slug             String?      @unique
   description      String
   location         String
   durationDays     Int

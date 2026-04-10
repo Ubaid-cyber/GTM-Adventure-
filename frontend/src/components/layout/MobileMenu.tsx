@@ -20,14 +20,20 @@ export default function MobileMenu({ session }: MobileMenuProps) {
   const userRole = (session?.user as any)?.role;
   const isAdmin = userRole === 'ADMIN';
 
-  // Toggle Scroll Lock
+  // Stable scroll lock — compensates for scrollbar removal to prevent layout shift
   useEffect(() => {
     if (isOpen) {
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
       document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
     } else {
       document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
     }
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+    };
   }, [isOpen]);
 
   const toggleMenu = () => setIsOpen(!isOpen);
@@ -90,7 +96,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                     <>
                       {/* Standard User Links */}
                       <div className="space-y-3">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Expedition Discovery</p>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Browse Treks</p>
                         {publicNavLinks.map((link) => (
                           <Link 
                             key={link.href}
@@ -106,7 +112,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
 
                       {isLoggedIn && (
                         <div className="space-y-3">
-                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Command Center</p>
+                          <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">Dashboard</p>
                           {protectedNavLinks.map((link) => (
                             <Link 
                               key={link.href}
@@ -130,7 +136,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                         onClick={toggleMenu}
                         className="w-full bg-slate-900 text-white py-5 rounded-2xl font-bold text-xs uppercase tracking-widest text-center block shadow-lg"
                       >
-                        Login / Join Expedition
+                        Login / Get Started
                       </Link>
                     </div>
                   )}
@@ -163,7 +169,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                     className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-white border border-rose-100 text-rose-500 font-bold text-[10px] uppercase tracking-widest"
                   >
                     <LogOut size={16} />
-                    Secure Logout
+                    Sign Out
                   </button>
                 </div>
               )}

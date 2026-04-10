@@ -36,7 +36,7 @@ export default function DashboardClient({ apiToken, isLeader }: { apiToken: stri
       <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a] text-white">
          <div className="flex flex-col items-center gap-4">
            <div className="w-12 h-12 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin" />
-           <p className="text-white/40 text-xs font-bold uppercase tracking-widest">Entering Administration HQ...</p>
+           <p className="text-white/40 text-xs font-bold uppercase tracking-widest">Loading Admin Dashboard...</p>
          </div>
       </div>
     );
@@ -49,7 +49,7 @@ export default function DashboardClient({ apiToken, isLeader }: { apiToken: stri
   return (
     <div className="min-h-screen bg-[#0a0a0a] py-12 px-6 lg:px-12">
       <div className="max-w-[1600px] mx-auto">
-        {/* EXECUTIVE ORCHESTRATOR: Leader-Only Dashboard HUD */}
+        {/* Leader Dashboard */}
         {role === 'LEADER' && <LeaderDashboard user={user} apiToken={apiToken} />}
       </div>
     </div>

@@ -61,8 +61,8 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ user, apiToken
              <div className="w-12 h-[2px] bg-cyan-500"></div>
              <p className="text-[10px] font-black text-cyan-500/80 uppercase tracking-[0.5em]">Role: Trek Leader</p>
           </div>
-          <h1 className="text-4xl font-black text-white uppercase tracking-tighter leading-none">
-             Trek <span className="text-cyan-600/90">Leader</span>
+          <h1 className="text-4xl font-black text-white tracking-tighter leading-none">
+             Leader <span className="text-cyan-600/90">Dashboard</span>
           </h1>
           <div className="flex flex-wrap items-center gap-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
              <span className="flex items-center gap-2">
@@ -145,7 +145,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ user, apiToken
            {loading ? (
              <div className="py-40 flex flex-col items-center justify-center animate-pulse">
                 <div className="w-20 h-20 border-4 border-cyan-500/10 border-t-cyan-500 rounded-full animate-spin mb-6"></div>
-                <p className="text-[10px] font-black text-cyan-600 uppercase tracking-widest">Scanning Data...</p>
+                <p className="text-[10px] font-black text-cyan-600 uppercase tracking-widest">Loading...</p>
              </div>
            ) : filteredBookings.length === 0 ? (
              <div className="bg-white/5 backdrop-blur-sm border border-dashed border-white/10 rounded-[48px] py-32 flex flex-col items-center justify-center text-center px-10">
@@ -153,7 +153,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ user, apiToken
                    <Compass className="w-8 h-8 text-white/10 group-hover:text-cyan-500 group-hover:scale-125 transition-all duration-700" />
                 </div>
                 <h4 className="text-xl font-black text-white uppercase tracking-tighter mb-4">No active members</h4>
-                <p className="text-sm text-slate-500 max-w-sm font-medium leading-relaxed mb-10">Waiting for next group deployment.</p>
+                <p className="text-sm text-slate-500 max-w-sm font-medium leading-relaxed mb-10">No bookings found for your current treks.</p>
                 <button 
                    onClick={() => window.location.reload()}
                    className="px-8 py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-cyan-600 transition-all shadow-xl shadow-slate-900/40 border border-white/5"
@@ -243,7 +243,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ user, apiToken
               <div className="relative z-10 space-y-10">
                  <div className="space-y-2">
                     <p className="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em]">Operations</p>
-                    <h4 className="text-2xl font-black uppercase tracking-tighter leading-tight">Elite <br/>Tools</h4>
+                    <h4 className="text-2xl font-black uppercase tracking-tighter leading-tight">Management<br/>Tools</h4>
                  </div>
                  
                  <div className="space-y-4">

@@ -253,7 +253,7 @@ export default function BookingsClient() {
                       
                       {booking.status === 'PENDING' && (
                         <Link 
-                          href={`/treks/${booking.trek?.id}?retry=${booking.id}`}
+                          href={`/treks/${booking.trek?.slug || booking.trek?.id}?retry=${booking.id}`}
                           className="flex items-center gap-3 px-8 py-3.5 bg-amber-500 text-white rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-amber-500/20 hover:bg-amber-600 transition-all"
                         >
                           Complete Payment

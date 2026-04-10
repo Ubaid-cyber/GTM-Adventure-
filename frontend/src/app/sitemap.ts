@@ -11,7 +11,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (process.env.DATABASE_URL) {
       // Limit to 100 treks for build stability, can be increased later
       const treks = await prisma.trek.findMany({
-        select: { id: true, updatedAt: true },
+        select: { id: true, slug: true, updatedAt: true },
         take: 100, 
       }).catch(err => {
         console.error('Sitemap fetch failed (Caught):', err.message);
@@ -20,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
       if (treks && treks.length > 0) {
         trekEntries = treks.map((trek) => ({
-          url: `${baseUrl}/treks/${trek.id}`,
+          url: `${baseUrl}/treks/${trek.slug || trek.id}`,
           lastModified: trek.updatedAt,
           changeFrequency: 'weekly' as const,
           priority: 0.8,

@@ -53,8 +53,8 @@ export default async function AdminDashboardPage() {
       {/* 💼 Business Identification */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-1 text-left">
-          <h1 className="text-3xl font-bold tracking-tight text-white uppercase italic">HQ Commander</h1>
-          <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Administrative Management & Fiscal Audit</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Admin Dashboard</h1>
+          <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Operational &amp; Financial Overview</p>
         </div>
         <div className="flex items-center justify-between md:justify-end gap-3 bg-white/5 p-2 rounded-xl border border-white/5 w-full md:w-auto">
           <div className="px-4 py-2 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg">Operational</div>
@@ -158,7 +158,7 @@ export default async function AdminDashboardPage() {
                   <span className="text-[10px] font-bold uppercase tracking-widest">Health Clearances Needed</span>
                 </div>
                 <p className="text-xs text-white/60 leading-relaxed font-medium text-left">
-                  {pendingApprovals} bookings are awaiting medical review before trek deployment.
+                  {pendingApprovals} bookings are awaiting medical review before they can proceed.
                 </p>
                 <button className="w-full py-3 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-xl hover:bg-blue-700 transition-all">Review Queue</button>
               </div>

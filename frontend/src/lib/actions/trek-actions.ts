@@ -108,7 +108,8 @@ export async function getTreksAction(params: {
           maxAltitude: true,
           bestSeason: true,
           highlights: true,
-          coverImage: true
+          coverImage: true,
+          slug: true
         }
       })
     ]);
@@ -130,13 +131,16 @@ export async function getTreksAction(params: {
   }
 }
 
-/**
- * Retrieves a single trek by its ID.
- */
-export async function getTrekAction(id: string) {
+export async function getTrekAction(slugOrId: string) {
   try {
-    const trek = await prisma.trek.findUnique({
-      where: { id }
+    // Single query: match by slug OR id for backward compatibility
+    const trek = await prisma.trek.findFirst({
+      where: {
+        OR: [
+          { slug: slugOrId },
+          { id: slugOrId }
+        ]
+      }
     });
     
     if (!trek) return { success: false, error: 'Trek not found' };

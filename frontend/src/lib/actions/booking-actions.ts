@@ -22,7 +22,7 @@ export async function getBookings() {
       SELECT 
         b.*,
         u.name as "userName", u.email as "userEmail", u.profile_image as "userProfileImage",
-        t.title as "trekTitle", t.price as "trekPrice",
+        t.title as "trekTitle", t.price as "trekPrice", t.slug as "trekSlug",
         e."startDate" as "expeditionStartDate", e.status as "expeditionStatus",
         s.name as "staffName", s.email as "staffEmail"
       FROM "Booking" b
@@ -37,7 +37,7 @@ export async function getBookings() {
     return Array.isArray(bookings) ? bookings.map((b: any) => ({
       ...b,
       user: { id: b.userId, name: b.userName, email: b.userEmail, profileImage: b.userProfileImage },
-      trek: { id: b.trekId, title: b.trekTitle, price: b.trekPrice },
+      trek: { id: b.trekId, title: b.trekTitle, price: b.trekPrice, slug: b.trekSlug },
       expedition: b.expeditionId ? { id: b.expeditionId, startDate: b.expeditionStartDate, status: b.expeditionStatus } : null,
       assignedStaff: b.assignedStaffId ? { id: b.assignedStaffId, name: b.staffName, email: b.staffEmail } : null
     })) : [];
@@ -180,7 +180,7 @@ export async function getBookingProgress(bookingId: string) {
     const userEmail = session.user.email;
 
     const bookings: any[] = await (prisma as any).$queryRaw`
-      SELECT b.*, t.title as "trekTitle", t.price as "trekPrice"
+      SELECT b.*, t.title as "trekTitle", t.price as "trekPrice", t.slug as "trekSlug"
       FROM "Booking" b
       JOIN "Trek" t ON b."trekId" = t.id
       JOIN "User" u ON b."userId" = u.id
@@ -193,7 +193,7 @@ export async function getBookingProgress(bookingId: string) {
     
     return { 
       success: true, 
-      booking: { ...b, trek: { title: b.trekTitle, price: b.trekPrice } } 
+      booking: { ...b, trek: { title: b.trekTitle, price: b.trekPrice, slug: b.trekSlug } } 
     };
   } catch (err: any) {
     return { success: false, error: err.message };
@@ -381,7 +381,7 @@ export async function getUserBookingsAction() {
     const bookings = await (prisma as any).$queryRaw`
       SELECT 
         b.*,
-        t.title as "trekTitle", t.price as "trekPrice", t."coverImage" as "trekCoverImage", t.location as "trekLocation", t."durationDays" as "trekDurationDays",
+        t.title as "trekTitle", t.price as "trekPrice", t."coverImage" as "trekCoverImage", t.location as "trekLocation", t."durationDays" as "trekDurationDays", t.slug as "trekSlug",
         e."startDate" as "expeditionStartDate", e.status as "expeditionStatus"
       FROM "Booking" b
       JOIN "Trek" t ON b."trekId" = t.id
@@ -398,7 +398,8 @@ export async function getUserBookingsAction() {
         price: b.trekPrice, 
         coverImage: b.trekCoverImage,
         location: b.trekLocation,
-        durationDays: b.trekDurationDays
+        durationDays: b.trekDurationDays,
+        slug: b.trekSlug
       },
       expedition: b.expeditionId ? { 
         id: b.expeditionId, 

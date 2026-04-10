@@ -248,7 +248,7 @@ export default function TreksClient() {
                         <div className="flex items-center justify-between mt-auto">
                           <span className="text-lg font-black text-slate-900 tracking-tight">{formatINR(trek.price)}<span className="text-[10px] text-slate-400 align-top ml-0.5">+</span></span>
                           <Link
-                            href={`/treks/${trek.id}`}
+                            href={`/treks/${trek.slug || trek.id}`}
                             className="bg-primary hover:bg-primary-hover text-white px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-primary/10 active:scale-95"
                           >
                             Details
