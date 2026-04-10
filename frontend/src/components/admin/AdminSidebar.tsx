@@ -38,7 +38,7 @@ export default function AdminSidebar() {
   const [searchFocused, setSearchFocused] = useState(false);
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-[#0a0a0a] border-r border-white/5 flex flex-col z-[100]">
+    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-[#0a0a0a] border-r border-white/5 hidden lg:flex flex-col z-[100]">
       {/* 🏔️ Brand Area */}
       <div className="p-6 border-b border-white/5">
         <Link href="/adminControl" className="flex items-center gap-3">

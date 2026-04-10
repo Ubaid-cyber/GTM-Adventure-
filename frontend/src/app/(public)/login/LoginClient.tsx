@@ -192,6 +192,8 @@ export default function LoginClient() {
                   </div>
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Authenticator Code</label>
                   <input 
+                    id="login-2fa"
+                    name="totpCode"
                     type="text" 
                     value={totpCode} 
                     onChange={(e) => setTotpCode(e.target.value)} 
@@ -233,6 +235,8 @@ export default function LoginClient() {
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1">Email Address</label>
                     <input 
+                      id="login-email"
+                      name="email"
                       type="email" 
                       value={email} 
                       onChange={(e) => setEmail(e.target.value)} 
@@ -244,6 +248,8 @@ export default function LoginClient() {
                   <div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1">Password</label>
                     <input 
+                      id="login-password"
+                      name="password"
                       type="password" 
                       value={password} 
                       onChange={(e) => setPassword(e.target.value)} 
@@ -281,6 +287,8 @@ export default function LoginClient() {
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block px-1">Mobile Number</label>
                     <div className="relative">
                       <input 
+                        id="login-phone"
+                        name="phone"
                         type="tel" 
                         value={phone} 
                         onChange={(e) => setPhone(e.target.value)} 
@@ -298,6 +306,8 @@ export default function LoginClient() {
                     </div>
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 block">Verification Code Sent</label>
                     <input 
+                      id="login-otp"
+                      name="otp"
                       type="text" 
                       value={otp} 
                       onChange={(e) => setOtp(e.target.value)} 

@@ -51,12 +51,12 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-10 animate-in fade-in duration-1000 text-left">
       {/* 💼 Business Identification */}
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-1 text-left">
-          <h1 className="text-3xl font-bold tracking-tight text-white">Business Overview</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-white uppercase italic">HQ Commander</h1>
           <p className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Administrative Management & Fiscal Audit</p>
         </div>
-        <div className="flex items-center gap-3 bg-white/5 p-2 rounded-xl border border-white/5">
+        <div className="flex items-center justify-between md:justify-end gap-3 bg-white/5 p-2 rounded-xl border border-white/5 w-full md:w-auto">
           <div className="px-4 py-2 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest rounded-lg">Operational</div>
           <span className="text-white/40 text-[10px] font-bold pr-4 italic">Last Update: Just now</span>
         </div>

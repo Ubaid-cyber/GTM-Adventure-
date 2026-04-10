@@ -65,6 +65,8 @@ export default function HomeClient() {
               <div className="flex-1 px-4 py-3 flex items-center gap-3 border-r border-white/10">
                 <Search className="w-5 h-5 text-white/40" />
                 <input 
+                  id="home-search-desktop"
+                  name="q"
                   type="text" 
                   placeholder="Where is your next mission?" 
                   className="w-full bg-transparent border-none focus:outline-none text-white font-medium placeholder:text-white/40"
@@ -77,6 +79,8 @@ export default function HomeClient() {
               <div className="flex-1 px-4 py-3 flex items-center gap-3">
                 <Globe className="w-5 h-5 text-white/40" />
                 <select 
+                  id="home-region-desktop"
+                  name="region"
                   className="w-full bg-transparent border-none focus:outline-none text-white/90 font-bold text-sm appearance-none cursor-pointer [&>option]:bg-slate-900"
                   value={selectedRegion}
                   onChange={(e) => setSelectedRegion(e.target.value)}
@@ -101,6 +105,8 @@ export default function HomeClient() {
             <div className="md:hidden max-w-sm mx-auto bg-slate-950/70 backdrop-blur-3xl rounded-[32px] overflow-hidden border border-white/10 p-2 mb-20 -translate-y-12 shadow-2xl">
               <div className="p-8 text-left space-y-6">
                 <input 
+                  id="home-search-mobile"
+                  name="q-mobile"
                   type="text" 
                   placeholder="Search Tour Packages..." 
                   className="w-full bg-white/10 border border-white/20 rounded-2xl py-4 px-5 text-sm text-white focus:outline-none transition-all font-medium placeholder:text-white/40"

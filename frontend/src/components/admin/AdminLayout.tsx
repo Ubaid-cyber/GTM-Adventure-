@@ -27,7 +27,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       <AdminSidebar />
 
       {/* 🎯 Main Content Area */}
-      <main className="pl-64 min-h-screen flex flex-col">
+      <main className="lg:pl-64 min-h-screen flex flex-col">
         {/* Top Business Header */}
         <header className="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-[#0a0a0a]/90 backdrop-blur-2xl z-50">
           <div className="flex items-center gap-10">

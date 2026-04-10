@@ -5,6 +5,7 @@ import SearchBar from './SearchBar';
 import LogoutButton from './LogoutButton';
 import MobileMenu from './MobileMenu';
 import MountainLogo from '../common/MountainLogo';
+import { Shield } from 'lucide-react';
 import { publicNavLinks, protectedNavLinks } from '@/config/navigation';
 
 export default async function Header() {
@@ -23,42 +24,50 @@ export default async function Header() {
             <span className="font-bold text-slate-900 text-base tracking-tight">GTM Adventures</span>
           </Link>
 
-          {/* Navigation */}
+          {/* Navigation - Isolated for Admins */}
           <nav className="hidden md:flex items-center gap-6">
-            {publicNavLinks.map((link) => (
-              <Link 
-                key={link.href} 
-                href={link.href} 
-                className="text-sm text-slate-500 hover:text-slate-900 font-medium transition-colors whitespace-nowrap"
-              >
-                {link.label}
-              </Link>
-            ))}
-            
-            {isLoggedIn && (
+            {userRole !== 'ADMIN' && (
               <>
-                <div className="h-4 w-px bg-slate-200 mx-2 shrink-0" />
-                {protectedNavLinks.map((link) => (
-                   <Link 
-                     key={link.href} 
-                     href={link.href} 
-                     className="text-sm text-slate-500 hover:text-slate-900 font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap"
-                   >
-                     <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
-                     {link.label}
-                   </Link>
+                {publicNavLinks.map((link) => (
+                  <Link 
+                    key={link.href} 
+                    href={link.href} 
+                    className="text-sm text-slate-500 hover:text-slate-900 font-medium transition-colors whitespace-nowrap"
+                  >
+                    {link.label}
+                  </Link>
                 ))}
                 
-                {/* Staff Links */}
+                {isLoggedIn && (
+                  <>
+                    <div className="h-4 w-px bg-slate-200 mx-2 shrink-0" />
+                    {protectedNavLinks.map((link) => (
+                       <Link 
+                         key={link.href} 
+                         href={link.href} 
+                         className="text-sm text-slate-500 hover:text-slate-900 font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap"
+                       >
+                         <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                         {link.label}
+                       </Link>
+                    ))}
+                  </>
+                )}
+              </>
+            )}
+
+            {/* Always visible staff links but styled differently for isolation */}
+            {isLoggedIn && (
+              <>
                 {userRole === 'ADMIN' && (
-                  <Link href="/adminControl" className="text-[10px] bg-slate-900 text-white px-4 py-2 rounded-xl font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg shadow-black/5 flex items-center gap-2 ml-2">
-                    <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></span>
+                  <Link href="/adminControl" className="text-[10px] bg-slate-900 text-white px-5 py-2.5 rounded-xl font-black uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-black/10 flex items-center gap-2">
+                    <Shield className="w-3.5 h-3.5 text-primary" />
                     Admin Panel
                   </Link>
                 )}
 
                 {userRole === 'LEADER' && (
-                   <Link href="/dashboard" className="text-[10px] bg-blue-600 text-white px-4 py-2 rounded-xl font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/10 flex items-center gap-2 ml-2">
+                   <Link href="/dashboard" className="text-[10px] bg-blue-600 text-white px-5 py-2.5 rounded-xl font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/10 flex items-center gap-2">
                     <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
                     Leader Console
                   </Link>
@@ -67,8 +76,8 @@ export default async function Header() {
             )}
           </nav>
 
-          {/* Search Engine */}
-          <SearchBar />
+          {/* Search Engine - Hidden for Admins to reduce noise */}
+          {userRole !== 'ADMIN' && <SearchBar />}
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 sm:gap-4 ml-auto">
@@ -76,12 +85,12 @@ export default async function Header() {
               <div className="hidden sm:flex items-center gap-1.5 sm:gap-2">
                 <Link href="/dashboard/profile" className="flex items-center gap-2 group transition-all">
                   <span className="hidden sm:block text-sm font-bold text-slate-900 tracking-tight lowercase">
-                    {session.user?.name?.split(' ')[0] || 'account'}
+                    {userRole === 'ADMIN' ? 'Administrator' : (session.user?.name?.split(' ')[0] || 'account')}
                   </span>
-                  <div className="w-9 h-9 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-slate-900 text-sm font-bold shadow-sm group-hover:border-blue-500/50 transition-all overflow-hidden">
-                    {session.user?.image
+                  <div className="w-9 h-9 bg-slate-900 border border-slate-800 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg group-hover:scale-105 transition-all overflow-hidden">
+                    {userRole === 'ADMIN' ? 'A' : (session.user?.image
                       ? <img src={session.user.image} alt="User" className="w-full h-full object-cover" />
-                      : (session.user?.name ? session.user.name.charAt(0).toUpperCase() : 'U')}
+                      : (session.user?.name ? session.user.name.charAt(0).toUpperCase() : 'U'))}
                   </div>
                 </Link>
                 <div className="h-4 w-px bg-slate-200 mx-1 flex md:hidden sm:flex" />

@@ -68,6 +68,7 @@ export default function SignupClient() {
               <div key={f.name}>
                 <label className="block text-sm font-medium text-foreground mb-1.5">{f.label}</label>
                 <input
+                  id={f.name}
                   name={f.name} type={f.type} placeholder={f.placeholder}
                   value={(formData as any)[f.name]} onChange={handleChange} required
                   className="w-full px-4 py-2.5 rounded-lg border border-border bg-white text-sm text-foreground placeholder-muted focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"

@@ -25,6 +25,8 @@ export default function SearchBar() {
           <Search className="h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
         </div>
         <input
+          id="global-trek-search"
+          name="q"
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}

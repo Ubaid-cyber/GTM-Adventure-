@@ -211,51 +211,28 @@ export default function UserProfile() {
           )}
 
           {/* ADMIN QUADRANT: Logic & System (Placeholder) */}
-          {role === 'ADMIN' && (
+          {role !== 'ADMIN' && (
             <motion.div 
                initial={{ opacity: 0, x: -20 }}
                animate={{ opacity: 1, x: 0 }}
                className="lg:col-span-8 space-y-8"
             >
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="bg-white border border-slate-200 rounded-[40px] p-8 shadow-sm">
-                     <div className="flex items-center gap-3 mb-8">
-                        <TrendingUp className="w-5 h-5 text-primary" />
-                        <h3 className="text-base font-bold text-slate-900 uppercase tracking-widest">Global Metrics</h3>
-                     </div>
-                     <div className="space-y-6">
-                        {[
-                          { label: "Active Sessions", value: "1,204", change: "+12%" },
-                          { label: "Rev / Month", value: "₹4.1M", change: "+4%" },
-                          { label: "Server Load", value: "12%", change: "Stable" }
-                        ].map((stat, i) => (
-                          <div key={i} className="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-100">
-                             <div className="text-xs font-bold text-slate-500">{stat.label}</div>
-                             <div className="flex items-center gap-3">
-                                <span className="text-sm font-black text-slate-900">{stat.value}</span>
-                                <span className="text-[10px] font-black text-emerald-500">{stat.change}</span>
-                             </div>
-                          </div>
-                        ))}
-                     </div>
+               {/* 
+                 Note: Admin dashboard links and metrics have been removed from this public profile page 
+                 as requested. Admins should use the /adminControl panel for these features.
+               */}
+               <div className="bg-white border border-slate-200 rounded-[40px] p-12 text-center shadow-sm">
+                  <div className="w-20 h-20 bg-primary/5 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                    <Shield className="w-10 h-10 text-primary/40" />
                   </div>
-
-                  <div className="bg-slate-900 rounded-[40px] p-8 shadow-xl text-white">
-                     <div className="flex items-center gap-3 mb-8">
-                        <h3 className="text-base font-bold text-white uppercase tracking-widest">Admin Panel</h3>
-                     </div>
-                     <div className="space-y-4">
-                        <button className="w-full py-4 bg-white/10 hover:bg-white/20 transition-all rounded-2xl text-xs font-black uppercase tracking-widest text-left px-6">
-                           Manage Trek Inventory
-                        </button>
-                        <button className="w-full py-4 bg-white/10 hover:bg-white/20 transition-all rounded-2xl text-xs font-black uppercase tracking-widest text-left px-6">
-                           Audit Security Logs
-                        </button>
-                        <button className="w-full py-4 bg-rose-500/20 text-rose-500 hover:bg-rose-500/30 transition-all rounded-2xl text-xs font-black uppercase tracking-widest text-left px-6 border border-rose-500/30">
-                           Critical Alert Broadcast
-                        </button>
-                     </div>
-                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 mb-2">Secure Archive Access</h3>
+                  <p className="text-slate-500 text-sm max-w-sm mx-auto leading-relaxed">
+                    Your professional dossier is isolated. To manage expeditions or view fiscal metrics, please return to the Command Center.
+                  </p>
+                  <Link href="/adminControl" className="mt-8 inline-flex items-center gap-2 px-8 py-3 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-black transition-all">
+                    Go to Admin Panel
+                    <ChevronRight size={14} />
+                  </Link>
                </div>
             </motion.div>
           )}
