@@ -5,7 +5,7 @@ import BookingWidget from '@/components/BookingWidget';
 import { motion, AnimatePresence } from 'framer-motion';
 import ItineraryTimeline from '@/components/treks/ItineraryTimeline';
 import InquiryForm from '@/components/leads/InquiryForm';
-import { Star, Share2, ChevronRight, Facebook, Twitter, MessageCircle, Link as LinkIcon, CheckCircle2 } from 'lucide-react';
+import { Star, Share2, ChevronRight, Facebook, Twitter, MessageCircle, Link as LinkIcon, CheckCircle2, Image as ImageIcon, X as CloseIcon, Maximize2 } from 'lucide-react';
 import { getTrekAction } from '@/lib/actions/trek-actions';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -31,6 +31,8 @@ export default function TrekDetailClient({ id }: TrekDetailClientProps) {
   const [trek, setTrek] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'overview' | 'itinerary' | 'gear' | 'reviews'>('overview');
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     getTrekAction(id).then(res => {
@@ -148,6 +150,28 @@ export default function TrekDetailClient({ id }: TrekDetailClientProps) {
             </p>
           </motion.div>
         </div>
+
+        {/* 🖼️ View Gallery Trigger (Bottom-Right Placement) */}
+        {trek.gallery && trek.gallery.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="absolute bottom-12 right-6 md:right-10 z-[20]"
+          >
+            <button 
+              onClick={() => setIsGalleryOpen(true)}
+              className="flex items-center gap-3 px-6 py-4 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl text-white hover:bg-white hover:text-black transition-all group shadow-2xl"
+            >
+              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-primary/40">
+                <ImageIcon size={16} />
+              </div>
+              <div className="text-left">
+                <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 group-hover:opacity-100 transition-opacity">Visual Assets</div>
+                <div className="text-xs font-black uppercase tracking-widest">View Full Gallery ({trek.gallery.length})</div>
+              </div>
+            </button>
+          </motion.div>
+        )}
       </div>
 
       <div className="max-w-7xl mx-auto px-4 md:px-12 py-12 relative z-10">
@@ -371,6 +395,94 @@ export default function TrekDetailClient({ id }: TrekDetailClientProps) {
           
         </div>
       </div>
+
+      {/* ── Expedition Gallery Modal ── */}
+      <AnimatePresence>
+        {isGalleryOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl p-4 md:p-10 flex flex-col"
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between mb-8 max-w-7xl mx-auto w-full">
+              <div className="space-y-1">
+                <h3 className="text-white text-2xl font-black uppercase tracking-tighter">Expedition Gallery</h3>
+                <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.3em]">{trek.title} • visual archives</p>
+              </div>
+              <button 
+                onClick={() => setIsGalleryOpen(false)}
+                className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-rose-500 transition-all border border-white/10"
+              >
+                <CloseIcon size={20} />
+              </button>
+            </div>
+
+            {/* Gallery Grid */}
+            <div className="flex-1 overflow-y-auto no-scrollbar max-w-7xl mx-auto w-full pb-20">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                {trek.gallery.map((url: string, idx: number) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className="relative group cursor-zoom-in aspect-[4/5] rounded-2xl overflow-hidden border border-white/5 bg-white/5"
+                    onClick={() => setSelectedImage(url)}
+                  >
+                    <img 
+                      src={url} 
+                      alt={`Expedition context ${idx + 1}`} 
+                      className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all flex items-end p-6">
+                      <div className="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
+                        <Maximize2 size={12} />
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              {trek.gallery.length === 0 && (
+                <div className="h-full flex flex-col items-center justify-center text-center">
+                  <ImageIcon size={60} className="text-white/10 mb-6" />
+                  <p className="text-white/20 text-xs font-black uppercase tracking-widest">No detailed archives available for this path</p>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── High-Res Image Lightbox ── */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="fixed inset-0 z-[110] bg-black/90 p-4 md:p-12 flex items-center justify-center"
+            onClick={() => setSelectedImage(null)}
+          >
+            <div className="absolute top-8 right-8 z-[120]">
+              <button 
+                onClick={() => setSelectedImage(null)}
+                className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-black transition-all"
+              >
+                <CloseIcon size={20} />
+              </button>
+            </div>
+            <motion.img 
+              layoutId="lightbox-image"
+              src={selectedImage} 
+              className="max-w-full max-h-full rounded-2xl shadow-[0_0_80px_rgba(0,0,0,0.5)] object-contain"
+              alt="High resolution expedition archive"
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

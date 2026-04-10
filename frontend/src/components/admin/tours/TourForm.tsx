@@ -41,7 +41,8 @@ const tourSchema = z.object({
     day: z.number(),
     title: z.string().min(1, 'Day title required'),
     description: z.string().min(1, 'Day description required')
-  })).min(1, 'Tour itinerary required')
+  })).min(1, 'Tour itinerary required'),
+  gallery: z.array(z.object({ value: z.string().url('Invalid image URL').or(z.literal('')) })).default([])
 });
 
 type TourFormValues = z.infer<typeof tourSchema>;
@@ -64,7 +65,8 @@ export default function TourForm({ initialData, onSubmit, loading }: TourFormPro
       inclusions: data.inclusions?.map((v: string) => ({ value: v })) || [{ value: '' }],
       exclusions: data.exclusions?.map((v: string) => ({ value: v })) || [{ value: '' }],
       gearRequirements: data.gearRequirements?.map((v: string) => ({ value: v })) || [{ value: '' }],
-      itinerary: data.itinerary || [{ day: 1, title: 'Arrival', description: '' }]
+      itinerary: data.itinerary || [{ day: 1, title: 'Arrival', description: '' }],
+      gallery: data.gallery?.map((v: string) => ({ value: v })) || []
     };
   };
 
@@ -109,6 +111,10 @@ export default function TourForm({ initialData, onSubmit, loading }: TourFormPro
     control, name: 'itinerary'
   });
 
+  const { fields: galleryFields, append: appendGallery, remove: removeGallery } = useFieldArray({
+    control, name: 'gallery'
+  });
+
   const onFormSubmit = async (data: TourFormValues) => {
     try {
       const submissionData = {
@@ -117,6 +123,7 @@ export default function TourForm({ initialData, onSubmit, loading }: TourFormPro
         inclusions: data.inclusions.map(i => i.value),
         exclusions: data.exclusions.map(e => e.value),
         gearRequirements: data.gearRequirements?.map(g => g.value) || [],
+        gallery: data.gallery?.map(img => img.value).filter(v => v !== '') || [],
       };
       
       await onSubmit(submissionData);
@@ -388,6 +395,73 @@ export default function TourForm({ initialData, onSubmit, loading }: TourFormPro
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Expedition Gallery */}
+            <div className="md:col-span-2 space-y-4 p-6 bg-white/[0.02] border border-white/10 rounded-2xl mt-4">
+              <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-4">
+                <div className="space-y-1">
+                  <h3 className="text-blue-500 font-black uppercase tracking-[0.2em] text-xs">Expedition Gallery</h3>
+                  <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Add up to 30 high-definition expedition photos</p>
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => appendGallery({ value: '' })} 
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600/10 hover:bg-blue-600/20 text-blue-500 text-[10px] font-bold uppercase tracking-widest rounded-lg border border-blue-500/20 transition-all"
+                >
+                  <Plus className="w-3.5 h-3.5" /> Add Image Link
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {galleryFields.map((field, index) => (
+                  <div key={field.id} className="space-y-3 group bg-black/20 p-3 rounded-2xl border border-white/5 hover:border-blue-500/30 transition-all shadow-xl">
+                    <div className="relative group/field">
+                      <input 
+                        {...register(`gallery.${index}.value`)} 
+                        className="w-full bg-white/5 border border-white/10 rounded-xl pl-4 pr-10 py-3 text-[10px] font-mono text-white/60 focus:border-blue-500 focus:text-white outline-none transition-all placeholder:text-white/10" 
+                        placeholder="Paste Image URL (Unsplash, Pinterest, etc.)" 
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => removeGallery(index)} 
+                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 text-white/20 hover:text-rose-500 hover:bg-rose-500/10 rounded-lg transition-all"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    {/* Tiny Preview */}
+                    <div className="aspect-video w-full rounded-xl border border-white/5 bg-white/[0.01] overflow-hidden group-hover:shadow-[0_0_30px_rgba(59,130,246,0.1)] transition-all">
+                      {watch(`gallery.${index}.value`) ? (
+                        <img 
+                          src={watch(`gallery.${index}.value`)} 
+                          alt={`Gallery Preview ${index + 1}`} 
+                          className="w-full h-full object-cover transition-transform group-hover:scale-110" 
+                          onError={(e) => (e.currentTarget.src = 'https://placehold.co/600x400/000000/FFFFFF?text=Invalid+Image+URL')}
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center flex-col gap-2 opacity-10">
+                          <Mountain className="w-8 h-8" />
+                          <p className="text-[8px] font-bold uppercase tracking-tighter">Awaiting Signal...</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {galleryFields.length === 0 && (
+                <div className="py-16 flex flex-col items-center justify-center text-center space-y-4 bg-white/[0.01] border-2 border-dashed border-white/5 rounded-[32px] group hover:border-blue-500/20 transition-all cursor-pointer" onClick={() => appendGallery({ value: '' })}>
+                   <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 group-hover:bg-blue-500/10 transition-all">
+                      <LayoutGrid className="w-8 h-8 text-white/10 group-hover:text-blue-500 transition-colors" />
+                   </div>
+                   <div className="space-y-1">
+                      <p className="text-xs font-black text-white/20 uppercase tracking-[0.2em] group-hover:text-white/40">No Visual Assets Loaded</p>
+                      <p className="text-[9px] font-bold text-white/10 uppercase tracking-widest">Click to initialize expedition gallery</p>
+                   </div>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
