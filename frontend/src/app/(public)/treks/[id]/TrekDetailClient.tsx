@@ -149,29 +149,29 @@ export default function TrekDetailClient({ id }: TrekDetailClientProps) {
                "{trek.description.substring(0, 140)}..."
             </p>
           </motion.div>
-        </div>
 
-        {/* 🖼️ View Gallery Trigger (Bottom-Right Placement) */}
-        {trek.gallery && trek.gallery.length > 0 && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="absolute bottom-12 right-6 md:right-10 z-[20]"
-          >
-            <button 
-              onClick={() => setIsGalleryOpen(true)}
-              className="flex items-center gap-3 px-6 py-4 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl text-white hover:bg-white hover:text-black transition-all group shadow-2xl"
+          {/* 🖼️ View Gallery Trigger (Bottom-Right Inside Content Hub) */}
+          {(trek.gallery?.length ?? 0) > 0 && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="absolute bottom-12 right-0 z-[30]"
             >
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-primary/40">
-                <ImageIcon size={16} />
-              </div>
-              <div className="text-left">
-                <div className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50 group-hover:opacity-100 transition-opacity">Visual Assets</div>
-                <div className="text-xs font-black uppercase tracking-widest">View Full Gallery ({trek.gallery.length})</div>
-              </div>
-            </button>
-          </motion.div>
-        )}
+              <button 
+                onClick={() => setIsGalleryOpen(true)}
+                className="flex items-center gap-3 px-5 py-3.5 bg-white/10 backdrop-blur-2xl border border-white/20 rounded-2xl text-white hover:bg-white hover:text-black transition-all group shadow-2xl"
+              >
+                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform shadow-lg shadow-primary/40">
+                  <ImageIcon size={16} />
+                </div>
+                <div className="text-left">
+                  <div className="text-[9px] font-black uppercase tracking-[0.2em] opacity-50 group-hover:opacity-100 transition-opacity leading-none mb-1">Visual Assets</div>
+                  <div className="text-xs font-black uppercase tracking-widest leading-none">View Gallery ({trek.gallery.length})</div>
+                </div>
+              </button>
+            </motion.div>
+          )}
+        </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 md:px-12 py-12 relative z-10">
