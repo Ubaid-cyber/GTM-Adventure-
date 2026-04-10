@@ -3,7 +3,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { prisma } from './lib/prisma.js';
 
-dotenv.config({ path: '../.env' }); // Load from root .env
+// Load environment variables
+if (process.env.NODE_ENV !== 'production') {
+  dotenv.config({ path: '../.env' }); // Load from root .env in local development
+}
 
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
