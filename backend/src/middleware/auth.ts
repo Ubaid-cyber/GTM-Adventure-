@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { prisma } from '../lib/prisma.js';
+import { intentCache } from '../lib/hash-cache.js';
 
 /**
  * 🛡️ ENTERPRISE AUTHENTICATION PERIMETER
@@ -37,18 +38,32 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
   }
 
   try {
+    // 🔍 FAST RETRIEVAL: Check the Hash Table for cached user session
+    const authHash = intentCache.generateHash(email, 'USER_SESSION');
+    const cachedUser = intentCache.get(authHash);
+    
+    if (cachedUser) {
+      console.log(`[AUTHENTICATED] Session Cache Hit: ${email} (Retrieved from Hash Table)`);
+      (req as any).user = cachedUser;
+      return next();
+    }
+
     const user = await prisma.user.findUnique({
       where: { email }
     });
 
     if (!user) {
+      console.error(`[SECURITY] User not found during session check: ${email}`);
       return res.status(404).json({ error: 'User context not found in system.' });
     }
 
     // 🛡️ DATA ISOLATION: Scrub sensitive vectors from context
     const { password, twoFactorSecret, ...scrubbedUser } = user;
-    (req as any).user = scrubbedUser;
     
+    // Store in the Hash Table to "point to where the data is stored" temporarily in RAM
+    intentCache.set(authHash, scrubbedUser);
+    
+    (req as any).user = scrubbedUser;
     next();
   } catch (error) {
     console.error('CRITICAL: Auth System Failure:', error);

@@ -1,10 +1,10 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../lib/prisma.js';
 import crypto from 'crypto';
+import { intentCache } from '../lib/hash-cache.js';
 
 const router = Router();
 
-// POST /api/webhooks/razorpay
 router.post('/razorpay', async (req: Request, res: Response) => {
   try {
     const secret = process.env.RAZORPAY_WEBHOOK_SECRET || '';
@@ -29,6 +29,16 @@ router.post('/razorpay', async (req: Request, res: Response) => {
     const event = req.body;
     if (event.event === 'payment.captured') {
       const { bookingId } = event.payload.payment.entity.notes;
+      const intentHash = intentCache.generateHash(bookingId, 'WEBHOOK_CAPTURE');
+
+      // 🔍 FAST RETRIEVAL from Hash Table
+      if (intentCache.has(intentHash)) {
+        console.log(`[WEBHOOK] Skipping duplicate event for booking ${bookingId} (Cache Hit)`);
+        return res.json({ status: 'processed (cached)' });
+      }
+
+      // Mark the intent so it can point to the ongoing process
+      intentCache.set(intentHash, { status: 'PROCESSING' });
 
       await prisma.$transaction(async (tx: any) => {
         const booking = await tx.booking.findUnique({

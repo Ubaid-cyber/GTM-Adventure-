@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { prisma } from '../lib/prisma.js';
 import { authenticateToken } from '../middleware/auth.js';
 import Razorpay from 'razorpay';
+import { intentCache } from '../lib/hash-cache.js';
 
 const router = Router();
 router.use(authenticateToken);
@@ -39,10 +40,25 @@ router.post('/order', async (req: Request, res: Response) => {
   }
 });
 
-// POST /api/razorpay/verify
+
+
 router.post('/verify', async (req: Request, res: Response) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, bookingId } = req.body;
+  const intentHash = intentCache.generateHash(bookingId, 'VERIFY_PAYMENT');
+
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, bookingId } = req.body;
+    // 🔍 FAST RETRIEVAL: Check if payment intent hash exists in the Hash Table
+    const cachedIntent = intentCache.get(intentHash);
+    if (cachedIntent?.status === 'PROCESSING') {
+      return res.status(429).json({ error: 'Payment verification already in progress.' });
+    }
+    if (cachedIntent?.status === 'SUCCESS') {
+      return res.json({ success: true, message: 'Payment already verified (Cache Hit)' });
+    }
+
+    // Mark as processing in the Hash Table to "point to where data is being managed"
+    intentCache.set(intentHash, { status: 'PROCESSING' });
+    
     const secret = process.env.RAZORPAY_KEY_SECRET || '';
 
     if (razorpay_order_id.startsWith('mock_') && razorpay_signature === 'mock_sig') {
