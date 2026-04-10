@@ -63,91 +63,97 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-white no-scrollbar">
+              <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-white no-scrollbar">
                 
                 {/* Public Navigation */}
                 <div className="space-y-1">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-4">Discovery</p>
-                  {publicNavLinks.map((link) => {
-                    const Icon = link.icon;
-                    return (
-                      <Link 
-                        key={link.href}
-                        href={link.href}
-                        onClick={toggleMenu}
-                        className="flex items-center justify-between p-4 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all group"
-                      >
-                        <div className="flex items-center gap-4">
-                           <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 transition-colors">
-                              <Icon size={20} />
-                           </div>
-                           <span className="font-semibold text-slate-900">{link.label}</span>
-                        </div>
-                        <ChevronRight size={16} className="text-slate-300 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
-                      </Link>
-                    );
-                  })}
-                </div>
-
-                {/* User Navigation */}
-                {isLoggedIn && (
-                  <div className="space-y-1 pt-4">
-                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-4">My Dashboard</p>
-                    {protectedNavLinks.map((link) => {
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-2">Discovery</p>
+                  <div className="grid grid-cols-1 gap-1">
+                    {publicNavLinks.map((link) => {
                       const Icon = link.icon;
                       return (
                         <Link 
                           key={link.href}
                           href={link.href}
                           onClick={toggleMenu}
-                          className="flex items-center justify-between p-4 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all group"
+                          className="flex items-center justify-between p-3.5 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all group"
                         >
-                          <div className="flex items-center gap-4">
-                             <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 transition-colors">
-                                <Icon size={20} />
+                          <div className="flex items-center gap-3">
+                             <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 transition-colors">
+                                <Icon size={18} />
                              </div>
-                             <span className="font-semibold text-slate-900">{link.label}</span>
+                             <span className="font-semibold text-slate-900 text-sm">{link.label}</span>
                           </div>
-                          <ChevronRight size={16} className="text-slate-300 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
+                          <ChevronRight size={14} className="text-slate-300 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
                         </Link>
                       );
                     })}
                   </div>
+                </div>
+
+                {/* User Navigation (Compact) */}
+                {isLoggedIn && (
+                  <div className="space-y-1">
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-2">My Dashboard</p>
+                    <div className="grid grid-cols-1 gap-1">
+                      {protectedNavLinks.map((link) => {
+                        const Icon = link.icon;
+                        return (
+                          <Link 
+                            key={link.href}
+                            href={link.href}
+                            onClick={toggleMenu}
+                            className="flex items-center justify-between p-3.5 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all group"
+                          >
+                            <div className="flex items-center gap-3">
+                               <div className="w-9 h-9 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 transition-colors">
+                                  <Icon size={18} />
+                               </div>
+                               <span className="font-semibold text-slate-900 text-sm">{link.label}</span>
+                            </div>
+                            <ChevronRight size={14} className="text-slate-300 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
                 )}
 
-                {/* Staff Control Links */}
+                {/* Staff Control Links (Higher Visibility) */}
                 {isLoggedIn && staffNavLinks.some(l => l.roles?.includes(userRole)) && (
-                   <div className="space-y-4 pt-6 border-t border-slate-100">
-                     <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-4">Operational Access</p>
-                     {staffNavLinks.map((link) => {
-                       if (!link.roles?.includes(userRole)) return null;
-                       const Icon = link.icon;
-                       return (
-                        <Link 
-                          key={link.href}
-                          href={link.href}
-                          onClick={toggleMenu}
-                          className="flex items-center justify-between p-4 bg-slate-900 rounded-2xl text-white transition-all active:scale-[0.98] shadow-lg shadow-black/5"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
-                                <Icon size={20} />
+                   <div className="space-y-3 pt-4 border-t border-slate-100">
+                     <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-2">Operations</p>
+                     <div className="grid grid-cols-1 gap-2">
+                       {staffNavLinks.map((link) => {
+                         if (!link.roles?.includes(userRole)) return null;
+                         const Icon = link.icon;
+                         return (
+                          <Link 
+                            key={link.href}
+                            href={link.href}
+                            onClick={toggleMenu}
+                            className="flex items-center justify-between p-3.5 bg-slate-900 rounded-2xl text-white transition-all active:scale-[0.98] shadow-lg shadow-black/5"
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center">
+                                  <Icon size={18} />
+                              </div>
+                              <span className="font-bold text-[10px] uppercase tracking-wider">{link.label}</span>
                             </div>
-                            <span className="font-bold text-xs uppercase tracking-wider">{link.label}</span>
-                          </div>
-                          <ChevronRight size={18} className="opacity-40" />
-                        </Link>
-                       );
-                     })}
+                            <ChevronRight size={16} className="opacity-40" />
+                          </Link>
+                         );
+                       })}
+                     </div>
                    </div>
                 )}
 
                 {!isLoggedIn && (
-                  <div className="pt-4">
+                  <div className="pt-2">
                     <Link 
                       href="/login" 
                       onClick={toggleMenu}
-                      className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold text-xs uppercase tracking-widest text-center block shadow-lg shadow-black/5"
+                      className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold text-[11px] uppercase tracking-widest text-center block shadow-lg shadow-black/5"
                     >
                       Login / Sign Up
                     </Link>
