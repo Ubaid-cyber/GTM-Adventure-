@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronRight, LogOut } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { Menu, X, ChevronRight, LogOut, Mountain } from 'lucide-react';
 import { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 import MountainLogo from '../common/MountainLogo';
@@ -15,10 +16,24 @@ interface MobileMenuProps {
 
 export default function MobileMenu({ session }: MobileMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = React.useState(false);
+  
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const isLoggedIn = !!session?.user;
   const userRole = (session?.user as any)?.role;
 
-  const toggleMenu = () => setIsOpen(!isOpen);
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+    // Add/Remove scroll lock
+    if (!isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  };
 
   const menuVariants = {
     closed: { x: '100%', transition: { type: 'spring', stiffness: 300, damping: 30 } } as const,
@@ -36,14 +51,14 @@ export default function MobileMenu({ session }: MobileMenuProps) {
       </button>
 
       <AnimatePresence>
-        {isOpen && (
+        {isOpen && mounted && createPortal(
           <>
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={toggleMenu}
-              className="fixed inset-0 bg-slate-950/20 backdrop-blur-sm z-[60]"
+              className="fixed inset-0 bg-slate-950/40 backdrop-blur-md z-[9998]"
             />
             
             <motion.div 
@@ -51,11 +66,11 @@ export default function MobileMenu({ session }: MobileMenuProps) {
               animate="open"
               exit="closed"
               variants={menuVariants}
-              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white z-[80] flex flex-col shadow-2xl border-l border-slate-100"
-              style={{ backgroundColor: '#ffffff' }} // Hard-coded fallback for extra safety
+              className="fixed inset-y-0 right-0 w-[90%] max-w-sm bg-white z-[100] flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.1)] border-l border-slate-100"
+              style={{ height: '100dvh', backgroundColor: '#ffffff' }}
             >
-              {/* Header - Solid Background */}
-              <div className="p-4 flex items-center justify-between border-b border-slate-50 bg-white">
+              {/* Header - Fixed Height Area */}
+              <div className="flex-shrink-0 p-5 flex items-center justify-between border-b border-slate-50 bg-white">
                 <div className="flex items-center gap-2">
                    <MountainLogo className="w-5 h-5 text-slate-900" />
                    <span className="font-bold text-slate-900 text-[11px] tracking-tight uppercase italic">GTM ADVENTURES</span>
@@ -148,7 +163,6 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                      </div>
                    </div>
                 )}
-
                 {!isLoggedIn && (
                   <div className="pt-2">
                     <Link 
@@ -192,7 +206,8 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                 </div>
               )}
             </motion.div>
-          </>
+          </>,
+          document.body
         )}
       </AnimatePresence>
     </div>
