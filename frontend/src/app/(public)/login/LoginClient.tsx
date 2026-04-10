@@ -145,7 +145,7 @@ export default function LoginClient() {
             <span className="font-black text-xs text-slate-900 tracking-widest uppercase">GTM ADVENTURES</span>
           </motion.div>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
-            {show2FA ? 'Security Verification' : 'Login to Adventure'}
+            {show2FA ? 'Security Verification' : 'Sign In to Adventure'}
           </h1>
           <p className="text-slate-500 text-sm mt-2 font-medium tracking-tight whitespace-nowrap">
             {show2FA ? 'Enter your 6-digit authenticator code' : 'Manage your bookings and upcoming treks'}
@@ -161,7 +161,7 @@ export default function LoginClient() {
                 onClick={() => setTab('email')}
                 className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all ${tab === 'email' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
               >
-                <Mail className="w-3.5 h-3.5" /> Email
+                <Mail className="w-3.5 h-3.5" /> Sign In
               </button>
               <button 
                 onClick={() => setTab('phone')}
@@ -213,7 +213,7 @@ export default function LoginClient() {
                   onClick={() => setShow2FA(false)}
                   className="w-full text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-primary transition-colors text-center"
                 >
-                  Back to Login
+                  Back to Sign In
                 </button>
               </motion.form>
             ) : tab === 'email' ? (
@@ -260,7 +260,7 @@ export default function LoginClient() {
                   disabled={loading}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-slate-900/10 active:scale-[0.98] disabled:opacity-50"
                 >
-                  {loading ? 'Signing in...' : 'Login'}
+                  {loading ? 'Signing in...' : 'Sign In'}
                 </button>
               </motion.form>
             ) : (

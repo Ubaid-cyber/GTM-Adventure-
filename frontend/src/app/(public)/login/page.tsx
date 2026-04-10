@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import LoginClient from "./LoginClient";
 
 export const metadata: Metadata = {
-  title: "Login | GTM Adventures",
+  title: "Sign In | GTM Adventures",
   description: "Securely access your GTM Adventures account to manage your upcoming treks and expeditions.",
 };
 
