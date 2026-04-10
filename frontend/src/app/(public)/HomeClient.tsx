@@ -33,14 +33,19 @@ export default function HomeClient() {
     <main className="bg-white min-h-screen">
       {/* 1. HERO SECTION */}
       <section className="relative h-[95vh] flex items-center justify-center overflow-hidden">
-        {/* Cinematic Background */}
+        {/* Cinematic Background with Triple Scrim Visibility Layer */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <img 
             src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2000" 
             alt="Elite Global Adventure & Expedition Management - GTM Adventures" 
             className="w-full h-full object-cover scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-transparent"></div>
+          {/* Layer 1: Global Dimming for Brand Premiumness */}
+          <div className="absolute inset-0 bg-black/30"></div>
+          {/* Layer 2: Top-Down Scrim for Navigation Clarity */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/10 to-transparent"></div>
+          {/* Layer 3: Bottom-Up Navigation Scrim for Content Pop */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80"></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 text-center pt-24 md:pt-32">
@@ -49,20 +54,20 @@ export default function HomeClient() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold uppercase tracking-[0.2em] mb-6">
+            <span className="inline-block px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold uppercase tracking-[0.2em] mb-6 drop-shadow-sm">
               Premier Global Adventure Expeditions
             </span>
-            <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight leading-[1.1] mb-8 max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight leading-[1.1] mb-8 max-w-4xl mx-auto drop-shadow-2xl">
               Elite Adventure Booking <br />
               <span className="italic font-serif text-white/90">Experience Redefined.</span>
             </h1>
-            <p className="text-lg md:text-xl text-white/80 max-w-2xl mx-auto font-medium mb-20 leading-relaxed">
+            <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto font-medium mb-20 leading-relaxed drop-shadow-lg">
               Conquer the world's most breathtaking landscapes with unparalleled safety. 
               World-class expeditions led by expert guides and supported by our dedicated safety team.
             </p>
             
-            {/* 2. DISCOVERY ENGINE (Hero Version) - Reverted to previous design visuals */}
-            <div className="hidden md:flex max-w-3xl mx-auto bg-slate-900/60 backdrop-blur-xl rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-2 items-center gap-2 border border-white/10 mb-24 -translate-y-8 md:-translate-y-12">
+            {/* 2. DISCOVERY ENGINE (Hero Version) */}
+            <div className="hidden md:flex max-w-3xl mx-auto bg-slate-900/40 backdrop-blur-xl rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.3)] p-2 items-center gap-2 border border-white/10 mb-24 -translate-y-8 md:-translate-y-12">
               <div className="flex-1 px-4 py-3 flex items-center gap-3 border-r border-white/10">
                 <Search className="w-5 h-5 text-white/40" />
                 <input 
@@ -72,7 +77,7 @@ export default function HomeClient() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  aria-label="Search for treks"
+                  aria-label="Search for tour packages"
                 />
               </div>
               <div className="flex-1 px-4 py-3 flex items-center gap-3">
@@ -98,20 +103,20 @@ export default function HomeClient() {
               </button>
             </div>
 
-            {/* Mobile View Hero */}
-            <div className="md:hidden max-w-sm mx-auto bg-slate-900/60 backdrop-blur-2xl rounded-[32px] overflow-hidden border border-white/10 p-2 mb-20 -translate-y-12">
+            {/* Mobile View Hero - Enhanced Contrast */}
+            <div className="md:hidden max-w-sm mx-auto bg-slate-950/70 backdrop-blur-3xl rounded-[32px] overflow-hidden border border-white/10 p-2 mb-20 -translate-y-12 shadow-2xl">
               <div className="p-8 text-left space-y-6">
                 <input 
                   type="text" 
-                  placeholder="Search Global Treks..." 
-                  className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 px-5 text-sm text-white focus:outline-none transition-all font-medium"
+                  placeholder="Search Tour Packages..." 
+                  className="w-full bg-white/10 border border-white/20 rounded-2xl py-4 px-5 text-sm text-white focus:outline-none transition-all font-medium placeholder:text-white/40"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={handleKeyDown}
                 />
                 <button 
                   onClick={() => handleSearch()}
-                  className="w-full py-5 bg-white text-slate-900 rounded-2xl font-black text-xs uppercase tracking-[0.25em] flex items-center justify-center gap-3"
+                  className="w-full py-5 bg-white text-slate-900 rounded-2xl font-black text-xs uppercase tracking-[0.25em] flex items-center justify-center gap-3 shadow-lg shadow-white/5"
                 >
                   Explore <ArrowRight size={16} />
                 </button>
@@ -180,10 +185,10 @@ export default function HomeClient() {
           <div className="flex justify-between items-end mb-16">
             <div>
               <span className="text-blue-600 text-xs font-black uppercase tracking-[0.3em] mb-4 block">Hand-Picked Adventures</span>
-              <h2 className="text-4xl font-bold text-slate-900 tracking-tight">Featured Himalayan Treks.</h2>
+              <h2 className="text-4xl font-bold text-slate-900 tracking-tight">Signature Tour Packages.</h2>
             </div>
             <Link href="/treks" className="hidden md:flex items-center gap-2 text-sm font-bold text-slate-900 hover:text-blue-600 transition-colors group">
-              View All Treks <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              Explore All Tours <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 

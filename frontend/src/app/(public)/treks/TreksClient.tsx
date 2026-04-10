@@ -87,10 +87,10 @@ export default function TreksClient() {
         <div className="absolute bottom-8 left-6 md:bottom-12 md:left-10 max-w-2xl px-4 md:px-0">
           <h1 className="text-white text-4xl md:text-7xl font-black tracking-tighter uppercase leading-none drop-shadow-2xl">
             Featured <br />
-            <span className="text-primary">Treks</span>
+            <span className="text-primary">Tour Packages</span>
           </h1>
           <p className="text-white/60 mt-4 text-base md:text-xl font-medium tracking-wide">
-             Discover the standard of mountain trekking and adventure.
+             Discover the standard of mountain tours and adventure.
           </p>
         </div>
       </div>
@@ -189,9 +189,9 @@ export default function TreksClient() {
             {/* Left Column: Treks */}
             <div className="flex-1">
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-xl font-bold text-foreground">Featured Treks</h2>
+                <h2 className="text-xl font-bold text-foreground">Featured Tour Packages</h2>
                 {!loading && (
-                  <span className="text-sm text-muted">{treks.length} treks found</span>
+                  <span className="text-sm text-muted">{treks.length} packages found</span>
                 )}
               </div>
 
@@ -209,7 +209,7 @@ export default function TreksClient() {
                 </div>
               ) : treks.length === 0 ? (
                 <div className="text-center py-24 border-2 border-dashed border-border rounded-2xl">
-                  <p className="text-muted font-medium">No treks found. Try adjusting your search.</p>
+                  <p className="text-muted font-medium">No tour packages found. Try adjusting your search.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -256,7 +256,7 @@ export default function TreksClient() {
                     disabled={loadingMore}
                     className="border border-border text-foreground hover:border-primary hover:text-primary px-10 py-3 rounded-full text-sm font-bold transition-all disabled:opacity-50"
                   >
-                    {loadingMore ? 'Loading...' : 'Load More Treks'}
+                    {loadingMore ? 'Loading...' : 'Load More Packages'}
                   </button>
                 </div>
               )}

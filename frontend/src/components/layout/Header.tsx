@@ -5,10 +5,12 @@ import SearchBar from './SearchBar';
 import LogoutButton from './LogoutButton';
 import MobileMenu from './MobileMenu';
 import MountainLogo from '../common/MountainLogo';
+import { publicNavLinks, protectedNavLinks } from '@/config/navigation';
 
 export default async function Header() {
   const session = await auth();
   const isLoggedIn = !!session?.user;
+  const userRole = (session?.user as any)?.role;
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-100 shadow-sm">
@@ -23,31 +25,42 @@ export default async function Header() {
 
           {/* Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link href="/treks" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">Treks</Link>
-            <Link href="/about" className="text-sm text-muted hover:text-foreground font-medium transition-colors whitespace-nowrap">About</Link>
+            {publicNavLinks.map((link) => (
+              <Link 
+                key={link.href} 
+                href={link.href} 
+                className="text-sm text-slate-500 hover:text-slate-900 font-medium transition-colors whitespace-nowrap"
+              >
+                {link.label}
+              </Link>
+            ))}
             
             {isLoggedIn && (
               <>
-                <Link href="/dashboard/bookings" className="text-sm text-muted hover:text-foreground font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap">
-                  <span className="w-1.5 h-1.5 bg-accent rounded-full"></span>
-                  My Bookings
-                </Link>
+                <div className="h-4 w-px bg-slate-200 mx-2 shrink-0" />
+                {protectedNavLinks.map((link) => (
+                   <Link 
+                     key={link.href} 
+                     href={link.href} 
+                     className="text-sm text-slate-500 hover:text-slate-900 font-medium transition-colors flex items-center gap-1.5 whitespace-nowrap"
+                   >
+                     <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                     {link.label}
+                   </Link>
+                ))}
                 
-                {((session?.user as any)?.role === 'LEADER' || (session?.user as any)?.role === 'ADMIN') && (
-                  <div className="h-4 w-px bg-slate-200 mx-2 shrink-0" />
-                )}
-
-                {(session?.user as any)?.role === 'ADMIN' && (
-                  <Link href="/adminControl" className="text-[10px] bg-blue-600 text-white px-4 py-2 rounded-xl font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20 flex items-center gap-2 group/admin">
-                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-                    Command HQ
+                {/* Staff Links */}
+                {userRole === 'ADMIN' && (
+                  <Link href="/adminControl" className="text-[10px] bg-slate-900 text-white px-4 py-2 rounded-xl font-black uppercase tracking-widest hover:bg-black transition-all shadow-lg shadow-black/5 flex items-center gap-2 ml-2">
+                    <span className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></span>
+                    Admin Panel
                   </Link>
                 )}
 
-                {(session?.user as any)?.role === 'LEADER' && (
-                   <Link href="/dashboard" className="text-[10px] bg-emerald-600 text-white px-4 py-2 rounded-xl font-black uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-600/20 flex items-center gap-2">
+                {userRole === 'LEADER' && (
+                   <Link href="/dashboard" className="text-[10px] bg-blue-600 text-white px-4 py-2 rounded-xl font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/10 flex items-center gap-2 ml-2">
                     <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
-                    Leader Portal
+                    Leader Console
                   </Link>
                 )}
               </>
@@ -62,19 +75,20 @@ export default async function Header() {
             {isLoggedIn ? (
               <div className="hidden sm:flex items-center gap-1.5 sm:gap-2">
                 <Link href="/dashboard/profile" className="flex items-center gap-2 group transition-all">
-                  <span className="hidden sm:block text-base font-bold text-foreground tracking-tight lowercase">
-                    {session.user?.name?.split(' ')[0] || 'user'}
+                  <span className="hidden sm:block text-sm font-bold text-slate-900 tracking-tight lowercase">
+                    {session.user?.name?.split(' ')[0] || 'account'}
                   </span>
-                  <div className="w-10 h-10 bg-surface border border-border rounded-full flex items-center justify-center text-primary text-lg font-black shadow-inner group-hover:border-primary/50 transition-all overflow-hidden">
+                  <div className="w-9 h-9 bg-slate-50 border border-slate-200 rounded-full flex items-center justify-center text-slate-900 text-sm font-bold shadow-sm group-hover:border-blue-500/50 transition-all overflow-hidden">
                     {session.user?.image
                       ? <img src={session.user.image} alt="User" className="w-full h-full object-cover" />
                       : (session.user?.name ? session.user.name.charAt(0).toUpperCase() : 'U')}
                   </div>
                 </Link>
+                <div className="h-4 w-px bg-slate-200 mx-1 flex md:hidden sm:flex" />
                 <LogoutButton />
               </div>
             ) : (
-              <Link href="/login" className="hidden sm:inline-flex bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest transition-all shadow-lg shadow-primary/20 hover:scale-105 active:scale-95">
+              <Link href="/login" className="hidden sm:inline-flex bg-slate-900 hover:bg-black text-white px-6 py-2.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-black/5 hover:scale-105 active:scale-95">
                 Login / Signup
               </Link>
             )}

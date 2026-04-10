@@ -80,25 +80,25 @@ export default function Footer() {
         {/* Link Columns Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 py-20">
           
-          {/* Column 1: Explore */}
+          {/* Column 1: Tour Packages */}
           <div className="space-y-6">
-            <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Explore</h4>
+            <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Tour Packages</h4>
             <ul className="space-y-4">
-              <li><Link href="/treks" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Everest Region</Link></li>
-              <li><Link href="/treks" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Annapurna Circuit</Link></li>
-              <li><Link href="/treks" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Manaslu Escapes</Link></li>
-              <li><Link href="/treks" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Ladakh Highlands</Link></li>
+              <li><Link href="/treks" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Nepal Expeditions</Link></li>
+              <li><Link href="/treks" className="text-sm font-bold text-white/40 hover:text-white transition-colors">High Altitude Tours</Link></li>
+              <li><Link href="/treks" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Cultural Journeys</Link></li>
+              <li><Link href="/treks" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Himalayan Circuits</Link></li>
             </ul>
           </div>
 
           {/* Column 2: Dashboard */}
           <div className="space-y-6">
-            <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Command Center</h4>
+            <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Client Area</h4>
             <ul className="space-y-4">
               <li><Link href="/dashboard/bookings" className="text-sm font-bold text-white/40 hover:text-white transition-colors">My Bookings</Link></li>
-              <li><Link href="/dashboard/health" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Medical Portal</Link></li>
-              <li><Link href="/dashboard/treks" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Live Telemetry</Link></li>
-              <li><Link href="/dashboard/profile" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Security Settings</Link></li>
+              <li><Link href="/dashboard/health" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Medical Dashboard</Link></li>
+              <li><Link href="/dashboard/bookings" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Live Updates</Link></li>
+              <li><Link href="/dashboard/profile" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Account Settings</Link></li>
             </ul>
           </div>
 
