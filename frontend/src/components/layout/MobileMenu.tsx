@@ -3,9 +3,10 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, ChevronRight, Compass, Shield, Heart, User, LogOut, Users, Activity } from 'lucide-react';
+import { Menu, X, ChevronRight, Compass, Shield, Heart, User, LogOut, LayoutDashboard } from 'lucide-react';
 import { Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
+import MountainLogo from '../common/MountainLogo';
 
 interface MobileMenuProps {
   session: Session | null;
@@ -22,67 +23,63 @@ export default function MobileMenu({ session }: MobileMenuProps) {
     open: { x: 0, transition: { type: 'spring', stiffness: 300, damping: 30 } } as const
   };
 
-  const overlayVariants = {
-    closed: { opacity: 0 } as const,
-    open: { opacity: 1 } as const
-  };
-
   const navLinks = [
     { href: '/treks', label: 'Explore Treks', icon: Compass },
-    { href: '/dashboard/bookings', label: 'My Trips', icon: Shield, protected: true },
+    { href: '/dashboard/bookings', label: 'My Bookings', icon: Shield, protected: true },
     { href: '/dashboard/health', label: 'Health Form', icon: Heart, protected: true },
-    { href: '/dashboard/profile', label: 'Account', icon: User, protected: true },
+    { href: '/dashboard/profile', label: 'My Account', icon: User, protected: true },
   ];
+
+  const role = (session?.user as any)?.role;
+  const isStaff = role === 'ADMIN' || role === 'LEADER';
 
   return (
     <div className="md:hidden">
       <button 
         onClick={toggleMenu}
-        className="p-2 text-muted hover:text-primary transition-colors hover:bg-surface rounded-xl"
-        aria-label="Toggle Menu"
+        className="p-2 text-slate-500 hover:text-slate-900 transition-colors"
+        aria-label="Open Menu"
       >
-        <Menu size={24} strokeWidth={2.5} />
+        <Menu size={24} />
       </button>
 
       <AnimatePresence>
         {isOpen && (
           <>
+            {/* Background Overlay */}
             <motion.div 
-              initial="closed"
-              animate="open"
-              exit="closed"
-              variants={overlayVariants}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               onClick={toggleMenu}
-              className="fixed inset-0 bg-slate-950/60 backdrop-blur-[2px] z-[60]"
+              className="fixed inset-0 bg-slate-950/20 backdrop-blur-sm z-[60]"
             />
             
+            {/* Menu Drawer */}
             <motion.div 
               initial="closed"
               animate="open"
               exit="closed"
               variants={menuVariants}
-              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white shadow-[0_0_60px_rgba(0,0,0,0.15)] z-[70] flex flex-col h-full overflow-hidden"
+              className="fixed top-0 right-0 bottom-0 w-[85%] max-w-sm bg-white z-[70] flex flex-col shadow-2xl"
             >
-              <div className="p-5 flex items-center justify-between border-b border-slate-50 bg-white shrink-0">
+              {/* Header */}
+              <div className="p-6 flex items-center justify-between border-b border-slate-50">
                 <div className="flex items-center gap-2">
-                   <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/20">
-                      <svg className="w-5 h-5 text-white" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M16 4L2 28H30L16 4Z" fill="currentColor"/>
-                      </svg>
-                   </div>
-                   <span className="font-black text-blue-900 text-sm tracking-tighter uppercase italic pt-0.5">GTM Elite</span>
+                   <MountainLogo className="w-6 h-6 text-slate-900" />
+                   <span className="font-bold text-slate-900 text-sm tracking-tight">GTM Adventures</span>
                 </div>
-                <button 
-                  onClick={toggleMenu}
-                  className="p-2 text-slate-400 hover:text-slate-900 transition-colors"
-                >
-                  <X size={24} strokeWidth={2} />
+                <button onClick={toggleMenu} className="p-2 text-slate-400 hover:text-slate-900 transition-colors">
+                  <X size={24} />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto px-6 py-4 space-y-6 bg-white no-scrollbar">
-                <div className="space-y-1">
-                  <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.25em] mb-4 ml-1">Navigation</h3>
+              {/* Navigation Links */}
+              <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                
+                {/* Main Navigation */}
+                <div className="space-y-2">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-4">Navigation</p>
                   {navLinks.map((link) => {
                     if (link.protected && !isLoggedIn) return null;
                     const Icon = link.icon;
@@ -91,115 +88,80 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                         key={link.href}
                         href={link.href}
                         onClick={toggleMenu}
-                        className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-border hover:border-primary/20 hover:bg-background/40 transition-all group active:scale-[0.98]"
+                        className="flex items-center justify-between p-4 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all group"
                       >
                         <div className="flex items-center gap-4">
-                           <div className="w-10 h-10 rounded-xl bg-background border border-border flex items-center justify-center text-muted group-hover:text-primary group-hover:border-primary/20 transition-all">
+                           <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:text-slate-900 transition-colors">
                               <Icon size={20} />
                            </div>
-                           <span className="font-bold text-foreground text-sm group-hover:text-primary transition-colors">{link.label}</span>
+                           <span className="font-semibold text-slate-900">{link.label}</span>
                         </div>
-                        <ChevronRight size={16} className="text-muted group-hover:text-primary transition-all group-hover:translate-x-1" />
+                        <ChevronRight size={16} className="text-slate-300 group-hover:text-slate-900 group-hover:translate-x-1 transition-all" />
                       </Link>
                     );
                   })}
                 </div>
 
-                {((session?.user as any)?.role === 'LEADER' || (session?.user as any)?.role === 'ADMIN') && (
-                  <div className="pt-6 space-y-4 border-t border-slate-100 mb-6">
-                    <div className="flex items-center gap-3 px-1 mb-4">
-                       <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em]">Leadership & Command</span>
-                       <div className="h-px bg-slate-100 flex-1"></div>
-                    </div>
-                    
+                {/* Staff Access (Simple English) */}
+                {isStaff && (
+                  <div className="space-y-4 pt-6 border-t border-slate-100">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-4">Staff Only</p>
                     <Link 
-                      href={(session?.user as any)?.role === 'ADMIN' ? "/adminControl" : "/dashboard"}
+                      href={role === 'ADMIN' ? "/adminControl" : "/dashboard"}
                       onClick={toggleMenu}
-                      className="flex items-center justify-between p-4 bg-blue-600 rounded-2xl text-white shadow-lg shadow-blue-600/20 group overflow-hidden relative"
+                      className="flex items-center justify-between p-4 bg-slate-900 rounded-2xl text-white transition-all active:scale-[0.98]"
                     >
-                      <div className="relative z-10 flex items-center gap-4">
-                         <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                            {(session?.user as any)?.role === 'ADMIN' ? <Activity size={20} /> : <Shield size={20} />}
+                      <div className="flex items-center gap-4">
+                         <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                            <LayoutDashboard size={20} />
                          </div>
-                         <div className="flex flex-col text-left">
-                            <p className="text-[10px] font-bold uppercase tracking-widest leading-none mb-1 opacity-70">
-                               {(session?.user as any)?.role === 'ADMIN' ? 'Admin Access' : 'Operational'}
-                            </p>
-                            <p className="text-sm font-black uppercase tracking-tighter">
-                               {(session?.user as any)?.role === 'ADMIN' ? 'Command HQ' : 'Leader Portal'}
-                            </p>
-                         </div>
+                         <span className="font-bold text-sm uppercase tracking-wide">
+                            {role === 'ADMIN' ? 'Admin Panel' : 'Leader Console'}
+                         </span>
                       </div>
-                      <ChevronRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full translate-x-10 -translate-y-10 blur-2xl"></div>
-                    </Link>
-
-                    {(session?.user as any)?.role === 'ADMIN' && (
-                      <Link 
-                        href="/dashboard/participants"
-                        onClick={toggleMenu}
-                        className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-border hover:border-cyan-500/20 hover:shadow-xl hover:shadow-cyan-500/5 transition-all group mt-2"
-                      >
-                        <div className="flex items-center gap-4">
-                           <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center text-cyan-500 group-hover:bg-cyan-500 group-hover:text-white transition-all">
-                              <Users size={20} />
-                           </div>
-                           <div className="flex flex-col text-left">
-                              <span className="font-black text-foreground text-xs uppercase tracking-widest leading-none mb-1">Global Users</span>
-                              <span className="text-[8px] font-bold text-muted uppercase tracking-tighter">Directory</span>
-                           </div>
-                        </div>
-                        <ChevronRight size={16} className="text-muted group-hover:text-cyan-500 transition-all group-hover:translate-x-1" />
-                      </Link>
-                    )}
-                  </div>
-                )}
-
-                {!isLoggedIn && (
-                  <div className="pt-4">
-                    <Link 
-                      href="/login" 
-                      onClick={toggleMenu}
-                      className="w-full bg-primary hover:bg-primary-hover text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest text-center block shadow-lg shadow-primary/20"
-                    >
-                      Login / Signup
+                      <ChevronRight size={18} className="opacity-50" />
                     </Link>
                   </div>
                 )}
               </div>
 
-              {isLoggedIn && (
-                <div className="p-6 bg-surface border-t border-border">
-                  <div className="flex items-center justify-between mb-6">
-                    <div className="flex items-center gap-3">
-                       <div className="w-12 h-12 bg-background rounded-2xl border border-border flex items-center justify-center p-1 shadow-sm overflow-hidden">
+              {/* Footer Section (User Info / Auth) */}
+              <div className="p-6 border-t border-slate-50 bg-slate-50/50">
+                {isLoggedIn ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3 px-2">
+                       <div className="w-10 h-10 bg-white rounded-full border border-slate-200 flex items-center justify-center overflow-hidden">
                           {session.user?.image 
-                            ? <img src={session.user.image} className="w-full h-full rounded-xl object-cover" alt="User" />
-                            : <span className="text-primary font-black uppercase text-xl">{session.user?.name?.charAt(0)}</span>
+                            ? <img src={session.user.image} className="w-full h-full object-cover" alt="User" />
+                            : <span className="font-black text-slate-900 uppercase">{session.user?.name?.charAt(0)}</span>
                           }
                        </div>
                        <div>
-                          <div className="text-sm font-black text-foreground leading-none mb-1">{session.user?.name}</div>
-                          <div className="text-[10px] font-bold text-muted uppercase tracking-widest">Active Member</div>
+                          <p className="text-sm font-bold text-slate-900 leading-none mb-1">{session.user?.name}</p>
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Logged In</p>
                        </div>
                     </div>
-                  </div>
-                  <button 
-                    onClick={async () => {
-                      try {
+                    <button 
+                      onClick={async () => {
                         await signOut({ redirect: false });
                         window.location.assign('/');
-                      } catch (e) {
-                        window.location.assign('/');
-                      }
-                    }}
-                    className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-background border border-rose-500/20 text-rose-500 font-black text-xs uppercase tracking-widest hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all active:scale-[0.98]"
+                      }}
+                      className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-white border border-rose-100 text-rose-500 font-bold text-xs uppercase tracking-widest hover:bg-rose-500 hover:text-white transition-all shadow-sm"
+                    >
+                      <LogOut size={16} />
+                      Sign Out
+                    </button>
+                  </div>
+                ) : (
+                  <Link 
+                    href="/login" 
+                    onClick={toggleMenu}
+                    className="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold text-xs uppercase tracking-widest text-center block shadow-lg shadow-slate-900/10"
                   >
-                    <LogOut size={16} />
-                    Sign Out
-                  </button>
-                </div>
-              )}
+                    Login / Sign Up
+                  </Link>
+                )}
+              </div>
             </motion.div>
           </>
         )}

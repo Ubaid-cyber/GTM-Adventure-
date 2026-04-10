@@ -4,6 +4,7 @@ import { auth } from '@/lib/auth';
 import SearchBar from './SearchBar';
 import LogoutButton from './LogoutButton';
 import MobileMenu from './MobileMenu';
+import MountainLogo from '../common/MountainLogo';
 
 export default async function Header() {
   const session = await auth();
@@ -15,12 +16,9 @@ export default async function Header() {
         <div className="flex items-center h-16 gap-8">
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 shrink-0">
-            <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M16 4L2 28H30L16 4Z" fill="#1e3a8a"/>
-              <path d="M16 4L11 12H21L16 4Z" fill="white"/>
-            </svg>
-            <span className="font-bold text-primary text-base tracking-tight">GTM Adventures</span>
+          <Link href="/" className="flex items-center gap-2.5 shrink-0 transition-opacity hover:opacity-80">
+            <MountainLogo className="w-8 h-8 text-slate-900" />
+            <span className="font-bold text-slate-900 text-base tracking-tight">GTM Adventures</span>
           </Link>
 
           {/* Navigation */}
