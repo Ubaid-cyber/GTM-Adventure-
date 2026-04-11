@@ -43,7 +43,7 @@ async function main() {
     console.log('  🔐 2FA: ENABLED\n');
 
     // 2. Default Leader Account
-    const leaderEmail = 'bhatubaid341@gmail.com';
+    const leaderEmail = 'leader@gtm-adventures.com';
     const leaderPass = 'admin';
     const leaderHashed = await bcrypt.hash(leaderPass, 10);
 
