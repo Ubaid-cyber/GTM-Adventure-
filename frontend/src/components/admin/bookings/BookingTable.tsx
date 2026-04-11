@@ -298,7 +298,7 @@ export default function BookingTable({ bookings }: BookingTableProps) {
                         <option value="none" className="bg-slate-900">No Staff Assigned</option>
                         {staffMembers.map(s => (
                           <option key={s.id} value={s.id} className="bg-slate-900">
-                            {s.name}({s.role === 'LEADER' ? 'Trek Leader' : 'Admin'})
+                            {s.name}
                           </option>
                         ))}
                       </select>
