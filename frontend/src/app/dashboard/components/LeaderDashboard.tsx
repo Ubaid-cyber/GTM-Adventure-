@@ -58,11 +58,11 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ user, apiToken
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
         <div className="space-y-6">
           <div className="flex items-center gap-3">
-             <div className="w-12 h-[2px] bg-cyan-500"></div>
-             <p className="text-[10px] font-black text-cyan-500/80 uppercase tracking-[0.5em]">Role: Trek Leader</p>
+             <div className="w-12 h-[2px] bg-blue-500"></div>
+             <p className="text-[10px] font-black text-blue-500/80 uppercase tracking-[0.5em]">Role: Lead Guide</p>
           </div>
           <h1 className="text-4xl font-black text-white tracking-tighter leading-none">
-             Leader <span className="text-cyan-600/90">Dashboard</span>
+             Leader <span className="text-blue-600/90">Console</span>
           </h1>
           <div className="flex flex-wrap items-center gap-6 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
              <span className="flex items-center gap-2">
@@ -236,8 +236,8 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ user, apiToken
 
         {/* 📋 LEADER TOOLS */}
         <div className="space-y-10">
-           <div className="bg-white/5 backdrop-blur-xl rounded-[48px] p-10 text-white relative overflow-hidden group border border-white/10 shadow-2xl">
-              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 group-hover:rotate-12 transition-all duration-700 text-cyan-500">
+            <div className="bg-white/5 backdrop-blur-xl rounded-[48px] p-10 text-white relative overflow-hidden group border border-white/10 shadow-2xl">
+              <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 group-hover:rotate-12 transition-all duration-700 text-blue-500">
                  <Shield className="w-32 h-32" />
               </div>
               <div className="relative z-10 space-y-10">

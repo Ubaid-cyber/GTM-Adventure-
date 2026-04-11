@@ -49,7 +49,16 @@ export function MedicalDashboardView() {
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterStatus>('ALL');
-  const [search, setSearch] = useState('');
+  const searchParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+  const initialSearch = searchParams?.get('q') || '';
+  
+  const [search, setSearch] = useState(initialSearch);
+
+  useEffect(() => {
+    // Sync with URL params from header
+    const q = new URLSearchParams(window.location.search).get('q');
+    if (q !== null) setSearch(q);
+  }, [searchParams?.get('q')]);
 
   useEffect(() => {
     fetchProfiles();
@@ -94,17 +103,17 @@ export function MedicalDashboardView() {
   return (
     <div className="space-y-10 animate-in fade-in duration-1000">
       
-      {/* 🏥 Station Header */}
+      {/* 🏥 Professional Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <div className="flex items-center gap-3 mb-3">
              <div className="w-10 h-10 bg-blue-600/10 rounded-xl flex items-center justify-center border border-blue-500/20">
                <Activity className="w-5 h-5 text-blue-500" />
              </div>
-             <p className="text-[10px] font-black text-blue-500 uppercase tracking-[0.4em]">Expedition Management</p>
+             <p className="text-[10px] font-black text-blue-500 uppercase tracking-[0.4em]">Operations Management</p>
           </div>
           <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">Medical Panel</h1>
-          <p className="text-white/40 text-sm mt-2 max-w-xl font-medium">Review health status and grant medical clearance for upcoming trek expeditions.</p>
+          <p className="text-white/40 text-sm mt-2 max-w-xl font-medium">Review health records and manage medical clearance for upcoming expeditions.</p>
         </div>
         
         <div className="grid grid-cols-2 gap-4">
@@ -274,8 +283,8 @@ export function MedicalDashboardView() {
              <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-6">
                 <ShieldCheck className="w-10 h-10 text-white/10" />
              </div>
-             <h3 className="text-xl font-black text-white uppercase italic tracking-widest">Awaiting Synchronization</h3>
-             <p className="text-white/20 text-sm mt-2 max-w-xs mx-auto">All units are currently cleared or no records match your tactical filter.</p>
+             <h3 className="text-xl font-black text-white uppercase italic tracking-widest">Awaiting Records</h3>
+             <p className="text-white/20 text-sm mt-2 max-w-xs mx-auto">No medical profiles current match your search criteria.</p>
           </div>
         )}
       </div>
