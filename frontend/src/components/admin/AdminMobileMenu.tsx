@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, BarChart3, MapPin, Users, CreditCard, CalendarCheck, Inbox, FileText, Navigation, Star, LogOut, Plus } from 'lucide-react';
-import { signOut } from 'next-auth/react';
+import { handleSignOut } from '@/components/layout/LogoutButton';
 
 const NAV_ITEMS = [
   { name: 'Dashboard', icon: BarChart3, href: '/adminControl' },
@@ -122,11 +122,7 @@ export default function AdminMobileMenu() {
               {/* Footer */}
               <div className="p-4 border-t border-white/5">
                 <button
-                  onClick={async () => {
-                    close();
-                    await signOut({ redirect: false });
-                    window.location.assign('/');
-                  }}
+                  onClick={() => { close(); handleSignOut(); }}
                   className="w-full flex items-center gap-3 px-3 py-2.5 text-rose-500/60 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
                 >
                   <LogOut className="w-4 h-4" />

@@ -33,8 +33,9 @@ export default auth((req) => {
   const authRoutes = ['/login', '/signup'];
   const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-  // 🛡️ REVERSE GUARD: If logged in, don't show login/signup pages
+  // 🛡️ REVERSE GUARD: If logged in, redirect away from auth pages
   if (isAuthRoute && isLoggedIn) {
+    if (role === 'MEDICAL') return NextResponse.redirect(new URL('/dashboard/admin/medical', nextUrl));
     return NextResponse.redirect(new URL('/dashboard', nextUrl));
   }
 
@@ -46,6 +47,12 @@ export default auth((req) => {
   if (nextUrl.pathname.startsWith('/leader') && role !== 'LEADER' && role !== 'ADMIN') {
     const user = req.auth?.user?.email || 'anonymous';
     console.warn(`[SECURITY] Restricted role access attempt to ${nextUrl.pathname} by ${user}`);
+    return NextResponse.redirect(new URL('/login', nextUrl));
+  }
+  // 🩺 MEDICAL route: only MEDICAL role allowed
+  if (nextUrl.pathname.startsWith('/dashboard/admin/medical') && role !== 'MEDICAL') {
+    const user = req.auth?.user?.email || 'anonymous';
+    console.warn(`[SECURITY] Medical dashboard access attempt by non-medical user: ${user}`);
     return NextResponse.redirect(new URL('/login', nextUrl));
   }
   // 🛡️ Admin Intercept Deferred

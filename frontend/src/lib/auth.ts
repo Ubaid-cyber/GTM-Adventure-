@@ -79,7 +79,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           const { prisma } = await import("./prisma");
           const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
           
-          const isStaff = dbUser?.role === 'ADMIN' || dbUser?.role === 'LEADER';
+          const isStaff = dbUser?.role === 'ADMIN' || dbUser?.role === 'LEADER' || dbUser?.role === 'MEDICAL';
           
           if (isStaff && dbUser?.twoFactorEnabled) {
             if (!credentials.totpCode) {

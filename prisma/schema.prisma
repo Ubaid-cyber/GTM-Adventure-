@@ -274,6 +274,7 @@ enum UserRole {
   TREKKER
   LEADER
   ADMIN
+  MEDICAL
 }
 
 enum MedicalStatus {

@@ -18,6 +18,18 @@ async function validateAdmin() {
 }
 
 /**
+ * Validates that the current user has the MEDICAL role.
+ * Completely isolated from admin — doctors only.
+ */
+async function validateMedical() {
+  const session = await auth();
+  const role = (session?.user as any)?.role;
+  if (role !== 'MEDICAL') {
+    throw new Error('Unauthorized: Medical Officer access required');
+  }
+}
+
+/**
  * Fetches all treks for the management dashboard.
  */
 export async function getAdminTreks() {
@@ -445,7 +457,7 @@ export async function getBlockedIPs() {
  */
 
 export async function getAllMedicalProfiles() {
-  await validateAdmin();
+  await validateMedical();
   return await prisma.medicalProfile.findMany({
     where: {
       status: { not: 'NONE' }
@@ -460,7 +472,7 @@ export async function getAllMedicalProfiles() {
 }
 
 export async function updateMedicalNotesStatus(profileId: string, status: any, medicalNotes?: string) {
-  await validateAdmin();
+  await validateMedical();
   
   const updated = await prisma.medicalProfile.update({
     where: { id: profileId },
@@ -488,7 +500,7 @@ export async function updateMedicalNotesStatus(profileId: string, status: any, m
 }
 
 export async function resetMedicalClearance(profileId: string) {
-  await validateAdmin();
+  await validateMedical();
   
   await prisma.medicalProfile.update({
     where: { id: profileId },

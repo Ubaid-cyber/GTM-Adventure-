@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ChevronRight, LogOut, Shield, User } from 'lucide-react';
 import { Session } from 'next-auth';
-import { signOut } from 'next-auth/react';
+import { handleSignOut } from '@/components/layout/LogoutButton';
 import MountainLogo from '../common/MountainLogo';
 import { publicNavLinks, protectedNavLinks } from '@/config/navigation';
 
@@ -170,10 +170,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                      </div>
                   </Link>
                   <button 
-                    onClick={async () => {
-                      await signOut({ redirect: false });
-                      window.location.assign('/');
-                    }}
+                  onClick={handleSignOut}
                     className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-white border border-rose-100 text-rose-500 font-bold text-[10px] uppercase tracking-widest"
                   >
                     <LogOut size={16} />

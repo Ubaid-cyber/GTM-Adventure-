@@ -1,6 +1,6 @@
 'use client';
 
-import { signOut } from 'next-auth/react';
+import { handleSignOut } from '@/components/layout/LogoutButton';
 
 import React from 'react';
 import Link from 'next/link';
@@ -84,10 +84,7 @@ export default function AdminSidebar() {
           <span className="text-sm font-semibold">Settings</span>
         </Link>
         <button
-          onClick={async () => {
-            await signOut({ redirect: false });
-            window.location.href = '/';
-          }}
+          onClick={handleSignOut}
           className="w-full flex items-center gap-3 px-4 py-3 text-rose-500/60 hover:text-rose-500 hover:bg-rose-500/5 rounded-xl transition-all"
         >
           <LogOut className="w-5 h-5" />
