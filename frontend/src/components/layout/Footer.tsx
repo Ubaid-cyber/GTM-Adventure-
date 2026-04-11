@@ -57,14 +57,14 @@ export default function Footer() {
                 </div>
 
                 <div className="relative z-10">
-                  <h3 className="text-xl font-black mb-2 italic uppercase tracking-tighter" style={{ color: '#020617' }}>Join the Ascent</h3>
-                  <p className="text-slate-500 text-xs mb-8 font-bold uppercase tracking-widest">Receive safety updates and exclusive trek announcements.</p>
+                  <h3 className="text-xl font-black mb-2 italic uppercase tracking-tighter" style={{ color: '#020617' }}>Stay Updated</h3>
+                  <p className="text-slate-500 text-xs mb-8 font-bold uppercase tracking-widest">Get the latest news and exclusive trek offers.</p>
                   <form className="flex flex-col sm:flex-row gap-3">
                     <div className="flex-1 relative">
                       <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                       <input 
                         type="email" 
-                        placeholder="Your elite email address" 
+                        placeholder="Your email address" 
                         className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-sm text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-primary focus:bg-white transition-all shadow-inner font-bold"
                       />
                     </div>
@@ -118,13 +118,14 @@ export default function Footer() {
             <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Support</h4>
             <ul className="space-y-4">
               <li className="flex items-center gap-3 text-sm font-bold text-white/40">
-                <Phone size={14} className="text-primary/50" /> +91-GTM-SAFETY
+                <Phone size={14} className="text-primary/50 flex-shrink-0" /> +91 6005888754
               </li>
-              <li className="flex items-center gap-3 text-sm font-bold text-white/40">
-                <Mail size={14} className="text-primary/50" /> support@gtm-adventures.com
+              <li className="flex items-center gap-3 text-sm font-bold text-white/40 break-all">
+                <Mail size={14} className="text-primary/50 flex-shrink-0" /> info@gtmadventures.com
               </li>
-              <li className="flex items-center gap-3 text-sm font-bold text-white/40">
-                <MapPin size={14} className="text-primary/50" /> Khumbu Center, Nepal
+              <li className="flex items-start gap-3 text-sm font-bold text-white/40 leading-relaxed max-w-[240px]">
+                <MapPin size={16} className="text-primary/50 flex-shrink-0 mt-0.5" /> 
+                <span>House No 5A, 1st Floor, Devlok Colony, Chandrabani Road, Majra, Dehradun, Uttarakhand</span>
               </li>
             </ul>
           </div>
@@ -133,9 +134,9 @@ export default function Footer() {
           <div className="space-y-6 lg:text-right lg:items-end flex flex-col">
             <h4 className="text-[10px] font-black text-primary uppercase tracking-[0.3em]">Legal</h4>
             <ul className="space-y-4">
-              <li><Link href="#" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Privacy Perimeter</Link></li>
-              <li><Link href="#" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Terms of Ascent</Link></li>
-              <li><Link href="#" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Cookie Tracking</Link></li>
+              <li><Link href="#" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Privacy Policy</Link></li>
+              <li><Link href="#" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Terms of Service</Link></li>
+              <li><Link href="#" className="text-sm font-bold text-white/40 hover:text-white transition-colors">Cookie Policy</Link></li>
             </ul>
           </div>
         </div>
