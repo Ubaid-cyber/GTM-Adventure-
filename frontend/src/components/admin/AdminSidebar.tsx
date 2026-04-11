@@ -18,7 +18,8 @@ import {
   Inbox,
   FileText,
   Navigation,
-  Star
+  Star,
+  Stethoscope
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -32,6 +33,7 @@ const NAV_ITEMS = [
   { name: 'Content (CMS)', icon: FileText, href: '/adminControl/cms' },
   { name: 'Guides & Agents', icon: Navigation, href: '/adminControl/guides' },
   { name: 'Reviews & Ratings', icon: Star, href: '/adminControl/reviews' },
+  { name: 'Medical Oversight', icon: Stethoscope, href: '/medicalControl' },
 ];
 
 export default function AdminSidebar() {

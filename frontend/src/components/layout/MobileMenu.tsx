@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Menu, X, Compass, Info, Image as ImageIcon,
   CalendarCheck, Heart, User, Shield, LogOut, ChevronRight,
-  Mountain
+  Mountain, Stethoscope
 } from 'lucide-react';
 import { Session } from 'next-auth';
 import { handleSignOut } from '@/components/layout/LogoutButton';
@@ -33,29 +33,24 @@ export default function MobileMenu({ session }: MobileMenuProps) {
   const isLoggedIn = !!session?.user;
   const userRole = (session?.user as any)?.role;
   const isAdmin = userRole === 'ADMIN';
+  const isMedical = userRole === 'MEDICAL';
   const firstName = session?.user?.name?.split(' ')[0] || 'Adventurer';
 
-  // Lock body scroll with scrollbar compensation
+  // Body scroll lock
   useEffect(() => {
     if (isOpen) {
-      const sw = window.innerWidth - document.documentElement.clientWidth;
       document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = `${sw}px`;
     } else {
       document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
     }
-    return () => {
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
-    };
+    return () => { document.body.style.overflow = ''; };
   }, [isOpen]);
 
   const close = () => setIsOpen(false);
 
   return (
     <div className="md:hidden" style={{ isolation: 'isolate' }}>
-      {/* Hamburger Trigger */}
+      {/* 🍔 Trigger Button */}
       <button
         onClick={() => setIsOpen(true)}
         className="relative w-10 h-10 flex items-center justify-center rounded-xl text-slate-700 hover:bg-slate-100 transition-colors"
@@ -67,155 +62,169 @@ export default function MobileMenu({ session }: MobileMenuProps) {
       <AnimatePresence>
         {isOpen && (
           <>
-            {/* Full-screen backdrop */}
+            {/* 🌑 Backdrop (Blur + Dim) */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
               onClick={close}
-              className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[999998]"
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-[999998]"
             />
 
-            {/* Slide-in drawer */}
+            {/* 🛸 Floating Panel (Trek The Himalayas Style) */}
             <motion.div
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 240 }}
-              className="fixed inset-y-0 right-0 w-[88%] max-w-sm bg-white z-[999999] flex flex-col shadow-2xl"
+              initial={{ y: -20, opacity: 0, scale: 0.95 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: -20, opacity: 0, scale: 0.95 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="fixed top-20 left-4 right-4 max-h-[85vh] bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] z-[999999] flex flex-col overflow-hidden border border-slate-100 sm:left-auto sm:right-6 sm:w-80"
+              onClick={(e) => e.stopPropagation()}
             >
-              {/* ── Header ── */}
-              <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+              {/* 🏁 Header within Panel */}
+              <div className="flex items-center justify-between px-6 py-5 border-b border-slate-50">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
-                    <Mountain size={16} className="text-white" />
+                  <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white">
+                    <Mountain size={14} />
                   </div>
-                  <div>
-                    <p className="font-black text-slate-900 text-[13px] tracking-tight leading-none">GTM Adventures</p>
-                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-none mt-0.5">Explore. Summit. Repeat.</p>
-                  </div>
+                  <span className="font-black text-slate-900 text-xs uppercase tracking-widest">Navigation</span>
                 </div>
                 <button
                   onClick={close}
-                  className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors"
+                  className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors"
                 >
-                  <X size={18} />
+                  <X size={16} />
                 </button>
               </div>
 
-              {/* ── Scrollable Content ── */}
-              <div className="flex-1 overflow-y-auto">
-                <div className="px-4 py-6 space-y-6">
-
-                  {/* Greeting if logged in */}
+              {/* 📜 Content Area */}
+              <div className="flex-1 overflow-y-auto custom-scrollbar">
+                <div className="p-4 space-y-6">
+                  
+                  {/* 👋 Identity (if logged in) */}
                   {isLoggedIn && (
-                    <div className="px-2 pb-2 border-b border-slate-100">
-                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Welcome back</p>
-                      <p className="text-slate-900 font-black text-lg leading-tight capitalize">{firstName} 👋</p>
+                    <div className="px-2 py-3 bg-slate-50 rounded-2xl flex items-center gap-3">
+                      <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-bold text-sm">
+                        {firstName.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none">Officer</p>
+                        <p className="text-slate-900 font-black text-sm capitalize">{firstName} 👋</p>
+                      </div>
                     </div>
                   )}
 
-                  {/* ── Explore Section ── */}
+                  {/* 🧭 Public Links */}
                   <div>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 mb-3">Explore</p>
                     <div className="space-y-1">
                       {PUBLIC_LINKS.map((link) => (
                         <Link
                           key={link.href}
                           href={link.href}
                           onClick={close}
-                          className="flex items-center justify-between p-3.5 rounded-2xl hover:bg-slate-50 transition-all group"
+                          className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-all group"
                         >
                           <div className="flex items-center gap-3.5">
-                            <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center group-hover:bg-slate-200 transition-colors">
-                              <link.icon size={18} className="text-slate-700" />
+                            <div className="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600 transition-colors group-hover:bg-slate-900 group-hover:text-white">
+                              <link.icon size={16} />
                             </div>
-                            <div>
-                              <p className="font-bold text-slate-900 text-sm leading-none">{link.label}</p>
-                              <p className="text-slate-400 text-[11px] mt-0.5">{link.desc}</p>
-                            </div>
+                            <p className="font-bold text-slate-900 text-[13px]">{link.label}</p>
                           </div>
-                          <ChevronRight size={16} className="text-slate-300 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-transform" />
+                          <ChevronRight size={14} className="text-slate-300 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-transform" />
                         </Link>
                       ))}
                     </div>
                   </div>
 
-                  {/* ── Dashboard Section (Logged-in regular users) ── */}
-                  {isLoggedIn && !isAdmin && (
-                    <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 mb-3">My Account</p>
+                  {/* 📂 Dashboard Links (Non-Admin) */}
+                  {isLoggedIn && !isAdmin && !isMedical && (
+                    <div className="pt-2 border-t border-slate-50">
+                      <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest px-2 mb-2">My Portal</p>
                       <div className="space-y-1">
                         {DASHBOARD_LINKS.map((link) => (
                           <Link
                             key={link.href}
                             href={link.href}
                             onClick={close}
-                            className="flex items-center justify-between p-3.5 rounded-2xl hover:bg-slate-50 transition-all group"
+                            className="flex items-center justify-between p-3 rounded-xl hover:bg-blue-50 transition-all group"
                           >
                             <div className="flex items-center gap-3.5">
-                              <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                                <link.icon size={18} className="text-blue-600" />
+                              <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+                                <link.icon size={16} />
                               </div>
-                              <div>
-                                <p className="font-bold text-slate-900 text-sm leading-none">{link.label}</p>
-                                <p className="text-slate-400 text-[11px] mt-0.5">{link.desc}</p>
-                              </div>
+                              <p className="font-bold text-slate-900 text-[13px]">{link.label}</p>
                             </div>
-                            <ChevronRight size={16} className="text-slate-300 group-hover:text-slate-600 group-hover:translate-x-0.5 transition-transform" />
+                            <ChevronRight size={14} className="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-transform" />
                           </Link>
                         ))}
                       </div>
                     </div>
                   )}
 
-                  {/* ── Admin Shortcut ── */}
-                  {isAdmin && (
-                    <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 mb-3">Administration</p>
-                      <Link
-                        href="/adminControl"
-                        onClick={close}
-                        className="flex items-center gap-4 p-4 bg-slate-900 rounded-2xl group transition-all hover:bg-slate-800"
-                      >
-                        <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-                          <Shield size={18} className="text-white" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-bold text-white text-sm">Admin Panel</p>
-                          <p className="text-white/50 text-[11px]">Manage tours, bookings & more</p>
-                        </div>
-                        <ChevronRight size={16} className="text-white/40 group-hover:text-white group-hover:translate-x-0.5 transition-transform" />
-                      </Link>
+                  {/* 🛡️ Admin/Staff Nodes */}
+                  {(isAdmin || isMedical) && (
+                    <div className="pt-2 border-t border-slate-50">
+                       <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest px-2 mb-2">Oversight</p>
+                       <div className="space-y-2">
+                         {isAdmin && (
+                            <Link
+                              href="/adminControl"
+                              onClick={close}
+                              className="flex items-center gap-4 p-3 bg-slate-900 rounded-2xl group transition-all"
+                            >
+                              <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center text-white">
+                                <Shield size={16} />
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-bold text-white text-[13px]">Admin Panel</p>
+                                <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest leading-none mt-1">Full Control</p>
+                              </div>
+                              <ChevronRight size={14} className="text-white/20 group-hover:translate-x-0.5 transition-transform" />
+                            </Link>
+                         )}
+                         {isMedical && (
+                            <Link
+                              href="/medicalControl"
+                              onClick={close}
+                              className="flex items-center gap-4 p-3 bg-blue-600 rounded-2xl group transition-all"
+                            >
+                              <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center text-white">
+                                <Stethoscope size={16} />
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-bold text-white text-[13px]">Medical HQ</p>
+                                <p className="text-blue-200 text-[10px] uppercase font-bold tracking-widest leading-none mt-1">Vitals Oversight</p>
+                              </div>
+                              <ChevronRight size={14} className="text-white/20 group-hover:translate-x-0.5 transition-transform" />
+                            </Link>
+                         )}
+                       </div>
                     </div>
                   )}
 
-                  {/* ── Login CTA (not logged in) ── */}
+                  {/* 🔑 Auth CTA */}
                   {!isLoggedIn && (
                     <div className="pt-2">
-                      <Link
+                       <Link
                         href="/login"
                         onClick={close}
-                        className="flex items-center justify-center gap-2 w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-sm hover:bg-slate-800 transition-colors"
+                        className="flex items-center justify-center w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-slate-900/10 active:scale-95"
                       >
-                        Login / Get Started
+                        Secure Login / Join
                       </Link>
                     </div>
                   )}
-
                 </div>
               </div>
 
-              {/* ── Footer (Sign Out) ── */}
+              {/* 🚪 Panel Footer */}
               {isLoggedIn && (
-                <div className="px-4 py-4 border-t border-slate-100 bg-slate-50">
+                <div className="px-5 py-5 border-t border-slate-50 bg-slate-50/50">
                   <button
                     onClick={() => { close(); handleSignOut(); }}
-                    className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-white border border-rose-100 text-rose-500 font-bold text-sm hover:bg-rose-50 transition-colors"
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white border border-rose-100 text-rose-500 font-black text-[10px] uppercase tracking-widest hover:bg-rose-50 transition-colors shadow-sm"
                   >
-                    <LogOut size={16} />
-                    Sign Out
+                    <LogOut size={14} />
+                    Terminate Session
                   </button>
                 </div>
               )}
@@ -223,6 +232,19 @@ export default function MobileMenu({ session }: MobileMenuProps) {
           </>
         )}
       </AnimatePresence>
+
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: #e2e8f0;
+          border-radius: 10px;
+        }
+      `}</style>
     </div>
   );
 }

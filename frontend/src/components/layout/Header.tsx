@@ -5,7 +5,7 @@ import SearchBar from './SearchBar';
 import LogoutButton from './LogoutButton';
 import MobileMenu from './MobileMenu';
 import MountainLogo from '../common/MountainLogo';
-import { Shield } from 'lucide-react';
+import { Shield, Stethoscope } from 'lucide-react';
 import { publicNavLinks, protectedNavLinks } from '@/config/navigation';
 
 export default async function Header() {
@@ -75,6 +75,15 @@ export default async function Header() {
               >
                 <Shield className="w-3 h-3" />
                 Admin Panel
+              </Link>
+            ) : isLoggedIn && userRole === 'MEDICAL' ? (
+              // Medical Officers: show a clinical HQ shortcut
+              <Link
+                href="/medicalControl"
+                className="hidden sm:inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all shadow-xl shadow-blue-600/20 hover:scale-105 active:scale-95"
+              >
+                <Stethoscope className="w-3 h-3 text-white" />
+                Medical Control
               </Link>
             ) : isLoggedIn ? (
               <div className="hidden sm:flex items-center gap-1.5 sm:gap-2">
