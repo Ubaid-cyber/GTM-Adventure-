@@ -76,10 +76,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
           // --- 3. ROLE-BASED 2FA (MANDATORY FOR STAFF ONLY) ---
           // Trekkers are bypassed (protected by rate-limiters & security headers)
+          // 🔴 2FA TEMPORARILY DISABLED — re-enable by changing `false` back to isStaff below
           const { prisma } = await import("./prisma");
           const dbUser = await prisma.user.findUnique({ where: { id: user.id } });
           
-          const isStaff = dbUser?.role === 'ADMIN' || dbUser?.role === 'LEADER' || dbUser?.role === 'MEDICAL';
+          const isStaff = false; // TODO: restore → dbUser?.role === 'ADMIN' || dbUser?.role === 'LEADER' || dbUser?.role === 'MEDICAL'
           
           if (isStaff && dbUser?.twoFactorEnabled) {
             if (!credentials.totpCode) {

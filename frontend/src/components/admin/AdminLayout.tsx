@@ -21,6 +21,13 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
     return <AdminLoginGate />;
   }
 
+  // Smart display name: avoid showing seeded placeholder names like 'HQ Commander'
+  const rawName = session.user?.name || '';
+  const isPlaceholderName = !rawName || rawName.toLowerCase().includes('hq commander') || rawName.toLowerCase().includes('hq');
+  const adminDisplayName = isPlaceholderName
+    ? (session.user?.email?.split('@')[0]?.replace(/[._-]/g, ' ') ?? 'Administrator')
+    : rawName;
+
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-white">
       <Toaster position="top-right" theme="dark" richColors closeButton />
@@ -57,9 +64,9 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
             {/* Mobile Nav Trigger (only visible on small screens) */}
             <AdminMobileMenu />
             <div className="flex flex-col text-right hidden sm:flex">
-              <span className="text-white font-bold text-sm tracking-tight">{session.user?.name}</span>
+              <span className="text-white font-bold text-sm tracking-tight capitalize">{adminDisplayName}</span>
               <span className="text-blue-500 font-bold text-[9px] uppercase tracking-widest leading-none mt-0.5">
-                Admin User
+                Administrator
               </span>
             </div>
             {/* Avatar: profile image if available, otherwise first+last name initials */}

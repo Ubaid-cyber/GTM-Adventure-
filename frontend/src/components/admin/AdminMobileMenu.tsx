@@ -43,7 +43,7 @@ export default function AdminMobileMenu() {
   const close = () => setIsOpen(false);
 
   return (
-    <div className="lg:hidden">
+    <div className="lg:hidden" style={{ isolation: 'isolate' }}>
       {/* Hamburger Trigger */}
       <button
         onClick={toggle}
@@ -62,7 +62,7 @@ export default function AdminMobileMenu() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={close}
-              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9998]"
+              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[999998]"
             />
 
             {/* Right Drawer */}
@@ -71,7 +71,7 @@ export default function AdminMobileMenu() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="fixed inset-y-0 right-0 w-72 bg-[#0f0f0f] border-l border-white/5 z-[9999] flex flex-col shadow-2xl"
+              className="fixed inset-y-0 right-0 w-72 bg-[#0f0f0f] border-l border-white/5 z-[999999] flex flex-col shadow-2xl"
             >
               {/* Header */}
               <div className="p-5 border-b border-white/5 flex items-center justify-between">

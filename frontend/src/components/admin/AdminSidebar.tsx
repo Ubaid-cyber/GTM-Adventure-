@@ -110,10 +110,10 @@ export default function AdminSidebar() {
 
       {/* 🚪 System Actions */}
       <div className="p-4 border-t border-white/5 space-y-1 bg-black/20">
-        <Link href="/dashboard/profile" className="flex items-center gap-3 px-4 py-2.5 text-white/40 hover:text-white hover:bg-white/[0.02] rounded-xl transition-all">
+        <div className="flex items-center gap-3 px-4 py-2.5 text-white/30 rounded-xl">
           <Settings className="w-4 h-4" />
-          <span className="text-[13px] font-medium">Settings</span>
-        </Link>
+          <span className="text-[13px] font-medium">Admin Account</span>
+        </div>
         <button
           onClick={handleSignOut}
           className="w-full flex items-center gap-3 px-4 py-2.5 text-rose-500/60 hover:text-rose-500 hover:bg-rose-500/5 rounded-xl transition-all"

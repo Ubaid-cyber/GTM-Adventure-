@@ -21,7 +21,7 @@ export async function getBookings() {
     const bookings = await (prisma as any).$queryRaw`
       SELECT 
         b.*,
-        u.name as "userName", u.email as "userEmail", u.profile_image as "userProfileImage",
+        u.name as "userName", u.email as "userEmail", u."profileImage" as "userProfileImage",
         t.title as "trekTitle", t.price as "trekPrice", t.slug as "trekSlug",
         e."startDate" as "expeditionStartDate", e.status as "expeditionStatus",
         s.name as "staffName", s.email as "staffEmail"
