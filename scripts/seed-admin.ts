@@ -67,7 +67,32 @@ async function main() {
     console.log(`  📧 Email: ${leaderEmail}`);
     console.log('  🎭 Role: LEADER\n');
 
-    // 3. Regular User Account
+    // 3. Medical Officer Account
+    const medicalEmail = 'medical@gtmadventures.com';
+    const medicalPass = 'admin';
+    const medicalHashed = await bcrypt.hash(medicalPass, 10);
+
+    await prisma.user.upsert({
+      where: { email: medicalEmail },
+      update: {
+        password: medicalHashed,
+        role: 'MEDICAL',
+        twoFactorEnabled: false,
+      },
+      create: {
+        email: medicalEmail,
+        name: 'Medical Officer',
+        password: medicalHashed,
+        role: 'MEDICAL',
+        twoFactorEnabled: false,
+      },
+    });
+
+    console.log('  ✅ Medical Officer Synchronized!');
+    console.log(`  📧 Email: ${medicalEmail}`);
+    console.log('  🎭 Role: MEDICAL\n');
+
+    // 4. Regular User Account
     const userEmail = 'user@gtm-adventures.com';
     const userPass = 'admin';
     const userHashed = await bcrypt.hash(userPass, 10);
