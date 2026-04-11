@@ -1,5 +1,7 @@
 'use client';
 
+import { signOut } from 'next-auth/react';
+
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -81,7 +83,13 @@ export default function AdminSidebar() {
           <Settings className="w-5 h-5" />
           <span className="text-sm font-semibold">Settings</span>
         </Link>
-        <button className="w-full flex items-center gap-3 px-4 py-3 text-rose-500/60 hover:text-rose-500 hover:bg-rose-500/5 rounded-xl transition-all">
+        <button
+          onClick={async () => {
+            await signOut({ redirect: false });
+            window.location.href = '/';
+          }}
+          className="w-full flex items-center gap-3 px-4 py-3 text-rose-500/60 hover:text-rose-500 hover:bg-rose-500/5 rounded-xl transition-all"
+        >
           <LogOut className="w-5 h-5" />
           <span className="text-sm font-semibold">Exit HQ</span>
         </button>
