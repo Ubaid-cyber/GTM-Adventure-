@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Script from 'next/script';
 import { Suspense } from 'react';
-import MedicalCautionBanner from '@/app/(public)/dashboard/health/MedicalCautionBanner';
+import MedicalCautionBanner from '@/app/dashboard/health/MedicalCautionBanner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, ArrowRight } from 'lucide-react';
 import { formatINR } from '@/lib/utils/formatters';
