@@ -29,7 +29,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
     : rawName;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white">
+    <div className="min-h-screen bg-[#0a0a0a] text-white" style={{ isolation: 'isolate' }}>
       <Toaster position="top-right" theme="dark" richColors closeButton />
       {/* 🏛️ Admin Navigation Shell */}
       <AdminSidebar />
@@ -37,7 +37,10 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       {/* 🎯 Main Content Area */}
       <main className="lg:pl-64 min-h-screen flex flex-col">
         {/* Top Business Header */}
-        <header className="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-[#0a0a0a]/90 backdrop-blur-2xl z-50">
+        <header 
+          className="h-20 border-b border-white/5 flex items-center justify-between px-8 sticky top-0 bg-[#0a0a0a]/90 backdrop-blur-2xl z-50"
+          style={{ isolation: 'isolate' }}
+        >
           <div className="flex items-center gap-10">
             {/* 🧭 High-Visibility Operational Nav */}
             <nav className="hidden lg:flex items-center gap-1 bg-white/[0.03] p-1 rounded-full border border-white/5">
