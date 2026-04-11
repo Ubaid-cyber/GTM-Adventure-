@@ -30,7 +30,7 @@ async function main() {
       },
       create: {
         email: adminEmail,
-        name: 'HQ Commander',
+        name: 'System Administrator',
         password: adminHashed,
         role: 'ADMIN',
         twoFactorEnabled: false,
@@ -38,7 +38,7 @@ async function main() {
       },
     });
 
-    console.log('  ✅ Admin HQ Commander Synchronized!');
+    console.log('  ✅ Admin Synchronized!');
     console.log(`  📧 Email: ${adminEmail}`);
     console.log('  🔐 2FA: ENABLED\n');
 
