@@ -13,7 +13,7 @@ import {
 import { handleSignOut } from '@/components/layout/LogoutButton';
 
 const NAV_ITEMS = [
-  { name: 'Dashboard', icon: BarChart3, href: '/adminControl', desc: 'HQ Metrics & Overview' },
+  { name: 'Dashboard', icon: BarChart3, href: '/adminControl', desc: 'Performance & Overview' },
   { name: 'Tour Packages', icon: MapPin, href: '/adminControl/tours', desc: 'Inventory Management' },
   { name: 'Bookings', icon: CalendarCheck, href: '/adminControl/bookings', desc: 'Reservation Flow' },
   { name: 'Customers', icon: Users, href: '/adminControl/customers', desc: 'User Directory' },
@@ -85,7 +85,7 @@ export default function AdminMobileMenu() {
                      <LayoutDashboard size={16} className="text-white" />
                   </div>
                   <div>
-                    <p className="text-white font-black text-sm tracking-tight leading-none">HQ Admin</p>
+                    <p className="text-white font-black text-sm tracking-tight leading-none">Admin Panel</p>
                     <p className="text-white/30 text-[9px] uppercase tracking-widest font-bold mt-0.5">Control Center</p>
                   </div>
                 </div>

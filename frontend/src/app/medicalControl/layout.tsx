@@ -1,8 +1,8 @@
 import MedicalLayout from '@/components/medical/MedicalLayout';
 
 export const metadata = {
-  title: 'Medical HQ · GTM Adventures',
-  description: 'Mission-critical health oversight and trekker clearance node.',
+  title: 'Medical Panel · GTM Adventures',
+  description: 'Professional health management and trekker clearance panel.',
   robots: { index: false, follow: false },
 };
 

@@ -1,5 +1,5 @@
-import { MedicalHQDashboard } from '@/components/medical/MedicalHQDashboard';
+import { MedicalDashboardView } from '@/components/medical/MedicalDashboardView';
 
-export default function MedicalControlPage() {
-  return <MedicalHQDashboard />;
+export default function MedicalPanelPage() {
+  return <MedicalDashboardView />;
 }

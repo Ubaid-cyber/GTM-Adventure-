@@ -28,7 +28,7 @@ interface Mission {
   checklists: any[];
 }
 
-export default function MissionOversightView({ apiToken }: { apiToken: string }) {
+export default function ExpeditionStatusView({ apiToken }: { apiToken: string }) {
   const { data: session } = useSession();
   const [missions, setMissions] = useState<Mission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -91,7 +91,7 @@ export default function MissionOversightView({ apiToken }: { apiToken: string })
          </div>
       </div>
 
-      {/* MISSION GRID */}
+      {/* EXPEDITION GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
          <AnimatePresence>
             {filteredMissions.map((mission, idx) => {
@@ -161,7 +161,7 @@ export default function MissionOversightView({ apiToken }: { apiToken: string })
                         </div>
                      ) : (
                         <div className="py-6 text-center border-2 border-dashed border-slate-100 rounded-3xl mb-4">
-                           <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No Status Update filed in this sector</p>
+                           <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">No status updates filed for this area</p>
                         </div>
                      )}
 

@@ -18,11 +18,11 @@ import {
 import { handleSignOut } from '@/components/layout/LogoutButton';
 
 const NAV_ITEMS = [
-  { name: 'Oversight', icon: Activity, href: '/medicalControl', desc: 'Real-time Vitals' },
+  { name: 'Health Status', icon: Activity, href: '/medicalControl', desc: 'Real-time Vitals' },
   { name: 'Clearance Queue', icon: Stethoscope, href: '/medicalControl/clearance', desc: 'Pre-flight Approvals' },
   { name: 'Trekker Profiles', icon: Users, href: '/medicalControl/profiles', desc: 'Health Records' },
-  { name: 'Incident Reports', icon: AlertCircle, href: '/medicalControl/incidents', desc: 'Emergency Logs' },
-  { name: 'Archive', icon: History, href: '/medicalControl/archive', desc: 'Past Expeditions' },
+  { name: 'Incident Reports', icon: AlertCircle, href: '/medicalControl/incidents', desc: 'Logs & Issues' },
+  { name: 'Health Archive', icon: History, href: '/medicalControl/archive', desc: 'Past Expeditions' },
 ];
 
 export default function MedicalSidebar() {
@@ -38,15 +38,15 @@ export default function MedicalSidebar() {
             <Stethoscope className="w-7 h-7 text-white" />
           </div>
           <div className="mt-5">
-            <h2 className="text-white font-black text-sm tracking-widest uppercase leading-none">Medical HQ</h2>
-            <p className="text-white/20 text-[9px] font-black uppercase tracking-[0.3em] mt-2">Mission Critical Safe</p>
+            <h2 className="text-white font-black text-sm tracking-widest uppercase leading-none">Medical Panel</h2>
+            <p className="text-white/20 text-[9px] font-black uppercase tracking-[0.3em] mt-2">Health & Safety First</p>
           </div>
         </div>
       </div>
 
-      {/* 🧭 Navigation Console */}
+      {/* 🧭 Navigation */}
       <nav className="flex-1 overflow-y-auto px-6 py-8 space-y-2">
-        <p className="text-white/20 text-[10px] uppercase font-black tracking-[0.35em] mb-6 px-2 italic">Standard Operating</p>
+        <p className="text-white/20 text-[10px] uppercase font-black tracking-[0.35em] mb-6 px-2 italic">Standard Panel</p>
         {NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -78,7 +78,7 @@ export default function MedicalSidebar() {
         })}
 
         <div className="mt-10 pt-8 border-t border-white/5">
-          <p className="text-white/20 text-[10px] uppercase font-black tracking-[0.35em] mb-6 px-2 italic">Global Ops</p>
+          <p className="text-white/20 text-[10px] uppercase font-black tracking-[0.35em] mb-6 px-2 italic">General</p>
           <Link
             href="/"
             className="flex items-center gap-4 p-4 hover:bg-white/[0.03] rounded-2xl transition-all border border-transparent hover:border-white/5 group"

@@ -33,7 +33,7 @@ const NAV_ITEMS = [
   { name: 'Content (CMS)', icon: FileText, href: '/adminControl/cms' },
   { name: 'Guides & Agents', icon: Navigation, href: '/adminControl/guides' },
   { name: 'Reviews & Ratings', icon: Star, href: '/adminControl/reviews' },
-  { name: 'Medical Oversight', icon: Stethoscope, href: '/medicalControl' },
+  { name: 'Health Management', icon: Stethoscope, href: '/medicalControl' },
 ];
 
 export default function AdminSidebar() {
@@ -51,7 +51,7 @@ export default function AdminSidebar() {
             </svg>
           </div>
           <div className="flex flex-col leading-tight">
-            <span className="text-white font-bold text-sm tracking-tight">GTM Administration</span>
+            <span className="text-white font-bold text-sm tracking-tight">GTM Management</span>
             <span className="text-white/40 text-[10px] font-bold uppercase tracking-widest">Admin Panel</span>
           </div>
         </Link>

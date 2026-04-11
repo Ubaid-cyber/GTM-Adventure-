@@ -2,7 +2,7 @@ import * as otplib from 'otplib';
 import * as QRCode from 'qrcode';
 
 /**
- * Standardize TOTP logic for GTM Adventures HQ.
+ * Standardize TOTP logic for GTM Adventures Management.
  * Using a Dynamic detection pattern to handle complex Next.js 16 / Turbopack bundling.
  */
 

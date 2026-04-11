@@ -242,7 +242,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ user, apiToken
               </div>
               <div className="relative z-10 space-y-10">
                  <div className="space-y-2">
-                    <p className="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em]">Operations</p>
+                    <p className="text-[10px] font-black text-cyan-500 uppercase tracking-[0.4em]">Administration</p>
                     <h4 className="text-2xl font-black uppercase tracking-tighter leading-tight">Management<br/>Tools</h4>
                  </div>
                  
@@ -289,9 +289,9 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ user, apiToken
                       <div className="space-y-1">
                          <p className="text-[7px] font-black text-white/20 uppercase tracking-[0.2em]">Live</p>
                          <p className="text-[9px] font-bold text-white uppercase tracking-tighter leading-tight">
-                            {i === 1 ? 'Booking confirmed for deployment.' : 
-                             i === 2 ? 'Security protocol verified.' : 
-                             'Secure communication active.'}
+                            {i === 1 ? 'Booking confirmed for expedition.' : 
+                             i === 2 ? 'Safety protocol verified.' : 
+                             'Communication active.'}
                          </p>
                       </div>
                    </div>

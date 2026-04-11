@@ -124,7 +124,7 @@ export default function Footer() {
                 <Mail size={14} className="text-primary/50" /> support@gtm-adventures.com
               </li>
               <li className="flex items-center gap-3 text-sm font-bold text-white/40">
-                <MapPin size={14} className="text-primary/50" /> Khumbu HQ, Nepal
+                <MapPin size={14} className="text-primary/50" /> Khumbu Center, Nepal
               </li>
             </ul>
           </div>

@@ -41,7 +41,7 @@ export default async function AccountingPage({ searchParams }: { searchParams: P
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="text-left">
           <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Accounting & <span className="text-blue-500">Audit</span></h1>
-          <p className="text-white/40 text-sm">Universal transaction ledger and revenue auditing center for GTM HQ.</p>
+          <p className="text-white/40 text-sm">Universal transaction ledger and revenue auditing center for GTM Management.</p>
         </div>
         
         {/* Specialized View Switcher */}

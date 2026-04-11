@@ -264,7 +264,7 @@ export async function getAdminAuditLogs(query?: string) {
 }
 
 /**
- * Fetches aggregated financial statistics for the HQ Command Center.
+ * Fetches aggregated financial statistics for the Management Center.
  */
 export async function getAdminFinancialStats() {
   await validateAdmin();

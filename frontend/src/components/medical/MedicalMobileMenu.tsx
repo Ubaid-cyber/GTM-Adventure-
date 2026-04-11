@@ -11,11 +11,11 @@ import {
 import { handleSignOut } from '@/components/layout/LogoutButton';
 
 const NAV_ITEMS = [
-  { name: 'Oversight', icon: Activity, href: '/medicalControl', desc: 'Real-time Vitals' },
+  { name: 'Health Status', icon: Activity, href: '/medicalControl', desc: 'Real-time Vitals' },
   { name: 'Clearance Queue', icon: Stethoscope, href: '/medicalControl/clearance', desc: 'Pre-flight Approvals' },
   { name: 'Trekker Profiles', icon: Users, href: '/medicalControl/profiles', desc: 'Health Records' },
-  { name: 'Incident Logs', icon: AlertCircle, href: '/medicalControl/incidents', desc: 'Critical Events' },
-  { name: 'Archive', icon: History, href: '/medicalControl/archive', desc: 'Past Records' },
+  { name: 'Incident Logs', icon: AlertCircle, href: '/medicalControl/incidents', desc: 'Logs & Issues' },
+  { name: 'Health Archive', icon: History, href: '/medicalControl/archive', desc: 'Past Records' },
 ];
 
 export default function MedicalMobileMenu() {
@@ -67,8 +67,8 @@ export default function MedicalMobileMenu() {
                      <Stethoscope size={16} className="text-white" />
                   </div>
                   <div>
-                    <p className="text-white font-black text-sm tracking-tight leading-none">Medical HQ</p>
-                    <p className="text-white/30 text-[9px] uppercase tracking-widest font-bold mt-0.5">Clinical Ops</p>
+                    <p className="text-white font-black text-sm tracking-tight leading-none">Medical Panel</p>
+                    <p className="text-white/30 text-[9px] uppercase tracking-widest font-bold mt-0.5">Operations</p>
                   </div>
                 </div>
                 <button onClick={close} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/30 hover:text-white transition-colors">
@@ -77,7 +77,7 @@ export default function MedicalMobileMenu() {
               </div>
 
               <div className="flex-1 overflow-y-auto px-4 py-6">
-                <p className="text-white/20 text-[10px] uppercase font-black tracking-[0.2em] px-2 mb-4 italic">Medical Console</p>
+                <p className="text-white/20 text-[10px] uppercase font-black tracking-[0.2em] px-2 mb-4 italic">Navigation</p>
                 <div className="space-y-1">
                   {NAV_ITEMS.map((item) => {
                     const isActive = pathname === item.href;
@@ -122,7 +122,7 @@ export default function MedicalMobileMenu() {
                   className="w-full flex items-center gap-3 px-4 py-3 text-rose-500/60 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl transition-all"
                 >
                   <LogOut className="w-4 h-4" />
-                  <span className="text-sm font-bold tracking-tight">Deactivate Session</span>
+                  <span className="text-sm font-bold tracking-tight">Logout</span>
                 </button>
               </div>
             </motion.div>

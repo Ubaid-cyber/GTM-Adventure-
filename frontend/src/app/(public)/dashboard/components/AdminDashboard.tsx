@@ -8,7 +8,7 @@ import {
   Target, Zap
 } from 'lucide-react';
 import Link from 'next/link';
-import MissionOversightView from './MissionOversightView';
+import ExpeditionStatusView from './ExpeditionStatusView';
 
 interface AdminDashboardProps {
   user: any;
@@ -168,7 +168,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ user, apiToken }
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
           >
-            {currentView === 'oversight' && <MissionOversightView apiToken={apiToken} />}
+            {currentView === 'oversight' && <ExpeditionStatusView apiToken={apiToken} />}
           </motion.div>
         )}
       </AnimatePresence>

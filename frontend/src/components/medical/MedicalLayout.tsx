@@ -39,7 +39,7 @@ export default async function MedicalLayout({ children }: MedicalLayoutProps) {
             {/* 🧭 Operational Status Nav */}
             <div className="hidden lg:flex items-center gap-2 bg-blue-600/5 px-4 py-1.5 rounded-full border border-blue-500/10">
               <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-              <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Clinical Node Active</span>
+              <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">Medical Panel Online</span>
             </div>
           </div>
           
@@ -51,7 +51,7 @@ export default async function MedicalLayout({ children }: MedicalLayoutProps) {
                 {user?.name || user?.email?.split('@')[0] || 'Medical Officer'}
               </span>
               <span className="text-blue-500 font-bold text-[9px] uppercase tracking-widest leading-none mt-0.5 italic">
-                {isMedical ? 'Medical Officer' : 'HQ Admin (Override)'}
+                {isMedical ? 'Medical Staff' : 'Admin Management'}
               </span>
             </div>
 

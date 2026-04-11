@@ -36,7 +36,7 @@ export default function MedicalLoginGate() {
         window.location.reload();
       }
     } catch {
-      setError('HQ LINK FAILURE.');
+      setError('System connection error.');
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ export default function MedicalLoginGate() {
         window.location.reload();
       }
     } catch {
-      setError('HQ LINK FAILURE.');
+      setError('Connection failure.');
     } finally {
       setLoading(false);
     }
@@ -78,9 +78,9 @@ export default function MedicalLoginGate() {
              <div className="absolute inset-0 bg-blue-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
              <Stethoscope className="w-8 h-8 text-blue-500 relative z-10" />
           </div>
-          <h1 className="text-3xl font-black text-white tracking-tight uppercase italic">Medical Control</h1>
+          <h1 className="text-3xl font-black text-white tracking-tight uppercase italic">Medical Panel</h1>
           <p className="text-white/40 text-[10px] mt-3 font-black uppercase tracking-[0.4em] whitespace-nowrap">
-            {step === 'credentials' ? 'Clinical Officer Access Only' : 'Neural 2FA Verification Req'}
+            {step === 'credentials' ? 'Medical Staff Access Only' : 'Security Code Required'}
           </p>
         </div>
 
@@ -98,7 +98,7 @@ export default function MedicalLoginGate() {
                 className="space-y-6"
               >
                 <div>
-                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2.5 block px-1">Officer Email</label>
+                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2.5 block px-1">Staff Email</label>
                   <div className="relative group">
                     <input 
                       type="email" 
@@ -106,14 +106,14 @@ export default function MedicalLoginGate() {
                       onChange={(e) => setEmail(e.target.value)} 
                       required
                       className="w-full px-12 py-4 rounded-2xl border border-white/5 bg-white/[0.02] text-sm text-white placeholder:text-white/10 focus:outline-none focus:border-blue-500/40 focus:bg-white/[0.04] transition-all"
-                      placeholder="medical@gtm-adventures.com" 
+                      placeholder="medical@gtmadventures.com" 
                     />
                     <User className="w-4 h-4 text-white/20 absolute left-4 top-1/2 -translate-y-1/2 group-focus-within:text-blue-500 transition-colors" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2.5 block px-1">Clearance Key</label>
+                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em] mb-2.5 block px-1">Login Password</label>
                   <div className="relative group">
                     <input 
                       type="password" 
@@ -132,7 +132,7 @@ export default function MedicalLoginGate() {
                   disabled={loading}
                   className="w-full mt-4 bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-blue-600/30 disabled:opacity-50 flex items-center justify-center gap-3 active:scale-95"
                 >
-                  {loading ? 'Validating...' : 'Authenticate'}
+                  {loading ? 'Authenticating...' : 'Sign In'}
                   {!loading && <ArrowRight className="w-3.5 h-3.5" />}
                 </button>
               </motion.form>
@@ -150,7 +150,7 @@ export default function MedicalLoginGate() {
                       <HeartPulse className="w-6 h-6 text-blue-500" />
                     </div>
                   </div>
-                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-4 block">Medical Sync Code</label>
+                  <label className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em] mb-4 block">Security Verification Code</label>
                   <input 
                     type="text" 
                     value={totpCode} 
@@ -168,7 +168,7 @@ export default function MedicalLoginGate() {
                   disabled={loading}
                   className="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all shadow-xl shadow-blue-600/30 disabled:opacity-50 flex items-center justify-center gap-3"
                 >
-                  {loading ? 'Linking...' : 'Complete Approval'}
+                  {loading ? 'Verifying...' : 'Complete Login'}
                 </button>
 
                 <button 
@@ -176,7 +176,7 @@ export default function MedicalLoginGate() {
                   onClick={() => setStep('credentials')}
                   className="w-full text-center text-[10px] font-black text-white/20 hover:text-white transition-colors tracking-[0.3em] uppercase"
                 >
-                  Return to Key Entry
+                  Back to Login
                 </button>
               </motion.form>
             )}
@@ -195,7 +195,7 @@ export default function MedicalLoginGate() {
         </div>
         
         <p className="mt-8 text-center text-white/10 text-[9px] font-bold uppercase tracking-[0.4em]">
-          End-to-End Encrypted Secure Medical Node
+          Secure Medical Panel System
         </p>
       </div>
     </div>

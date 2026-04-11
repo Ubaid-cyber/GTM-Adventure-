@@ -21,9 +21,9 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
     return <AdminLoginGate />;
   }
 
-  // Smart display name: avoid showing seeded placeholder names like 'HQ Commander'
+  // Smart display name: avoid showing seeded placeholder names like 'Head Administrator'
   const rawName = session.user?.name || '';
-  const isPlaceholderName = !rawName || rawName.toLowerCase().includes('hq commander') || rawName.toLowerCase().includes('hq');
+  const isPlaceholderName = !rawName || rawName.toLowerCase().includes('head administrator') || rawName.toLowerCase().includes('administrator') || rawName.toLowerCase().includes('admin');
   const adminDisplayName = isPlaceholderName
     ? (session.user?.email?.split('@')[0]?.replace(/[._-]/g, ' ') ?? 'Administrator')
     : rawName;
@@ -42,7 +42,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           style={{ isolation: 'isolate' }}
         >
           <div className="flex items-center gap-10">
-            {/* 🧭 High-Visibility Operational Nav */}
+            {/* 🧭 Main Navigation */}
             <nav className="hidden lg:flex items-center gap-1 bg-white/[0.03] p-1 rounded-full border border-white/5">
               {[
                 { name: 'Tour Packages', href: '/adminControl/tours' },

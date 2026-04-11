@@ -107,7 +107,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                         {firstName.charAt(0)}
                       </div>
                       <div>
-                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none">Officer</p>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none">Account</p>
                         <p className="text-slate-900 font-black text-sm capitalize">{firstName} 👋</p>
                       </div>
                     </div>
@@ -163,7 +163,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                   {/* 🛡️ Admin/Staff Nodes */}
                   {(isAdmin || isMedical) && (
                     <div className="pt-2 border-t border-slate-50">
-                       <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest px-2 mb-2">Oversight</p>
+                       <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest px-2 mb-2">Management</p>
                        <div className="space-y-2">
                          {isAdmin && (
                             <Link
@@ -191,8 +191,8 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                                 <Stethoscope size={16} />
                               </div>
                               <div className="flex-1">
-                                <p className="font-bold text-white text-[13px]">Medical HQ</p>
-                                <p className="text-blue-200 text-[10px] uppercase font-bold tracking-widest leading-none mt-1">Vitals Oversight</p>
+                                <p className="font-bold text-white text-[13px]">Medical Panel</p>
+                                <p className="text-blue-200 text-[10px] uppercase font-bold tracking-widest leading-none mt-1">Health Management</p>
                               </div>
                               <ChevronRight size={14} className="text-white/20 group-hover:translate-x-0.5 transition-transform" />
                             </Link>
@@ -224,7 +224,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                     className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white border border-rose-100 text-rose-500 font-black text-[10px] uppercase tracking-widest hover:bg-rose-50 transition-colors shadow-sm"
                   >
                     <LogOut size={14} />
-                    Terminate Session
+                    Logout
                   </button>
                 </div>
               )}

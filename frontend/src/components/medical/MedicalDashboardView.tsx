@@ -13,7 +13,9 @@ import {
   AlertCircle,
   Stethoscope,
   ArrowUpRight,
-  Filter
+  Filter,
+  HeartPulse,
+  ShieldCheck
 } from 'lucide-react';
 import { 
   getAllMedicalProfiles, 
@@ -42,7 +44,7 @@ const STATUS_MAP: Record<string, { label: string; color: string; bg: string }> =
   NONE:               { label: 'Inactive',        color: 'text-white/20',    bg: 'bg-white/5'  },
 };
 
-export function MedicalHQDashboard() {
+export function MedicalDashboardView() {
   const [profiles, setProfiles] = useState<MedicalProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -85,7 +87,7 @@ export function MedicalHQDashboard() {
   if (loading) return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
       <div className="w-12 h-12 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
-      <p className="text-xs font-black text-white/20 uppercase tracking-[0.3em]">Establishing Secure Link...</p>
+      <p className="text-xs font-black text-white/20 uppercase tracking-[0.3em]">Loading medical records...</p>
     </div>
   );
 
@@ -99,10 +101,10 @@ export function MedicalHQDashboard() {
              <div className="w-10 h-10 bg-blue-600/10 rounded-xl flex items-center justify-center border border-blue-500/20">
                <Activity className="w-5 h-5 text-blue-500" />
              </div>
-             <p className="text-[10px] font-black text-blue-500 uppercase tracking-[0.4em]">Operations Unit 01</p>
+             <p className="text-[10px] font-black text-blue-500 uppercase tracking-[0.4em]">Expedition Management</p>
           </div>
-          <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">Medical Oversight</h1>
-          <p className="text-white/40 text-sm mt-2 max-w-xl font-medium">Real-time physiological monitoring and clearance protocols for active expedition units.</p>
+          <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">Medical Panel</h1>
+          <p className="text-white/40 text-sm mt-2 max-w-xl font-medium">Review health status and grant medical clearance for upcoming trek expeditions.</p>
         </div>
         
         <div className="grid grid-cols-2 gap-4">
@@ -125,7 +127,7 @@ export function MedicalHQDashboard() {
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Search Trekker Identity..."
+            placeholder="Search trekker name or email..."
             className="w-full pl-12 pr-4 py-4 bg-transparent text-sm text-white placeholder:text-white/10 focus:outline-none"
           />
         </div>
@@ -245,11 +247,11 @@ export function MedicalHQDashboard() {
 
                 </div>
 
-                {/* Tactical Footer: Clinical Notes */}
+                {/* Dashboard Footer: Clinical Notes */}
                 <div className="mt-6 pt-6 border-t border-white/5 flex flex-col md:flex-row gap-4 items-start md:items-center">
                   <div className="flex items-center gap-2 text-white/20">
                     <FileText size={14} />
-                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">Clinical Assessment Notes</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">Health Review Notes</span>
                   </div>
                   <input 
                     type="text"

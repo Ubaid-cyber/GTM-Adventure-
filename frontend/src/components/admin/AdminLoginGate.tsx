@@ -87,9 +87,9 @@ export default function AdminLoginGate() {
           <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
              <ShieldAlert className="w-6 h-6 text-blue-500" />
           </div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Admin Control</h1>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Admin Management</h1>
           <p className="text-white/40 text-[10px] mt-2 font-bold uppercase tracking-[0.2em] whitespace-nowrap">
-            {step === 'credentials' ? 'Restricted Access Protocol' : 'Two-Factor Analytics Required'}
+            {step === 'credentials' ? 'Staff Login Required' : 'Security Verification Required'}
           </p>
         </div>
 
@@ -105,7 +105,7 @@ export default function AdminLoginGate() {
                 className="space-y-5"
               >
                 <div>
-                  <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 block px-1">Clearance Email</label>
+                  <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 block px-1">Admin Email</label>
                   <div className="relative">
                     <input 
                       type="email" 
@@ -120,7 +120,7 @@ export default function AdminLoginGate() {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 block px-1">Passphrase</label>
+                  <label className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 block px-1">Password</label>
                   <div className="relative">
                     <input 
                       type="password" 
@@ -139,7 +139,7 @@ export default function AdminLoginGate() {
                   disabled={loading}
                   className="w-full mt-2 bg-blue-600 hover:bg-blue-500 text-white py-3.5 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {loading ? 'Authenticating...' : 'Commence Login'}
+                  {loading ? 'Authenticating...' : 'Sign In'}
                   {!loading && <ArrowRight className="w-3 h-3" />}
                 </button>
               </motion.form>
@@ -170,7 +170,7 @@ export default function AdminLoginGate() {
                   disabled={loading}
                   className="w-full bg-blue-600 hover:bg-blue-500 text-white py-3.5 rounded-xl font-bold text-[11px] uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center gap-2"
                 >
-                  {loading ? 'Verifying Neural Link...' : 'Unlock HQ Dashboard'}
+                  {loading ? 'Verifying...' : 'Access Dashboard'}
                 </button>
 
                 <button 
@@ -178,7 +178,7 @@ export default function AdminLoginGate() {
                   onClick={() => setStep('credentials')}
                   className="w-full text-center text-[10px] font-bold text-white/30 hover:text-white transition-colors tracking-widest uppercase"
                 >
-                  Return to Passphrase
+                  Back to Login
                 </button>
               </motion.form>
             )}
