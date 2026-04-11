@@ -62,12 +62,24 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
                 Admin User
               </span>
             </div>
-            <div className="w-10 h-10 rounded-full border-2 border-blue-600/30 p-0.5 shadow-2xl shadow-blue-600/20 transition-transform hover:scale-105 cursor-pointer ring-4 ring-black">
-              <img 
-                src={session.user?.image || `https://ui-avatars.com/api/?name=${session.user?.name || 'Admin'}&background=2563eb&color=fff`} 
-                alt="Account" 
-                className="w-full h-full object-cover rounded-full"
-              />
+            {/* Avatar: profile image if available, otherwise first+last name initials */}
+            <div className="w-10 h-10 rounded-full border-2 border-blue-600/30 shadow-2xl shadow-blue-600/20 transition-transform hover:scale-105 cursor-pointer ring-4 ring-black overflow-hidden flex items-center justify-center bg-blue-600">
+              {session.user?.image ? (
+                <img 
+                  src={session.user.image} 
+                  alt="Account" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span className="text-white font-black text-sm tracking-tight select-none">
+                  {(() => {
+                    const parts = (session.user?.name || '').trim().split(/\s+/);
+                    const first = parts[0]?.[0]?.toUpperCase() ?? '';
+                    const last = parts.length > 1 ? parts[parts.length - 1][0]?.toUpperCase() : '';
+                    return `${first}${last}`;
+                  })()}
+                </span>
+              )}
             </div>
           </div>
         </header>
