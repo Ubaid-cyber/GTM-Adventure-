@@ -1,9 +1,8 @@
 import React from 'react';
 import { auth } from '@/lib/auth';
 import { Toaster } from 'sonner';
-import MedicalSidebar from './MedicalSidebar';
+import PanelHeader from '@/components/layout/PanelHeader';
 import MedicalLoginGate from './MedicalLoginGate';
-import MedicalMobileMenu from './MedicalMobileMenu';
 
 interface MedicalLayoutProps {
   children: React.ReactNode;
