@@ -71,17 +71,17 @@ export default function MobileMenu({ session }: MobileMenuProps) {
               className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-[999998]"
             />
 
-            {/* 🛸 Floating Panel (Trek The Himalayas Style) */}
+            {/* 🛸 Floating Panel ( */}
             <motion.div
               initial={{ y: -20, opacity: 0, scale: 0.95 }}
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: -20, opacity: 0, scale: 0.95 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed top-20 left-4 right-4 max-h-[85vh] bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] z-[999999] flex flex-col overflow-hidden border border-slate-100 sm:left-auto sm:right-6 sm:w-80"
+              className="fixed top-16 left-4 right-4 max-h-[80vh] bg-white rounded-[20px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] z-[999999] flex flex-col overflow-hidden border border-slate-100 sm:left-auto sm:right-6 sm:w-72"
               onClick={(e) => e.stopPropagation()}
             >
               {/* 🏁 Header within Panel */}
-              <div className="flex items-center justify-between px-6 py-5 border-b border-slate-50">
+              <div className="flex items-center justify-between px-5 py-4 border-b border-slate-50">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white">
                     <Mountain size={14} />
@@ -98,12 +98,12 @@ export default function MobileMenu({ session }: MobileMenuProps) {
 
               {/* 📜 Content Area */}
               <div className="flex-1 overflow-y-auto custom-scrollbar">
-                <div className="p-4 space-y-6">
+                <div className="p-4 space-y-4">
                   
                   {/* 👋 Identity (if logged in) */}
                   {isLoggedIn && (
                     <div className="px-2 py-3 bg-slate-50 rounded-2xl flex items-center gap-3">
-                      <div className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-bold text-sm">
+                      <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white font-bold text-xs">
                         {firstName.charAt(0)}
                       </div>
                       <div>
@@ -121,13 +121,13 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                           key={link.href}
                           href={link.href}
                           onClick={close}
-                          className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-all group"
+                          className="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-50 transition-all group"
                         >
-                          <div className="flex items-center gap-3.5">
-                            <div className="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600 transition-colors group-hover:bg-slate-900 group-hover:text-white">
-                              <link.icon size={16} />
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600 transition-colors group-hover:bg-slate-900 group-hover:text-white">
+                              <link.icon size={14} />
                             </div>
-                            <p className="font-bold text-slate-900 text-[13px]">{link.label}</p>
+                            <p className="font-bold text-slate-900 text-xs">{link.label}</p>
                           </div>
                           <ChevronRight size={14} className="text-slate-300 group-hover:text-slate-900 group-hover:translate-x-0.5 transition-transform" />
                         </Link>
@@ -145,13 +145,13 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                             key={link.href}
                             href={link.href}
                             onClick={close}
-                            className="flex items-center justify-between p-3 rounded-xl hover:bg-blue-50 transition-all group"
+                            className="flex items-center justify-between p-2.5 rounded-xl hover:bg-blue-50 transition-all group"
                           >
-                            <div className="flex items-center gap-3.5">
-                              <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
-                                <link.icon size={16} />
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+                                <link.icon size={14} />
                               </div>
-                              <p className="font-bold text-slate-900 text-[13px]">{link.label}</p>
+                              <p className="font-bold text-slate-900 text-xs">{link.label}</p>
                             </div>
                             <ChevronRight size={14} className="text-slate-300 group-hover:text-blue-600 group-hover:translate-x-0.5 transition-transform" />
                           </Link>
@@ -169,13 +169,13 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                             <Link
                               href="/adminControl"
                               onClick={close}
-                              className="flex items-center gap-4 p-3 bg-slate-900 rounded-2xl group transition-all"
+                              className="flex items-center gap-4 p-2.5 bg-slate-900 rounded-xl group transition-all"
                             >
-                              <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center text-white">
-                                <Shield size={16} />
+                              <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white">
+                                <Shield size={14} />
                               </div>
                               <div className="flex-1">
-                                <p className="font-bold text-white text-[13px]">Admin Panel</p>
+                                <p className="font-bold text-white text-xs">Admin Panel</p>
                                 <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest leading-none mt-1">Full Control</p>
                               </div>
                               <ChevronRight size={14} className="text-white/20 group-hover:translate-x-0.5 transition-transform" />
@@ -185,13 +185,13 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                             <Link
                               href="/medicalControl"
                               onClick={close}
-                              className="flex items-center gap-4 p-3 bg-blue-600 rounded-2xl group transition-all"
+                              className="flex items-center gap-4 p-2.5 bg-blue-600 rounded-xl group transition-all"
                             >
-                              <div className="w-9 h-9 bg-white/10 rounded-lg flex items-center justify-center text-white">
-                                <Stethoscope size={16} />
+                              <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center text-white">
+                                <Stethoscope size={14} />
                               </div>
                               <div className="flex-1">
-                                <p className="font-bold text-white text-[13px]">Medical Panel</p>
+                                <p className="font-bold text-white text-xs">Medical Panel</p>
                                 <p className="text-blue-200 text-[10px] uppercase font-bold tracking-widest leading-none mt-1">Health Management</p>
                               </div>
                               <ChevronRight size={14} className="text-white/20 group-hover:translate-x-0.5 transition-transform" />
@@ -207,7 +207,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
                        <Link
                         href="/login"
                         onClick={close}
-                        className="flex items-center justify-center w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-slate-900/10 active:scale-95"
+                        className="flex items-center justify-center w-full py-3 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl shadow-slate-900/10 active:scale-95"
                       >
                         Secure Login / Join
                       </Link>
@@ -218,7 +218,7 @@ export default function MobileMenu({ session }: MobileMenuProps) {
 
               {/* 🚪 Panel Footer */}
               {isLoggedIn && (
-                <div className="px-5 py-5 border-t border-slate-50 bg-slate-50/50">
+                <div className="px-5 py-4 border-t border-slate-50 bg-slate-50/50">
                   <button
                     onClick={() => { close(); handleSignOut(); }}
                     className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-white border border-rose-100 text-rose-500 font-black text-[10px] uppercase tracking-widest hover:bg-rose-50 transition-colors shadow-sm"
