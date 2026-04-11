@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { 
   Instagram, 
@@ -12,10 +12,24 @@ import {
   MapPin, 
   ArrowRight,
   Shield,
-  CreditCard
+  CreditCard,
+  CheckCircle2
 } from 'lucide-react';
 
 export default function Footer() {
+  const [email, setEmail] = useState('');
+  const [isSubscribed, setIsSubscribed] = useState(false);
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+    
+    // Simulate API call
+    setTimeout(() => {
+      setIsSubscribed(true);
+      setEmail('');
+    }, 400);
+  };
   return (
     <footer className="bg-slate-950 border-t border-white/5 pt-20 pb-10 overflow-hidden relative">
       {/* Background Glow */}
@@ -59,19 +73,29 @@ export default function Footer() {
                 <div className="relative z-10">
                   <h3 className="text-xl font-black mb-2 italic uppercase tracking-tighter" style={{ color: '#020617' }}>Stay Updated</h3>
                   <p className="text-slate-500 text-xs mb-8 font-bold uppercase tracking-widest">Get the latest news and exclusive trek offers.</p>
-                  <form className="flex flex-col sm:flex-row gap-3">
-                    <div className="flex-1 relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
-                      <input 
-                        type="email" 
-                        placeholder="Your email address" 
-                        className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-sm text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-primary focus:bg-white transition-all shadow-inner font-bold"
-                      />
+                  {isSubscribed ? (
+                    <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl text-emerald-600 font-bold text-sm">
+                      <CheckCircle2 size={18} />
+                      Subscription confirmed! We'll be in touch.
                     </div>
-                    <button className="px-8 py-4 bg-primary text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-blue-600 transition-all flex items-center justify-center gap-2 group whitespace-nowrap shadow-lg shadow-primary/20">
-                      Subscribe <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                    </button>
-                  </form>
+                  ) : (
+                    <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
+                      <div className="flex-1 relative">
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                        <input 
+                          type="email" 
+                          required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          placeholder="Your email address" 
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-12 pr-4 text-sm text-slate-900 placeholder:text-slate-300 focus:outline-none focus:border-primary focus:bg-white transition-all shadow-inner font-bold"
+                        />
+                      </div>
+                      <button type="submit" className="px-8 py-4 bg-primary text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] hover:bg-blue-600 transition-all flex items-center justify-center gap-2 group whitespace-nowrap shadow-lg shadow-primary/20">
+                        Subscribe <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                      </button>
+                    </form>
+                  )}
                 </div>
              </div>
           </div>
