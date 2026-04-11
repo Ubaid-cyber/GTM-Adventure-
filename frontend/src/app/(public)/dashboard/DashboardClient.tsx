@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { LeaderDashboard } from './components/LeaderDashboard';
 import { AdminDashboard } from './components/AdminDashboard';
-import { TrekkerDashboard } from './components/TrekkerDashboard';
 
 export default function DashboardClient({ apiToken, isLeader }: { apiToken: string; isLeader: boolean }) {
   const { data: session, status } = useSession();

@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Compass, Calendar, ArrowRight, ShieldCheck, Map } from 'lucide-react';
 import { formatDateOnly } from '@/lib/utils/date-safe';
+import { getUserBookingsAction } from '@/lib/actions/booking-actions';
 
 interface TrekkerDashboardProps {
   user: any;
-  apiToken: string;
 }
 
-export function TrekkerDashboard({ user, apiToken }: TrekkerDashboardProps) {
+export function TrekkerDashboard({ user }: TrekkerDashboardProps) {
   const [activeMissions, setActiveMissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
@@ -21,26 +21,17 @@ export function TrekkerDashboard({ user, apiToken }: TrekkerDashboardProps) {
   }, []);
 
   useEffect(() => {
-    const fetchMissions = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/active-bookings`, {
-          headers: {
-            'Authorization': `Bearer ${apiToken}`,
-            'x-user-email': user.email
-          }
-        });
-        if (res.ok) {
-          const data = await res.json();
-          setActiveMissions(data.bookings || []);
-        }
-      } catch (err) {
-        console.error('Failed to fetch missions:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMissions();
-  }, [user.email, apiToken]);
+    getUserBookingsAction()
+      .then((bookings) => {
+        // Only show confirmed bookings that have an active expedition
+        const active = bookings.filter(
+          (b: any) => b.status === 'CONFIRMED' && b.expeditionId
+        );
+        setActiveMissions(active);
+      })
+      .catch((err) => console.error('Failed to fetch missions:', err))
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="space-y-10">
