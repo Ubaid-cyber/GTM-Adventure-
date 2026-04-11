@@ -82,7 +82,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
                 />
               ) : (
                 <span className="text-white font-black text-sm tracking-tight select-none">
-                  {(() => {
+                  {isPlaceholderName ? 'A' : (() => {
                     const parts = (session.user?.name || '').trim().split(/\s+/);
                     const first = parts[0]?.[0]?.toUpperCase() ?? '';
                     const last = parts.length > 1 ? parts[parts.length - 1][0]?.toUpperCase() : '';
