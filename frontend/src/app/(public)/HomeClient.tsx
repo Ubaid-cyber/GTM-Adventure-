@@ -36,7 +36,7 @@ export default function HomeClient() {
         {/* Cinematic Background - Overlays removed as requested for full image visibility */}
         <div className="absolute inset-0 z-0 overflow-hidden">
           <img 
-            src="/images/hero-sunrise.png" 
+            src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2000" 
             alt="Elite Global Adventure & Expedition Management - GTM Adventures" 
             className="w-full h-full object-cover scale-105"
           />
