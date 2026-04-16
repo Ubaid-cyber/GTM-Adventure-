@@ -50,3 +50,14 @@ next-env.d.ts
 
 # Temporary files
 /tmp/
+
+# Agentic metadata
+.agent/
+.planning/
+.brain/
+.scratch/
+
+# Scratch scripts
+patch-*.js
+scripts/tmp-*
+scripts/ralph-*
