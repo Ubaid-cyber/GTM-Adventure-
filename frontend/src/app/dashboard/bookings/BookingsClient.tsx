@@ -49,10 +49,10 @@ const CountdownTimer = ({ createdAt }: { createdAt: string }) => {
   );
 };
 
-export default function BookingsClient() {
+export default function BookingsClient({ initialBookings = [] }: { initialBookings?: any[] }) {
   const { data: session } = useSession();
-  const [bookings, setBookings] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [bookings, setBookings] = useState<any[]>(initialBookings);
+  const [loading, setLoading] = useState(initialBookings.length === 0);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -81,7 +81,10 @@ export default function BookingsClient() {
   };
 
   useEffect(() => {
-    fetchBookings();
+    // Only fetch if we don't have initial data OR if session just loaded
+    if (initialBookings.length === 0 || session?.user?.email) {
+      fetchBookings();
+    }
   }, [session?.user?.email]);
 
   const handleCancelInitiate = (id: string, title: string) => {

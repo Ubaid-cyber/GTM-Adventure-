@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import BookingsClient from './BookingsClient';
 import { Metadata } from 'next';
+import { getUserBookingsAction } from '@/lib/actions/booking-actions';
 
 export const metadata: Metadata = {
   title: 'My Bookings | GTM-Adventure',
@@ -15,5 +16,8 @@ export default async function BookingsPage() {
     redirect('/login');
   }
 
-  return <BookingsClient />;
+  // Fetch data on server for better performance
+  const initialBookings = await getUserBookingsAction();
+
+  return <BookingsClient initialBookings={initialBookings} />;
 }
